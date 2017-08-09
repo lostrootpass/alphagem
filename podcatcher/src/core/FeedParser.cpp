@@ -21,9 +21,99 @@ void FeedParser::parseFromRemoteFile(QString& url)
 	connect(_reply, &QNetworkReply::downloadProgress, this, &FeedParser::_progressUpdated);
 }
 
-void FeedParser::parseFromString(QByteArray fileData)
+void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 {
+	while (!(xml->name() == "channel" && xml->isEndElement()))
+	{
+		xml->readNext();
 
+		if (xml->isStartElement())
+		{
+			QStringRef n = xml->qualifiedName();
+
+			if (n == "item")
+			{
+				_parseItemData(xml, feed);
+			}
+			else if (n == "image")
+			{
+				_parseImageData(xml, feed);
+			}
+			else if (n == "title")
+			{
+				feed->title = xml->readElementText();
+			}
+			else if (n == "link")
+			{
+				feed->link = xml->readElementText();
+			}
+			else if (n == "description")
+			{
+				feed->description = xml->readElementText();
+			}
+			else if (n == "lastBuildDate")
+			{
+				feed->lastUpdated = QDate::fromString(xml->readElementText());
+			}
+		}
+	}
+}
+
+void FeedParser::_parseImageData(QXmlStreamReader*xml, Feed* feed)
+{
+	while (!(xml->name() == "image" && xml->isEndElement()))
+	{
+		xml->readNext();
+
+		if (xml->isStartElement())
+		{
+			if (xml->name() == "url")
+			{
+				feed->imageUrl = xml->readElementText();
+			}
+		}
+	}
+}
+
+void FeedParser::_parseItemData(QXmlStreamReader* xml, Feed* feed)
+{
+	Episode e;
+
+	while (!(xml->name() == "item" && xml->isEndElement()))
+	{
+		xml->readNext();
+
+		if (xml->isStartElement())
+		{
+			QStringRef n = xml->qualifiedName();
+			if (n == "title")
+			{
+				e.title = xml->readElementText();
+			}
+			else if (n == "description")
+			{
+				e.description = xml->readElementText();
+			}
+			else if (n == "pubDate")
+			{
+				e.published = QDate::fromString(xml->readElementText());
+			}
+			else if (n == "itunes:duration")
+			{
+				e.duration = xml->readElementText().toInt();
+			}
+			else if (n == "enclosure")
+			{
+				e.mediaUrl = xml->attributes().value("url").toString();
+			}
+			else if (n == "itunes:image")
+			{
+				e.imageUrl = xml->attributes().value("href").toString();
+			}
+		}
+	}
+
+	feed->episodes.push_back(e);
 }
 
 void FeedParser::_downloadFinished(QNetworkReply* reply)
@@ -35,26 +125,18 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 	else
 	{
 		QXmlStreamReader xml(reply->readAll());
-
 		Feed feed;
 
-		QString currElement = "";
 		while (!xml.atEnd())
 		{
 			xml.readNext();
 
 			if (xml.isStartElement())
 			{
-				if (currElement == "channel" && xml.name() == "title")
+				if (xml.name() == "channel")
 				{
-					feed.title = xml.readElementText();
+					_parseChannelData(&xml, &feed);
 				}
-				else if (currElement == "item" && xml.name() == "title")
-				{
-					feed.episodes.push_back(xml.readElementText());
-				}
-
-				currElement = xml.name().toString();
 			}
 		}
 

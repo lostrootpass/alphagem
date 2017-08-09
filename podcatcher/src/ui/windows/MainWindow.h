@@ -4,9 +4,12 @@
 #include "ui_MainWindow.h"
 
 class QProgressBar;
+class QMediaPlayer;
+class QMediaPlaylist;
 
 class FeedParser;
 struct Feed;
+struct Episode;
 
 class MainWindow : public QMainWindow
 {
@@ -21,6 +24,11 @@ private:
 
 	FeedParser* _feedParser;
 	QProgressBar* _progressBar;
+
+	QMediaPlayer* _mediaPlayer;
+	QMediaPlaylist* _playlist;
+
+	void _playEpisode(const Episode* episode);
 
 private slots:
 	/* Auto generated slots */
@@ -37,4 +45,6 @@ private slots:
 	void onFeedAdded(QString& feed);
 	void onStatusBarUpdate(QString& text);
 	void onFeedRetrieved(Feed* feed);
+
+	void onEpisodeSelected(const QModelIndex& index);
 };

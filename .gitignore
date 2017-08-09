@@ -4,3 +4,5 @@ Debug/
 Release/
 *.vcxproj.user
 .vs
+*.VC.db
+*.VC.opendb

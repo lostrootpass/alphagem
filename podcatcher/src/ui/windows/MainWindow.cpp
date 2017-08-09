@@ -2,24 +2,57 @@
 #include "AddFeedWindow.h"
 #include "AboutWindow.h"
 
-#include "src/core/FeedParser.h"
-#include "src/core/Feed.h"
+#include "core/FeedParser.h"
+#include "core/Feed.h"
+
+#include "ui/models/EpisodeListModel.h"
 
 #include <QProgressBar>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent), _feedParser(nullptr)
+	: QMainWindow(parent), _feedParser(nullptr),
+	_mediaPlayer(nullptr), _playlist(nullptr)
 {
 	ui.setupUi(this);
 
 	_progressBar = new QProgressBar();
 	statusBar()->addPermanentWidget(_progressBar);
+
+	connect(ui.listView, &QListView::doubleClicked, this, &MainWindow::onEpisodeSelected);
 }
 
 MainWindow::~MainWindow()
 {
-	if (_feedParser)
-		delete _feedParser;
+	delete _feedParser;
+	delete _mediaPlayer;
+	delete _playlist;
+}
+
+void MainWindow::_playEpisode(const Episode* episode)
+{
+	if (!_mediaPlayer)
+	{
+		_mediaPlayer = new QMediaPlayer();
+	}
+	else
+	{
+		_mediaPlayer->stop();
+	}
+
+	if (!_playlist)
+	{
+		_playlist = new QMediaPlaylist();
+		_mediaPlayer->setPlaylist(_playlist);
+	}
+	else
+	{
+		_playlist->clear();
+	}
+
+	_playlist->addMedia(QUrl(episode->mediaUrl));
+	_mediaPlayer->play();
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -75,8 +108,16 @@ void MainWindow::onFeedRetrieved(Feed* feed)
 {
 	ui.feedNameLabel->setText(feed->title);
 
-	for (QString& s : feed->episodes)
-	{
-		ui.listWidget->addItem(s);
-	}
+	QAbstractItemModel* model = new EpisodeListModel(feed->episodes, 0);
+
+	ui.listView->setModel(model);
+}
+
+void MainWindow::onEpisodeSelected(const QModelIndex& index)
+{
+	EpisodeListModel* model = (EpisodeListModel*)ui.listView->model();
+
+	const Episode& ep = model->getEpisode(index);
+
+	_playEpisode(&ep);
 }
