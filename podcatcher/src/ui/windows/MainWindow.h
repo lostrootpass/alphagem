@@ -4,9 +4,8 @@
 #include "ui_MainWindow.h"
 
 class QProgressBar;
-class QMediaPlayer;
-class QMediaPlaylist;
 
+class AudioPlayer;
 class FeedParser;
 struct Feed;
 struct Episode;
@@ -19,16 +18,14 @@ public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
 	~MainWindow();
 
+	void setAudioPlayer(AudioPlayer* player);
+
 private:
 	Ui::MainWindowClass ui;
 
+	AudioPlayer* _audioPlayer;
 	FeedParser* _feedParser;
 	QProgressBar* _progressBar;
-
-	QMediaPlayer* _mediaPlayer;
-	QMediaPlaylist* _playlist;
-
-	void _playEpisode(const Episode* episode);
 
 private slots:
 	/* Auto generated slots */

@@ -1,19 +1,18 @@
 #include "MainWindow.h"
+
+#include <QProgressBar>
+
 #include "AddFeedWindow.h"
 #include "AboutWindow.h"
 
-#include "core/FeedParser.h"
+#include "core/AudioPlayer.h"
 #include "core/Feed.h"
+#include "core/FeedParser.h"
 
 #include "ui/models/EpisodeListModel.h"
 
-#include <QProgressBar>
-#include <QMediaPlayer>
-#include <QMediaPlaylist>
-
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent), _feedParser(nullptr),
-	_mediaPlayer(nullptr), _playlist(nullptr)
+	: QMainWindow(parent), _feedParser(nullptr)
 {
 	ui.setupUi(this);
 
@@ -26,33 +25,13 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 	delete _feedParser;
-	delete _mediaPlayer;
-	delete _playlist;
 }
 
-void MainWindow::_playEpisode(const Episode* episode)
+void MainWindow::setAudioPlayer(AudioPlayer* player)
 {
-	if (!_mediaPlayer)
-	{
-		_mediaPlayer = new QMediaPlayer();
-	}
-	else
-	{
-		_mediaPlayer->stop();
-	}
+	_audioPlayer = player;
 
-	if (!_playlist)
-	{
-		_playlist = new QMediaPlaylist();
-		_mediaPlayer->setPlaylist(_playlist);
-	}
-	else
-	{
-		_playlist->clear();
-	}
-
-	_playlist->addMedia(QUrl(episode->mediaUrl));
-	_mediaPlayer->play();
+	ui.playbackControlWidget->connectToAudioPlayer(_audioPlayer);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -119,5 +98,5 @@ void MainWindow::onEpisodeSelected(const QModelIndex& index)
 
 	const Episode& ep = model->getEpisode(index);
 
-	_playEpisode(&ep);
+	_audioPlayer->playEpisode(&ep);
 }
