@@ -9,7 +9,7 @@ EpisodeListModel::~EpisodeListModel()
 {
 }
 
-int EpisodeListModel::rowCount(const QModelIndex &parent) const
+int EpisodeListModel::rowCount(const QModelIndex&) const
 {
 	return _episodes.size();
 }

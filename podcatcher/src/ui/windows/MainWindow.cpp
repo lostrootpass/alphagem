@@ -7,12 +7,12 @@
 
 #include "core/AudioPlayer.h"
 #include "core/Feed.h"
-#include "core/FeedParser.h"
+#include "core/FeedCache.h"
 
 #include "ui/models/EpisodeListModel.h"
 
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent), _feedParser(nullptr)
+	: QMainWindow(parent), _feedCache(nullptr)
 {
 	ui.setupUi(this);
 
@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-	delete _feedParser;
 }
 
 void MainWindow::setAudioPlayer(AudioPlayer* player)
@@ -34,12 +33,22 @@ void MainWindow::setAudioPlayer(AudioPlayer* player)
 	ui.playbackControlWidget->connectToAudioPlayer(_audioPlayer);
 }
 
+void MainWindow::setFeedCache(FeedCache* cache)
+{
+	_feedCache = cache;
+
+	connect(_feedCache, &FeedCache::feedListUpdated, this, &MainWindow::onFeedListUpdated);
+}
+
 void MainWindow::on_actionAdd_Feed_triggered()
 {
 	AddFeedWindow* feedWindow = new AddFeedWindow();
 	feedWindow->setAttribute(Qt::WA_DeleteOnClose);
 
-	connect(feedWindow, &AddFeedWindow::feedAdded, this, &MainWindow::onFeedAdded);
+	if (_feedCache)
+	{
+		connect(feedWindow, &AddFeedWindow::feedAdded, _feedCache, &FeedCache::onFeedAdded);
+	}
 
 	feedWindow->show();
 }
@@ -62,29 +71,19 @@ void MainWindow::on_actionAbout_triggered()
 	window->show();
 }
 
-void MainWindow::onFeedAdded(QString& feed)
-{
-	if (!_feedParser)
-	{
-		_feedParser = new FeedParser(nullptr);
-
-		connect(_feedParser, &FeedParser::downloadFailed, this, &MainWindow::onStatusBarUpdate);
-		connect(_feedParser, &FeedParser::updateProgress, _progressBar, &QProgressBar::setValue);
-		connect(_feedParser, &FeedParser::feedRetrieved, this, &MainWindow::onFeedRetrieved);
-	}
-
-
-
-	_feedParser->parseFromRemoteFile(feed);
-}
-
 void MainWindow::onStatusBarUpdate(QString& text)
 {
 	statusBar()->showMessage(text);
 }
 
-void MainWindow::onFeedRetrieved(Feed* feed)
+void MainWindow::onFeedListUpdated()
 {
+	QVector<Feed>& feeds = _feedCache->feeds();
+
+	if (!feeds.size()) return;
+
+	Feed* feed = &feeds[0];
+
 	ui.feedNameLabel->setText(feed->title);
 
 	QAbstractItemModel* model = new EpisodeListModel(feed->episodes, 0);

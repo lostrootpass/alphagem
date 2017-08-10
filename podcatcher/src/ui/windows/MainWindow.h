@@ -6,7 +6,7 @@
 class QProgressBar;
 
 class AudioPlayer;
-class FeedParser;
+class FeedCache;
 struct Feed;
 struct Episode;
 
@@ -19,12 +19,13 @@ public:
 	~MainWindow();
 
 	void setAudioPlayer(AudioPlayer* player);
+	void setFeedCache(FeedCache* cache);
 
 private:
 	Ui::MainWindowClass ui;
 
 	AudioPlayer* _audioPlayer;
-	FeedParser* _feedParser;
+	FeedCache* _feedCache;
 	QProgressBar* _progressBar;
 
 private slots:
@@ -39,9 +40,8 @@ private slots:
 	void on_actionAbout_triggered();
 
 	/* Custom slots */
-	void onFeedAdded(QString& feed);
 	void onStatusBarUpdate(QString& text);
-	void onFeedRetrieved(Feed* feed);
+	void onFeedListUpdated();
 
 	void onEpisodeSelected(const QModelIndex& index);
 };

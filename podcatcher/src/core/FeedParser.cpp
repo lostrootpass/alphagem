@@ -110,6 +110,10 @@ void FeedParser::_parseItemData(QXmlStreamReader* xml, Feed* feed)
 			{
 				e.imageUrl = xml->attributes().value("href").toString();
 			}
+			else if (n == "guid")
+			{
+				e.guid = xml->readElementText();
+			}
 		}
 	}
 
@@ -120,7 +124,8 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 {
 	if (reply->error())
 	{
-		emit downloadFailed(reply->errorString());
+		QString error = reply->errorString();
+		emit downloadFailed(error);
 	}
 	else
 	{

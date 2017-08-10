@@ -14,7 +14,8 @@ AddFeedWindow::~AddFeedWindow()
 
 void AddFeedWindow::on_addFeedButton_clicked()
 {
-	emit feedAdded(ui.urlInput->text());
+	QString s = ui.urlInput->text();
+	emit feedAdded(s);
 	close();
 }
 
