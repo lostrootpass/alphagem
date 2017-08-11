@@ -20,12 +20,14 @@ public:
 	void refresh();
 	void saveToDisk();
 
+	inline QVector<Episode>& episodes(int index) { return _feeds[index].episodes; }
 	inline QVector<Feed>& feeds() { return _feeds; }
 
 signals:
 	void feedListUpdated();
 
 public slots:
+	void onAboutToQuit();
 	void onFeedAdded(QString& url);
 	void onFeedRetrieved(Feed* feed);
 

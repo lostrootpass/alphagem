@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
 	EpisodeCache* epCache = new EpisodeCache(&a);
 	FeedCache* feedCache = new FeedCache(&a);
 
+	QObject::connect(&a, &QApplication::aboutToQuit, feedCache, &FeedCache::onAboutToQuit);
+
 	MainWindow w;
 	w.setAudioPlayer(player);
 	w.setEpisodeCache(epCache);

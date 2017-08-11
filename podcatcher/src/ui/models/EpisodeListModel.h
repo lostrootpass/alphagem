@@ -3,20 +3,29 @@
 #include <QAbstractListModel>
 
 #include "core/feeds/Feed.h"
+#include "core/feeds/FeedCache.h"
 
 class EpisodeListModel : public QAbstractListModel
 {
 	Q_OBJECT
 
 public:
-	EpisodeListModel(QVector<Episode>& episodes, QObject* parent = 0);
+	EpisodeListModel(FeedCache& cache, int feed, QObject* parent = 0);
 	~EpisodeListModel();
 
 	int rowCount(const QModelIndex &parent) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 
-	const Episode& getEpisode(const QModelIndex& index) const;
+	Episode& getEpisode(const QModelIndex& index) const;
+
+	void markAsPlayed(const QModelIndex& index);
 
 private:
-	QVector<Episode> _episodes;
+	FeedCache* _feedCache;
+	int _feedIndex;
+
+	inline int _epCount() const 
+	{
+		return _feedCache->episodes(_feedIndex).size();
+	}
 };

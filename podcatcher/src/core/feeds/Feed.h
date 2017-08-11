@@ -17,6 +17,8 @@ struct Episode
 	QDate published;
 
 	qint32 duration;
+
+	bool listened;
 };
 
 struct Feed

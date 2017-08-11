@@ -10,6 +10,7 @@
 #include "core/feeds/Feed.h"
 #include "core/feeds/FeedCache.h"
 
+#include "ui/models/EpisodeItemDelegate.h"
 #include "ui/models/EpisodeListModel.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -21,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
 	statusBar()->addPermanentWidget(_progressBar);
 
 	connect(ui.listView, &QListView::activated, this, &MainWindow::onEpisodeSelected);
+
+	ui.listView->setItemDelegate(new EpisodeItemDelegate(ui.listView));
 }
 
 MainWindow::~MainWindow()
@@ -138,11 +141,13 @@ void MainWindow::onFeedListUpdated()
 
 	if (!feeds.size()) return;
 
-	Feed* feed = &feeds[0];
+	const int feedIndex = 0;
+
+	Feed* feed = &feeds[feedIndex];
 
 	ui.feedNameLabel->setText(feed->title);
 
-	QAbstractItemModel* model = new EpisodeListModel(feed->episodes, 0);
+	QAbstractItemModel* model = new EpisodeListModel(*_feedCache, feedIndex, 0);
 
 	ui.listView->setModel(model);
 
@@ -176,4 +181,5 @@ void MainWindow::onEpisodeSelected(const QModelIndex& index)
 	const Episode& ep = model->getEpisode(index);
 
 	_audioPlayer->playEpisode(&ep);
+	model->markAsPlayed(index);
 }

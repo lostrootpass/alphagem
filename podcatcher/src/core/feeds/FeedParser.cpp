@@ -41,6 +41,7 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 			if (n == "item")
 			{
 				Episode e;
+				e.listened = false;
 
 				if (!_parseItemData(xml, &e, untilGuid))
 				{

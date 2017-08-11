@@ -18,6 +18,7 @@ QDataStream& operator<<(QDataStream& stream, const Episode& episode)
 	stream << episode.mediaFormat;
 	stream << episode.published;
 	stream << episode.duration;
+	stream << episode.listened;
 
 	return stream;
 }
@@ -32,6 +33,7 @@ QDataStream& operator>>(QDataStream& stream, Episode& episode)
 	stream >> episode.mediaFormat;
 	stream >> episode.published;
 	stream >> episode.duration;
+	stream >> episode.listened;
 
 	return stream;
 }
@@ -76,6 +78,11 @@ Feed* FeedCache::feedForUrl(const QString& url)
 	f.feedUrl = QString(url);
 	_feeds.push_back(f);
 	return &_feeds.back();
+}
+
+void FeedCache::onAboutToQuit()
+{
+	saveToDisk();
 }
 
 void FeedCache::onFeedAdded(QString& url)
