@@ -6,6 +6,7 @@
 #include <QXmlStreamReader>
 
 struct Feed;
+struct Episode;
 
 class FeedParser : public QObject
 {
@@ -28,7 +29,7 @@ private:
 
 	void _parseChannelData(QXmlStreamReader* xml, Feed* feed);
 	void _parseImageData(QXmlStreamReader*xml, Feed* feed);
-	void _parseItemData(QXmlStreamReader* xml, Feed* feed);
+	bool _parseItemData(QXmlStreamReader* xml, Episode* episode, QString untilGuid);
 
 private slots:
 	void _downloadFinished(QNetworkReply* reply);

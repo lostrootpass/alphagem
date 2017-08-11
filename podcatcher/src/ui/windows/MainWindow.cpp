@@ -91,6 +91,12 @@ void MainWindow::on_actionDownload_triggered()
 		_epCache->downloadEpisode(ep);
 }
 
+void MainWindow::on_actionRefresh_triggered()
+{
+	if (_feedCache)
+		_feedCache->refresh();
+}
+
 void MainWindow::onDownloadComplete(const Episode& e)
 {
 	QString message = QString("Download complete: %1").arg(e.title);

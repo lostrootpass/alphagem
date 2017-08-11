@@ -21,6 +21,7 @@ struct Episode
 
 struct Feed
 {
+	QString feedUrl;
 	QString title;
 	QString link;
 	QString description;

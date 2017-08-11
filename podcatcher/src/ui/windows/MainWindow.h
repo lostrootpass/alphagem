@@ -44,6 +44,7 @@ private slots:
 
 	//Toolbar
 	void on_actionDownload_triggered();
+	void on_actionRefresh_triggered();
 
 	/* Custom slots */
 	void onDownloadComplete(const Episode& e);

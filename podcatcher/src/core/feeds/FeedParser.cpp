@@ -1,7 +1,9 @@
 #include "FeedParser.h"
-#include "Feed.h"
 
 #include <QXmlStreamReader>
+
+#include "Feed.h"
+#include "FeedCache.h"
 
 FeedParser::FeedParser(QObject *parent)
 	: QObject(parent), _reply(nullptr)
@@ -23,6 +25,11 @@ void FeedParser::parseFromRemoteFile(QString& url)
 
 void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 {
+	QVector<Episode> newEpisodes;
+	QString untilGuid = "";
+	if (feed->episodes.size())
+		untilGuid = feed->episodes.front().guid;
+
 	while (!(xml->name() == "channel" && xml->isEndElement()))
 	{
 		xml->readNext();
@@ -33,7 +40,14 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 
 			if (n == "item")
 			{
-				_parseItemData(xml, feed);
+				Episode e;
+
+				if (!_parseItemData(xml, &e, untilGuid))
+				{
+					break;
+				}
+
+				newEpisodes.push_front(e);
 			}
 			else if (n == "image")
 			{
@@ -57,6 +71,8 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 			}
 		}
 	}
+
+	feed->episodes.append(newEpisodes);
 }
 
 void FeedParser::_parseImageData(QXmlStreamReader*xml, Feed* feed)
@@ -75,10 +91,10 @@ void FeedParser::_parseImageData(QXmlStreamReader*xml, Feed* feed)
 	}
 }
 
-void FeedParser::_parseItemData(QXmlStreamReader* xml, Feed* feed)
+//Parse an item element and turn it in to an episode.
+//Returns: true if the episode was added, false if episode guid was untilGuid
+bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode, QString untilGuid)
 {
-	Episode e;
-
 	while (!(xml->name() == "item" && xml->isEndElement()))
 	{
 		xml->readNext();
@@ -88,37 +104,40 @@ void FeedParser::_parseItemData(QXmlStreamReader* xml, Feed* feed)
 			QStringRef n = xml->qualifiedName();
 			if (n == "title")
 			{
-				e.title = xml->readElementText();
+				episode->title = xml->readElementText();
 			}
 			else if (n == "description")
 			{
-				e.description = xml->readElementText();
+				episode->description = xml->readElementText();
 			}
 			else if (n == "pubDate")
 			{
-				e.published = QDate::fromString(xml->readElementText());
+				episode->published = QDate::fromString(xml->readElementText());
 			}
 			else if (n == "itunes:duration")
 			{
-				e.duration = xml->readElementText().toInt();
+				episode->duration = xml->readElementText().toInt();
 			}
 			else if (n == "enclosure")
 			{
-				e.mediaUrl = xml->attributes().value("url").toString();
-				e.mediaFormat = xml->attributes().value("type").toString();
+				episode->mediaUrl = xml->attributes().value("url").toString();
+				episode->mediaFormat = xml->attributes().value("type").toString();
 			}
 			else if (n == "itunes:image")
 			{
-				e.imageUrl = xml->attributes().value("href").toString();
+				episode->imageUrl = xml->attributes().value("href").toString();
 			}
 			else if (n == "guid")
 			{
-				e.guid = xml->readElementText();
+				episode->guid = xml->readElementText();
 			}
 		}
 	}
 
-	feed->episodes.push_back(e);
+	if (episode->guid == untilGuid && untilGuid != "")
+		return false;
+
+	return true;
 }
 
 void FeedParser::_downloadFinished(QNetworkReply* reply)
@@ -131,7 +150,10 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 	else
 	{
 		QXmlStreamReader xml(reply->readAll());
-		Feed feed;
+
+		QString feedUrl = reply->url().toString();
+		FeedCache* cache = (FeedCache*)parent();
+		Feed* feed = cache->feedForUrl(feedUrl);
 
 		while (!xml.atEnd())
 		{
@@ -141,12 +163,12 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 			{
 				if (xml.name() == "channel")
 				{
-					_parseChannelData(&xml, &feed);
+					_parseChannelData(&xml, feed);
 				}
 			}
 		}
 
-		emit feedRetrieved(&feed);
+		emit feedRetrieved(feed);
 	}
 	
 	reply->disconnect(this);

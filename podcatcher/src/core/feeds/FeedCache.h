@@ -15,10 +15,12 @@ public:
 	FeedCache(QObject *parent);
 	~FeedCache();
 
+	Feed* feedForUrl(const QString& url);
 	void loadFromDisk();
+	void refresh();
 	void saveToDisk();
 
-	QVector<Feed>& feeds() { return _feeds; }
+	inline QVector<Feed>& feeds() { return _feeds; }
 
 signals:
 	void feedListUpdated();

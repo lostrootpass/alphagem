@@ -23,12 +23,12 @@ QVariant EpisodeListModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	if (role == Qt::DisplayRole)
-		return _episodes.at(index.row()).title;
+		return _episodes.at(_episodes.size() - 1 - index.row()).title;
 	else
 		return QVariant();
 }
 
 const Episode& EpisodeListModel::getEpisode(const QModelIndex& index) const
 {
-	return _episodes.at(index.row());
+	return _episodes.at(_episodes.size() - 1 - index.row());
 }

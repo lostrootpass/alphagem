@@ -38,13 +38,14 @@ QDataStream& operator>>(QDataStream& stream, Episode& episode)
 
 QDataStream& operator<<(QDataStream& stream, const Feed& feed)
 {
-	stream << feed.title << feed.description << feed.imageUrl << feed.lastUpdated;
+	stream << feed.feedUrl << feed.title << feed.description << feed.imageUrl << feed.lastUpdated;
 	stream << feed.episodes;
 	return stream;
 }
 
 QDataStream& operator >> (QDataStream& stream, Feed& feed)
 {
+	stream >> feed.feedUrl;
 	stream >> feed.title;
 	stream >> feed.description;
 	stream >> feed.imageUrl;
@@ -63,6 +64,20 @@ FeedCache::~FeedCache()
 {
 }
 
+Feed* FeedCache::feedForUrl(const QString& url)
+{
+	for (Feed& f : _feeds)
+	{
+		if (f.feedUrl == url)
+			return &f;
+	}
+
+	Feed f;
+	f.feedUrl = QString(url);
+	_feeds.push_back(f);
+	return &_feeds.back();
+}
+
 void FeedCache::onFeedAdded(QString& url)
 {
 	if (!_feedParser)
@@ -75,10 +90,8 @@ void FeedCache::onFeedAdded(QString& url)
 	_feedParser->parseFromRemoteFile(url);
 }
 
-void FeedCache::onFeedRetrieved(Feed* feed)
+void FeedCache::onFeedRetrieved(Feed*)
 {
-	_feeds.push_back(*feed);
-
 	saveToDisk();
 
 	emit feedListUpdated();
@@ -101,6 +114,13 @@ void FeedCache::loadFromDisk()
 	inStream >> _feeds;
 
 	emit feedListUpdated();
+}
+
+void FeedCache::refresh()
+{
+	if (!_feeds.size()) return;
+
+	onFeedAdded(_feeds[0].feedUrl);
 }
 
 void FeedCache::saveToDisk()

@@ -72,6 +72,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionDownload"/>
+   <addaction name="actionRefresh"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout_Qt">
@@ -101,6 +102,11 @@
   <action name="actionDownload">
    <property name="text">
     <string>&amp;Download</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="text">
+    <string>&amp;Refresh</string>
    </property>
   </action>
  </widget>
