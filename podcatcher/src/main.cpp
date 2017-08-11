@@ -2,20 +2,23 @@
 #include <QtWidgets/QApplication>
 
 #include "core/AudioPlayer.h"
-#include "core/FeedCache.h"
+#include "core/feeds/EpisodeCache.h"
+#include "core/feeds/FeedCache.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
 	AudioPlayer* player = new AudioPlayer(&a);
-	FeedCache* cache = new FeedCache(&a);
+	EpisodeCache* epCache = new EpisodeCache(&a);
+	FeedCache* feedCache = new FeedCache(&a);
 
 	MainWindow w;
 	w.setAudioPlayer(player);
-	w.setFeedCache(cache);
+	w.setEpisodeCache(epCache);
+	w.setFeedCache(feedCache);
 
-	cache->loadFromDisk();
+	feedCache->loadFromDisk();
 
 	w.show();
 	return a.exec();

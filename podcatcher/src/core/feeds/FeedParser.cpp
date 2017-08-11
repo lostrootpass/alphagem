@@ -105,6 +105,7 @@ void FeedParser::_parseItemData(QXmlStreamReader* xml, Feed* feed)
 			else if (n == "enclosure")
 			{
 				e.mediaUrl = xml->attributes().value("url").toString();
+				e.mediaFormat = xml->attributes().value("type").toString();
 			}
 			else if (n == "itunes:image")
 			{

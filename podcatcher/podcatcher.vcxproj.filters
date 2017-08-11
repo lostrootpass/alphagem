@@ -84,9 +84,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_FeedParser.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\FeedParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_EpisodeListModel.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -120,7 +117,19 @@
     <ClCompile Include="GeneratedFiles\Release\moc_FeedCache.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\FeedCache.cpp">
+    <ClCompile Include="src\core\feeds\FeedCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\feeds\FeedParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_EpisodeCache.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_EpisodeCache.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\feeds\EpisodeCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,9 +155,6 @@
     <CustomBuild Include="Resources\ui\windows\AboutWindow.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\core\FeedParser.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="src\ui\models\EpisodeListModel.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -161,7 +167,13 @@
     <CustomBuild Include="src\core\AudioPlayer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\core\FeedCache.h">
+    <CustomBuild Include="src\core\feeds\FeedCache.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\core\feeds\FeedParser.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\core\feeds\EpisodeCache.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -175,11 +187,11 @@
     <ClInclude Include="GeneratedFiles\ui_AboutWindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\Feed.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_PlaybackControlWidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\feeds\Feed.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

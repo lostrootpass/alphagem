@@ -71,6 +71,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionDownload"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout_Qt">
@@ -95,6 +96,11 @@
    </property>
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionDownload">
+   <property name="text">
+    <string>&amp;Download</string>
    </property>
   </action>
  </widget>

@@ -1,9 +1,12 @@
 #include "AudioPlayer.h"
 
+#include <QDir>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include <QStandardPaths>
 
-#include "core/Feed.h"
+#include "core/feeds/Feed.h"
+#include "core/feeds/EpisodeCache.h"
 
 AudioPlayer::AudioPlayer(QObject *parent)
 	: QObject(parent), _playlist(nullptr)
@@ -36,11 +39,7 @@ void AudioPlayer::playEpisode(const Episode* episode)
 		_playlist->clear();
 	}
 
-	QUrl episodeLocation(episode->mediaUrl);
-
-	//Todo: check to see if it has been saved locally
-
-	_playlist->addMedia(episodeLocation);
+	_playlist->addMedia(EpisodeCache::getEpisodeUrl(episode));
 	_mediaPlayer->play();
 
 	emit episodeChanged(episode);

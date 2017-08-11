@@ -2,7 +2,7 @@
 
 #include <QAbstractListModel>
 
-#include "core/Feed.h"
+#include "core/feeds/Feed.h"
 
 class EpisodeListModel : public QAbstractListModel
 {

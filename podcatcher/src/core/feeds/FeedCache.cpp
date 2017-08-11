@@ -6,6 +6,8 @@
 
 #include "FeedParser.h"
 
+static const qint64 VERSION = 0x00000001;
+
 QDataStream& operator<<(QDataStream& stream, const Episode& episode)
 {
 	stream << episode.title;
@@ -13,6 +15,7 @@ QDataStream& operator<<(QDataStream& stream, const Episode& episode)
 	stream << episode.mediaUrl;
 	stream << episode.imageUrl;
 	stream << episode.guid;
+	stream << episode.mediaFormat;
 	stream << episode.published;
 	stream << episode.duration;
 
@@ -26,6 +29,7 @@ QDataStream& operator>>(QDataStream& stream, Episode& episode)
 	stream >> episode.mediaUrl;
 	stream >> episode.imageUrl;
 	stream >> episode.guid;
+	stream >> episode.mediaFormat;
 	stream >> episode.published;
 	stream >> episode.duration;
 
@@ -92,6 +96,8 @@ void FeedCache::loadFromDisk()
 
 	file.open(QIODevice::ReadOnly);
 	QDataStream inStream(&file);
+	qint64 fileVersion;
+	inStream >> fileVersion;
 	inStream >> _feeds;
 
 	emit feedListUpdated();
@@ -110,5 +116,6 @@ void FeedCache::saveToDisk()
 	file.open(QIODevice::WriteOnly);
 
 	QDataStream outStream(&file);
+	outStream << VERSION;
 	outStream << _feeds;
 }

@@ -12,6 +12,7 @@ struct Episode
 	QString mediaUrl;
 	QString imageUrl;
 	QString guid;
+	QString mediaFormat;
 
 	QDate published;
 

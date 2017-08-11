@@ -1,7 +1,7 @@
 #include "PlaybackControlWidget.h"
 
 #include "core/AudioPlayer.h"
-#include "core/Feed.h"
+#include "core/feeds/Feed.h"
 
 PlaybackControlWidget::PlaybackControlWidget(QWidget *parent)
 	: QWidget(parent)
