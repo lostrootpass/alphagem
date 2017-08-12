@@ -12,18 +12,21 @@
 
 #include "ui/models/EpisodeItemDelegate.h"
 #include "ui/models/EpisodeListModel.h"
+#include "ui/models/FeedListModel.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent), _feedCache(nullptr), _epCache(nullptr)
 {
 	ui.setupUi(this);
 
+	ui.episodeListView->setVisible(false);
+
 	_progressBar = new QProgressBar();
 	statusBar()->addPermanentWidget(_progressBar);
 
-	connect(ui.listView, &QListView::activated, this, &MainWindow::onEpisodeSelected);
+	connect(ui.episodeListView, &QListView::activated, this, &MainWindow::onEpisodeSelected);
 
-	ui.listView->setItemDelegate(new EpisodeItemDelegate(ui.listView));
+	ui.episodeListView->setItemDelegate(new EpisodeItemDelegate(ui.episodeListView));
 }
 
 MainWindow::~MainWindow()
@@ -51,6 +54,20 @@ void MainWindow::setFeedCache(FeedCache* cache)
 	_feedCache = cache;
 
 	connect(_feedCache, &FeedCache::feedListUpdated, this, &MainWindow::onFeedListUpdated);
+
+	FeedListModel* flm = new FeedListModel(*cache, this);
+	ui.feedListView->setModel(flm);
+
+	connect(ui.feedListView, &QListView::activated, this, &MainWindow::onFeedSelected);
+
+
+
+	QAbstractItemModel* model = new EpisodeListModel(*_feedCache, -1, this);
+
+	ui.episodeListView->setModel(model);
+
+	connect(ui.episodeListView->selectionModel(), &QItemSelectionModel::currentChanged,
+		this, &MainWindow::onEpisodeHighlighted);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -86,45 +103,54 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionDownload_triggered()
 {
-	EpisodeListModel* model = (EpisodeListModel*)ui.listView->model();
+	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
 
-	const Episode& ep = model->getEpisode(ui.listView->currentIndex());
+	const Episode& ep = model->getEpisode(ui.episodeListView->currentIndex());
 
 	if(_epCache)
 		_epCache->downloadEpisode(ep);
 }
 
+void MainWindow::on_actionHome_triggered()
+{
+	ui.feedNameLabel->setText(tr("Home"));
+	ui.feedListView->setVisible(true);
+	ui.episodeListView->setVisible(false);
+}
+
 void MainWindow::on_actionRefresh_triggered()
 {
 	if (_feedCache)
-		_feedCache->refresh();
+	{
+		_feedCache->refresh(ui.episodeListView->currentIndex().row());
+	}
 }
 
 void MainWindow::onDownloadComplete(const Episode& e)
 {
-	QString message = QString("Download complete: %1").arg(e.title);
+	QString message = QString(tr("Download complete: %1")).arg(e.title);
 	statusBar()->showMessage(message);
 
-	EpisodeListModel* model = (EpisodeListModel*)ui.listView->model();
-	const Episode& ep = model->getEpisode(ui.listView->currentIndex());
+	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
+	const Episode& ep = model->getEpisode(ui.episodeListView->currentIndex());
 	bool downloaded = _epCache->isDownloaded(&ep);
 	ui.actionDownload->setEnabled(!downloaded);
 }
 
 void MainWindow::onDownloadFailed(const Episode&, QString error)
 {
-	QString message = QString("Download failed: %1").arg(error);
+	QString message = QString(tr("Download failed: %1")).arg(error);
 	statusBar()->showMessage(message);
 
-	EpisodeListModel* model = (EpisodeListModel*)ui.listView->model();
-	const Episode& e = model->getEpisode(ui.listView->currentIndex());
+	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
+	const Episode& e = model->getEpisode(ui.episodeListView->currentIndex());
 	bool downloaded = _epCache->isDownloaded(&e);
 	ui.actionDownload->setEnabled(!downloaded);
 }
 
 void MainWindow::onDownloadProgress(const Episode&, qint64 bytesDownloaded)
 {
-	QString message = QString("Downloading... (%1KB)").arg(bytesDownloaded / 1024);
+	QString message = QString(tr("Downloading... (%1KB)")).arg(bytesDownloaded / 1024);
 	statusBar()->showMessage(message);
 
 	ui.actionDownload->setEnabled(false);
@@ -137,27 +163,12 @@ void MainWindow::onStatusBarUpdate(QString& text)
 
 void MainWindow::onFeedListUpdated()
 {
-	QVector<Feed>& feeds = _feedCache->feeds();
 
-	if (!feeds.size()) return;
-
-	const int feedIndex = 0;
-
-	Feed* feed = &feeds[feedIndex];
-
-	ui.feedNameLabel->setText(feed->title);
-
-	QAbstractItemModel* model = new EpisodeListModel(*_feedCache, feedIndex, 0);
-
-	ui.listView->setModel(model);
-
-	connect(ui.listView->selectionModel(), &QItemSelectionModel::currentChanged,
-		this, &MainWindow::onEpisodeHighlighted);
 }
 
 void MainWindow::onEpisodeHighlighted(const QModelIndex& index)
 {
-	EpisodeListModel* model = (EpisodeListModel*)ui.listView->model();
+	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
 
 	const Episode& ep = model->getEpisode(index);
 
@@ -176,10 +187,28 @@ void MainWindow::onEpisodeHighlighted(const QModelIndex& index)
 
 void MainWindow::onEpisodeSelected(const QModelIndex& index)
 {
-	EpisodeListModel* model = (EpisodeListModel*)ui.listView->model();
+	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
 
 	const Episode& ep = model->getEpisode(index);
 
 	_audioPlayer->playEpisode(&ep);
 	model->markAsPlayed(index);
+}
+
+void MainWindow::onFeedSelected(const QModelIndex& index)
+{
+	QVector<Feed>& feeds = _feedCache->feeds();
+
+	if (!feeds.size()) return;
+
+	const int feedIndex = index.row();
+
+	Feed* feed = &feeds[feedIndex];
+
+	ui.feedNameLabel->setText(feed->title);
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	elm->setFeedIndex(feedIndex);
+
+	ui.feedListView->setVisible(false);
+	ui.episodeListView->setVisible(true);
 }

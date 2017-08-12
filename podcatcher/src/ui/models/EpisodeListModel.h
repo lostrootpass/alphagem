@@ -20,12 +20,14 @@ public:
 
 	void markAsPlayed(const QModelIndex& index);
 
+	void setFeedIndex(int newIndex);
+
 private:
 	FeedCache* _feedCache;
 	int _feedIndex;
 
 	inline int _epCount() const 
 	{
-		return _feedCache->episodes(_feedIndex).size();
+		return _feedIndex == -1 ? 0 : _feedCache->episodes(_feedIndex).size();
 	}
 };

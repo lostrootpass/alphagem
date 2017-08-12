@@ -94,6 +94,13 @@ void FeedCache::onFeedAdded(QString& url)
 		connect(_feedParser, &FeedParser::feedRetrieved, this, &FeedCache::onFeedRetrieved);
 	}
 
+	//Check to see we're not adding an existing feed.
+	for (const Feed& f : _feeds)
+	{
+		if (f.feedUrl == url)
+			return;
+	}
+
 	_feedParser->parseFromRemoteFile(url);
 }
 
@@ -123,11 +130,11 @@ void FeedCache::loadFromDisk()
 	emit feedListUpdated();
 }
 
-void FeedCache::refresh()
+void FeedCache::refresh(int index)
 {
 	if (!_feeds.size()) return;
 
-	onFeedAdded(_feeds[0].feedUrl);
+	onFeedAdded(_feeds[index].feedUrl);
 }
 
 void FeedCache::saveToDisk()

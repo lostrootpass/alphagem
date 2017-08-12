@@ -39,3 +39,13 @@ void EpisodeListModel::markAsPlayed(const QModelIndex& index)
 
 	emit dataChanged(index, index);
 }
+
+void EpisodeListModel::setFeedIndex(int newIndex)
+{
+	if (_feedIndex == newIndex)
+		return;
+
+	_feedIndex = newIndex;
+
+	emit layoutChanged();
+}

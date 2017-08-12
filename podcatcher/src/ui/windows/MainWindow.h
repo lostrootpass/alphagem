@@ -44,6 +44,7 @@ private slots:
 
 	//Toolbar
 	void on_actionDownload_triggered();
+	void on_actionHome_triggered();
 	void on_actionRefresh_triggered();
 
 	/* Custom slots */
@@ -55,4 +56,6 @@ private slots:
 
 	void onEpisodeHighlighted(const QModelIndex& index);
 	void onEpisodeSelected(const QModelIndex& index);
+
+	void onFeedSelected(const QModelIndex& index);
 };

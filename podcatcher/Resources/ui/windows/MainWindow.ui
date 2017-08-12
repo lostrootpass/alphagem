@@ -25,12 +25,19 @@
        </font>
       </property>
       <property name="text">
-       <string>(Feed Name)</string>
+       <string>Home</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QListView" name="listView"/>
+     <widget class="QListView" name="feedListView"/>
+    </item>
+    <item>
+     <widget class="QListView" name="episodeListView">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="PlaybackControlWidget" name="playbackControlWidget" native="true"/>
@@ -73,6 +80,7 @@
    </attribute>
    <addaction name="actionDownload"/>
    <addaction name="actionRefresh"/>
+   <addaction name="actionHome"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout_Qt">
@@ -107,6 +115,11 @@
   <action name="actionRefresh">
    <property name="text">
     <string>&amp;Refresh</string>
+   </property>
+  </action>
+  <action name="actionHome">
+   <property name="text">
+    <string>Home</string>
    </property>
   </action>
  </widget>
