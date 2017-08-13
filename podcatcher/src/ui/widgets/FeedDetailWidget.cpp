@@ -15,6 +15,11 @@ void FeedDetailWidget::setFeedCache(FeedCache& cache)
 	_feedCache = &cache;
 }
 
+void FeedDetailWidget::setImageDownloader(ImageDownloader& downloader)
+{
+	_imageDownloader = &downloader;
+}
+
 void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 {
 	QVector<Feed>& feeds = _feedCache->feeds();
@@ -27,4 +32,8 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 
 	ui.titleLabel->setText(feed->title);
 	ui.descriptionLabel->setText(feed->description);
+	ui.feedIcon->clear();
+
+	if (_imageDownloader)
+		_imageDownloader->setImage(QUrl(feed->imageUrl), *ui.feedIcon);
 }

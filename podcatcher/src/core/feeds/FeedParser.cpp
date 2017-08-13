@@ -54,6 +54,10 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 			{
 				_parseImageData(xml, feed);
 			}
+			else if (n == "itunes:image")
+			{
+				feed->imageUrl = xml->attributes().value("href").toString();
+			}
 			else if (n == "title")
 			{
 				feed->title = xml->readElementText();

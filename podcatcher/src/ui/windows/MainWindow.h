@@ -8,6 +8,7 @@ class QProgressBar;
 class AudioPlayer;
 class EpisodeCache;
 class FeedCache;
+class ImageDownloader;
 struct Feed;
 struct Episode;
 
@@ -22,6 +23,7 @@ public:
 	void setAudioPlayer(AudioPlayer* player);
 	void setEpisodeCache(EpisodeCache* epCache);
 	void setFeedCache(FeedCache* cache);
+	void setImageDownloader(ImageDownloader* imageDownloader);
 
 private:
 	Ui::MainWindowClass ui;
@@ -29,6 +31,7 @@ private:
 	AudioPlayer* _audioPlayer;
 	EpisodeCache* _epCache;
 	FeedCache* _feedCache;
+	ImageDownloader* _imageDownloader;
 	QProgressBar* _progressBar;
 
 private slots:

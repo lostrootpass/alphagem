@@ -94,13 +94,6 @@ void FeedCache::onFeedAdded(QString& url)
 		connect(_feedParser, &FeedParser::feedRetrieved, this, &FeedCache::onFeedRetrieved);
 	}
 
-	//Check to see we're not adding an existing feed.
-	for (const Feed& f : _feeds)
-	{
-		if (f.feedUrl == url)
-			return;
-	}
-
 	_feedParser->parseFromRemoteFile(url);
 }
 
@@ -132,7 +125,7 @@ void FeedCache::loadFromDisk()
 
 void FeedCache::refresh(int index)
 {
-	if (!_feeds.size()) return;
+	if (index < 0 || index >= _feeds.size()) return;
 
 	onFeedAdded(_feeds[index].feedUrl);
 }

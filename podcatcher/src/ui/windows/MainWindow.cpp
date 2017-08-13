@@ -6,6 +6,7 @@
 #include "AboutWindow.h"
 
 #include "core/AudioPlayer.h"
+#include "core/ImageDownloader.h"
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/Feed.h"
 #include "core/feeds/FeedCache.h"
@@ -74,6 +75,13 @@ void MainWindow::setFeedCache(FeedCache* cache)
 		this, &MainWindow::onEpisodeHighlighted);
 }
 
+void MainWindow::setImageDownloader(ImageDownloader* imageDownloader)
+{
+	_imageDownloader = imageDownloader;
+
+	ui.feedDetailWidget->setImageDownloader(*imageDownloader);
+}
+
 void MainWindow::on_actionAdd_Feed_triggered()
 {
 	AddFeedWindow* feedWindow = new AddFeedWindow();
@@ -126,7 +134,7 @@ void MainWindow::on_actionRefresh_triggered()
 {
 	if (_feedCache)
 	{
-		_feedCache->refresh(ui.episodeListView->currentIndex().row());
+		_feedCache->refresh(ui.feedListView->currentIndex().row());
 	}
 }
 

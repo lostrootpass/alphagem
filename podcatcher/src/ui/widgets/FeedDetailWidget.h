@@ -2,11 +2,14 @@
 
 #include <QWidget>
 #include <QModelIndex>
+#include <QNetworkAccessManager>
 #include "ui_FeedDetailWidget.h"
 
+#include "core/ImageDownloader.h"
 #include "core/feeds/Feed.h"
 #include "core/feeds/FeedCache.h"
 
+class QNetworkReply;
 
 class FeedDetailWidget : public QWidget
 {
@@ -17,6 +20,7 @@ public:
 	~FeedDetailWidget();
 
 	void setFeedCache(FeedCache& cache);
+	void setImageDownloader(ImageDownloader& downloader);
 
 public slots:
 	void onFeedSelected(const QModelIndex& index);
@@ -25,4 +29,5 @@ private:
 	Ui::FeedDetailWidget ui;
 
 	FeedCache* _feedCache;
+	ImageDownloader* _imageDownloader;
 };

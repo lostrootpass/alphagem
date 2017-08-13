@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 
 #include "core/AudioPlayer.h"
+#include "core/ImageDownloader.h"
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/FeedCache.h"
 
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
 	AudioPlayer* player = new AudioPlayer(&a);
 	EpisodeCache* epCache = new EpisodeCache(&a);
 	FeedCache* feedCache = new FeedCache(&a);
+	ImageDownloader* imageDownloader = new ImageDownloader(&a);
 
 	QObject::connect(&a, &QApplication::aboutToQuit, feedCache, &FeedCache::onAboutToQuit);
 
@@ -19,6 +21,7 @@ int main(int argc, char *argv[])
 	w.setAudioPlayer(player);
 	w.setEpisodeCache(epCache);
 	w.setFeedCache(feedCache);
+	w.setImageDownloader(imageDownloader);
 
 	feedCache->loadFromDisk();
 
