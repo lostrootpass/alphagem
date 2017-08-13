@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.setupUi(this);
 
 	ui.episodeListView->setVisible(false);
+	ui.feedDetailWidget->setVisible(false);
 
 	_progressBar = new QProgressBar();
 	statusBar()->addPermanentWidget(_progressBar);
@@ -59,6 +60,9 @@ void MainWindow::setFeedCache(FeedCache* cache)
 	ui.feedListView->setModel(flm);
 
 	connect(ui.feedListView, &QListView::activated, this, &MainWindow::onFeedSelected);
+
+	ui.feedDetailWidget->setFeedCache(*cache);
+	connect(ui.feedListView, &QListView::activated, ui.feedDetailWidget, &FeedDetailWidget::onFeedSelected);
 
 
 
@@ -113,7 +117,7 @@ void MainWindow::on_actionDownload_triggered()
 
 void MainWindow::on_actionHome_triggered()
 {
-	ui.feedNameLabel->setText(tr("Home"));
+	ui.feedDetailWidget->setVisible(false);
 	ui.feedListView->setVisible(true);
 	ui.episodeListView->setVisible(false);
 }
@@ -201,14 +205,10 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 
 	if (!feeds.size()) return;
 
-	const int feedIndex = index.row();
-
-	Feed* feed = &feeds[feedIndex];
-
-	ui.feedNameLabel->setText(feed->title);
 	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	elm->setFeedIndex(feedIndex);
+	elm->setFeedIndex(index.row());
 
+	ui.feedDetailWidget->setVisible(true);
 	ui.feedListView->setVisible(false);
 	ui.episodeListView->setVisible(true);
 }
