@@ -23,11 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.episodeListView->setVisible(false);
 	ui.feedDetailWidget->setVisible(false);
 
-	_progressBar = new QProgressBar();
-	statusBar()->addPermanentWidget(_progressBar);
-
-	connect(ui.episodeListView, &QListView::activated, this, &MainWindow::onEpisodeSelected);
-
 	ui.episodeListView->setItemDelegate(new EpisodeItemDelegate(ui.episodeListView));
 }
 
@@ -67,7 +62,7 @@ void MainWindow::setFeedCache(FeedCache* cache)
 
 
 
-	QAbstractItemModel* model = new EpisodeListModel(*_feedCache, -1, this);
+	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView, *_feedCache, -1, this);
 
 	ui.episodeListView->setModel(model);
 

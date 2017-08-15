@@ -26,6 +26,7 @@ void PlaybackControlWidget::onEpisodeChanged(const Episode* episode)
 {
 	ui.episodeName->setText(episode->title);
 
+	ui.playbackPositionBar->setTextVisible(true);
 	ui.playbackPositionBar->setMinimum(0);
 	ui.playbackPositionBar->setMaximum(episode->duration * 1000);
 	ui.playbackPositionBar->setValue(0);

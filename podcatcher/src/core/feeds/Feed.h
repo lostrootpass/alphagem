@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QVector>
-#include <QDate>
+#include <ctime>
 
 struct Episode
 {
@@ -14,7 +14,7 @@ struct Episode
 	QString guid;
 	QString mediaFormat;
 
-	QDate published;
+	std::time_t published;
 
 	qint32 duration;
 
@@ -29,7 +29,7 @@ struct Feed
 	QString description;
 	QString imageUrl;
 
-	QDate lastUpdated;
+	std::time_t lastUpdated;
 	
 	QVector<Episode> episodes;
 };

@@ -3,8 +3,6 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_MainWindow.h"
 
-class QProgressBar;
-
 class AudioPlayer;
 class EpisodeCache;
 class FeedCache;
@@ -25,6 +23,9 @@ public:
 	void setFeedCache(FeedCache* cache);
 	void setImageDownloader(ImageDownloader* imageDownloader);
 
+public slots:
+	void onEpisodeSelected(const QModelIndex& index);
+
 private:
 	Ui::MainWindowClass ui;
 
@@ -32,7 +33,6 @@ private:
 	EpisodeCache* _epCache;
 	FeedCache* _feedCache;
 	ImageDownloader* _imageDownloader;
-	QProgressBar* _progressBar;
 
 private slots:
 	/* Auto generated slots */
@@ -58,7 +58,6 @@ private slots:
 	void onFeedListUpdated();
 
 	void onEpisodeHighlighted(const QModelIndex& index);
-	void onEpisodeSelected(const QModelIndex& index);
 
 	void onFeedSelected(const QModelIndex& index);
 };

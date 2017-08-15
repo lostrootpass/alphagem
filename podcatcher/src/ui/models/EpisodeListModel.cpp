@@ -1,7 +1,10 @@
 #include "EpisodeListModel.h"
 
-EpisodeListModel::EpisodeListModel(FeedCache& cache, int feed, QObject* parent) 
-	: QAbstractListModel(parent), _feedCache(&cache), _feedIndex(feed)
+#include "ui/widgets/EpisodeDetailWidget.h"
+#include "MainWindow.h"
+
+EpisodeListModel::EpisodeListModel(QListView& view, FeedCache& cache, int feed, QObject* parent) 
+	: QAbstractListModel(parent), _view(&view), _feedCache(&cache), _feedIndex(feed)
 {
 }
 
@@ -14,18 +17,9 @@ int EpisodeListModel::rowCount(const QModelIndex&) const
 	return _epCount();
 }
 
-QVariant EpisodeListModel::data(const QModelIndex &index, int role) const
+QVariant EpisodeListModel::data(const QModelIndex &, int ) const
 {
-	if (!index.isValid())
-		return QVariant();
-
-	if (index.row() >= _epCount())
-		return QVariant();
-
-	if (role == Qt::DisplayRole)
-		return getEpisode(index).title;
-	else
-		return QVariant();
+	return QVariant();
 }
 
 Episode& EpisodeListModel::getEpisode(const QModelIndex& index) const
@@ -40,6 +34,15 @@ void EpisodeListModel::markAsPlayed(const QModelIndex& index)
 	emit dataChanged(index, index);
 }
 
+void EpisodeListModel::refreshIndex(const QModelIndex& index)
+{
+	QWidget* w = _view->indexWidget(index);
+	if (w)
+		qobject_cast<EpisodeDetailWidget*>(w)->refresh();
+	else
+		_view->setIndexWidget(index, _getWidget(index));
+}
+
 void EpisodeListModel::setFeedIndex(int newIndex)
 {
 	if (_feedIndex == newIndex)
@@ -48,4 +51,14 @@ void EpisodeListModel::setFeedIndex(int newIndex)
 	_feedIndex = newIndex;
 
 	emit layoutChanged();
+}
+
+EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
+{
+	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, index, nullptr);
+	MainWindow* w = qobject_cast<MainWindow*>(_view->window());
+	connect(e, &EpisodeDetailWidget::play, w, &MainWindow::onEpisodeSelected);
+
+	//Item view will take ownership of the widget for us.
+	return e;
 }

@@ -5,6 +5,17 @@
 #include "Feed.h"
 #include "FeedCache.h"
 
+#include <sstream>
+#include <iomanip>
+
+std::time_t toTime(QString s)
+{
+	struct tm tm = { 0 };
+	std::istringstream str(s.toStdString());
+	str >> std::get_time(&tm, "%a, %d %b %Y %H:%M:%S %Z%z");
+	return mktime(&tm);
+}
+
 FeedParser::FeedParser(QObject *parent)
 	: QObject(parent), _reply(nullptr)
 {
@@ -66,13 +77,13 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 			{
 				feed->link = xml->readElementText();
 			}
-			else if (n == "description")
+			else if (n == "description" || n == "itunes:summary")
 			{
 				feed->description = xml->readElementText();
 			}
 			else if (n == "lastBuildDate")
 			{
-				feed->lastUpdated = QDate::fromString(xml->readElementText());
+				feed->lastUpdated = toTime(xml->readElementText());
 			}
 		}
 	}
@@ -111,13 +122,13 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode, QString
 			{
 				episode->title = xml->readElementText();
 			}
-			else if (n == "description")
+			else if (n == "description" || n == "itunes:summary")
 			{
 				episode->description = xml->readElementText();
 			}
 			else if (n == "pubDate")
 			{
-				episode->published = QDate::fromString(xml->readElementText());
+				episode->published = toTime(xml->readElementText());
 			}
 			else if (n == "itunes:duration")
 			{

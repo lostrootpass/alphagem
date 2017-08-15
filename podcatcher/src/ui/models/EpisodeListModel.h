@@ -1,16 +1,19 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QListView>
 
 #include "core/feeds/Feed.h"
 #include "core/feeds/FeedCache.h"
+
+class EpisodeDetailWidget;
 
 class EpisodeListModel : public QAbstractListModel
 {
 	Q_OBJECT
 
 public:
-	EpisodeListModel(FeedCache& cache, int feed, QObject* parent = 0);
+	EpisodeListModel(QListView& view, FeedCache& cache, int feed, QObject* parent = 0);
 	~EpisodeListModel();
 
 	int rowCount(const QModelIndex &parent) const override;
@@ -20,9 +23,12 @@ public:
 
 	void markAsPlayed(const QModelIndex& index);
 
+	void refreshIndex(const QModelIndex& index);
+
 	void setFeedIndex(int newIndex);
 
 private:
+	QListView* _view;
 	FeedCache* _feedCache;
 	int _feedIndex;
 
@@ -30,4 +36,6 @@ private:
 	{
 		return _feedIndex == -1 ? 0 : _feedCache->episodes(_feedIndex).size();
 	}
+
+	EpisodeDetailWidget* _getWidget(const QModelIndex& index) const;
 };

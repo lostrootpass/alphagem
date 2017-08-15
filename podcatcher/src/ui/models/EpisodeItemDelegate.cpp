@@ -1,7 +1,6 @@
 #include "EpisodeItemDelegate.h"
 
 #include <QPainter>
-
 #include "EpisodeListModel.h"
 
 EpisodeItemDelegate::EpisodeItemDelegate(QObject *parent)
@@ -15,11 +14,15 @@ EpisodeItemDelegate::~EpisodeItemDelegate()
 
 void EpisodeItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	QStyleOptionViewItem opt = option;
-	initStyleOption(&opt, index);
+	EpisodeListModel* elm = (EpisodeListModel*)index.model();
+	elm->refreshIndex(index);
 
-	EpisodeListModel* model = (EpisodeListModel*)index.model();
-	opt.font.setBold(!model->getEpisode(index).listened);
+	QStyledItemDelegate::paint(painter, option, index);
+}
 
-	QStyledItemDelegate::paint(painter, opt, index);
+QSize EpisodeItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	QSize s = QStyledItemDelegate::sizeHint(option, index);
+	s.setHeight(120);
+	return s;
 }
