@@ -23,6 +23,6 @@ void EpisodeItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 QSize EpisodeItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	QSize s = QStyledItemDelegate::sizeHint(option, index);
-	s.setHeight(120);
+	s.setHeight(130);
 	return s;
 }
