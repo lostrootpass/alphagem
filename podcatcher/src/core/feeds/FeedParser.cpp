@@ -39,7 +39,7 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 	QVector<Episode> newEpisodes;
 	QString untilGuid = "";
 	if (feed->episodes.size())
-		untilGuid = feed->episodes.front().guid;
+		untilGuid = feed->episodes.back().guid;
 
 	while (!(xml->name() == "channel" && xml->isEndElement()))
 	{
