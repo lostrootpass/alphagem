@@ -50,6 +50,9 @@ private slots:
 	void on_actionHome_triggered();
 	void on_actionRefresh_triggered();
 
+	//Context
+	void on_action_DeleteFeed_triggered();
+
 	/* Custom slots */
 	void onDownloadComplete(const Episode& e);
 	void onDownloadFailed(const Episode& e, QString error);

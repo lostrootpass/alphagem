@@ -34,7 +34,14 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QListView" name="feedListView"/>
+       <widget class="QListView" name="feedListView">
+        <property name="contextMenuPolicy">
+         <enum>Qt::ActionsContextMenu</enum>
+        </property>
+        <property name="viewMode">
+         <enum>QListView::ListMode</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QListView" name="episodeListView">
@@ -126,6 +133,14 @@
   <action name="actionHome">
    <property name="text">
     <string>Home</string>
+   </property>
+  </action>
+  <action name="action_DeleteFeed">
+   <property name="text">
+    <string>&amp;Delete Feed</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>

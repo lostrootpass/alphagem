@@ -18,6 +18,7 @@ public:
 	Feed* feedForUrl(const QString& url);
 	void loadFromDisk();
 	void refresh(int index);
+	void removeFeed(int index);
 	void saveToDisk();
 
 	inline QVector<Episode>& episodes(int index) { return _feeds[index].episodes; }

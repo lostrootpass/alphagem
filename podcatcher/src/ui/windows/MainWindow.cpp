@@ -59,7 +59,8 @@ void MainWindow::setFeedCache(FeedCache* cache)
 
 	ui.feedDetailWidget->setFeedCache(*cache);
 	connect(ui.feedListView, &QListView::activated, ui.feedDetailWidget, &FeedDetailWidget::onFeedSelected);
-
+	ui.feedListView->addAction(ui.action_DeleteFeed);
+	
 
 
 	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView, *_feedCache, -1, this);
@@ -131,6 +132,17 @@ void MainWindow::on_actionRefresh_triggered()
 	{
 		_feedCache->refresh(ui.feedListView->currentIndex().row());
 	}
+}
+
+void MainWindow::on_action_DeleteFeed_triggered()
+{
+	if (!ui.feedListView->isVisible()) return;
+
+	const QModelIndex& i = ui.feedListView->selectionModel()->currentIndex();
+
+	if (!i.isValid()) return;
+
+	_feedCache->removeFeed(i.row());
 }
 
 void MainWindow::onDownloadComplete(const Episode& e)

@@ -130,6 +130,17 @@ void FeedCache::refresh(int index)
 	onFeedAdded(_feeds[index].feedUrl);
 }
 
+void FeedCache::removeFeed(int index)
+{
+	if (index < 0 || index >= _feeds.size()) return;
+
+	//For now, don't remove associated data, just the feed.
+	_feeds.remove(index);
+	saveToDisk();
+	
+	emit feedListUpdated();
+}
+
 void FeedCache::saveToDisk()
 {
 	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
