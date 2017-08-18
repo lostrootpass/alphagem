@@ -29,6 +29,8 @@ public slots:
 private:
 	Ui::PlaybackControlWidget ui;
 
+	AudioPlayer* _player;
+
 private slots:
 	/* Auto generated slots */
 	void on_playPauseButton_clicked();
