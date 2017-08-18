@@ -47,7 +47,8 @@ void EpisodeListModel::setFeedIndex(int newIndex)
 
 	_feedIndex = newIndex;
 
-	emit layoutChanged();
+	beginResetModel();
+	endResetModel();
 }
 
 EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
