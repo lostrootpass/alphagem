@@ -36,10 +36,7 @@ void EpisodeListModel::markAsPlayed(const QModelIndex& index)
 
 void EpisodeListModel::refreshIndex(const QModelIndex& index)
 {
-	QWidget* w = _view->indexWidget(index);
-	if (w)
-		qobject_cast<EpisodeDetailWidget*>(w)->refresh();
-	else
+	if(!_view->indexWidget(index))
 		_view->setIndexWidget(index, _getWidget(index));
 }
 
@@ -58,6 +55,7 @@ EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) cons
 	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, index, nullptr);
 	MainWindow* w = qobject_cast<MainWindow*>(_view->window());
 	connect(e, &EpisodeDetailWidget::play, w, &MainWindow::onEpisodeSelected);
+	connect(e, &EpisodeDetailWidget::download, w, &MainWindow::onDownloadStarted);
 
 	//Item view will take ownership of the widget for us.
 	return e;

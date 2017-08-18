@@ -91,7 +91,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionDownload"/>
    <addaction name="actionRefresh"/>
    <addaction name="actionHome"/>
   </widget>
@@ -118,11 +117,6 @@
    </property>
    <property name="text">
     <string>&amp;Quit</string>
-   </property>
-  </action>
-  <action name="actionDownload">
-   <property name="text">
-    <string>&amp;Download</string>
    </property>
   </action>
   <action name="actionRefresh">

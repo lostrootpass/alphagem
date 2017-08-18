@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>156</height>
+    <height>159</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -94,11 +94,22 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="playButton">
-     <property name="text">
-      <string>Play</string>
-     </property>
-    </widget>
+     <layout class="QHBoxLayout" name="buttonLayout">
+       <item>
+         <widget class="QPushButton" name="playButton">
+           <property name="text">
+             <string>Play</string>
+           </property>
+         </widget>
+       </item>
+       <item>
+         <widget class="QPushButton" name="downloadButton">
+           <property name="text">
+             <string>Download</string>
+           </property>
+         </widget>
+       </item>
+     </layout>
    </item>
   </layout>
  </widget>

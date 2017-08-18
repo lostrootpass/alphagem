@@ -8,6 +8,8 @@
 
 #include <QDateTime>
 
+#include "core/feeds/EpisodeCache.h"
+
 EpisodeDetailWidget::EpisodeDetailWidget(const EpisodeListModel& m, const QModelIndex& idx, QWidget *parent)
 	: QWidget(parent), _model(&m), _index(idx)
 {
@@ -51,9 +53,53 @@ void EpisodeDetailWidget::refresh()
 		.arg(e.duration % 60, 2, 10, QChar('0'));
 
 	ui.playButton->setText(formatString);
+
+	_setDownloadButtonStatus(&e);
+}
+
+void EpisodeDetailWidget::onDownloadProgressUpdate(const Episode&, qint64)
+{
+	ui.downloadButton->setText(tr("Downloading..."));
+	ui.downloadButton->setEnabled(false);
+}
+
+void EpisodeDetailWidget::onDownloadFinished(const EpisodeCache* cache, const Episode& e)
+{
+	if (e.guid == _model->getEpisode(_index).guid)
+	{
+		cache->disconnect(this);
+
+		refresh();
+	}
+}
+
+void EpisodeDetailWidget::_setDownloadButtonStatus(const Episode* e)
+{
+	const bool downloaded = EpisodeCache::isDownloaded(e);
+	ui.downloadButton->setEnabled(!downloaded);
+
+	if (downloaded)
+	{
+		ui.downloadButton->setText(tr("Downloaded"));
+	}
+	else
+	{
+		qint64 bytesSoFar = EpisodeCache::getPartialDownloadSize(e);
+		if (bytesSoFar != -1)
+		{
+			ui.downloadButton->setText(tr("Resume download"));
+		}
+	}
+}
+
+void EpisodeDetailWidget::on_downloadButton_clicked()
+{
+	emit download(_index);
 }
 
 void EpisodeDetailWidget::on_playButton_clicked()
 {
 	emit play(_index);
+
+	refresh();
 }

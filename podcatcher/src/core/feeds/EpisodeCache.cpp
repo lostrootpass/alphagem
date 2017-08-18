@@ -37,10 +37,20 @@ bool EpisodeCache::isDownloaded(const Episode* e)
 	return false;
 }
 
+qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
+{
+	QFile handle(getTmpDownloadFilename(e));
+
+	if (handle.exists())
+		return handle.size();
+
+	return -1;
+}
+
 void EpisodeCache::downloadEpisode(const Episode& e)
 {
 	_currentDownload = &e;
-	_handle = new QFile(_getTmpDownloadFilename());
+	_handle = new QFile(getTmpDownloadFilename(_currentDownload));
 
 	QNetworkRequest req(QUrl(e.mediaUrl));
 	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -81,6 +91,23 @@ QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
 	return url;
 }
 
+QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
+{
+	QString ext = "";
+	
+	if (e->mediaFormat == "audio/mpeg")
+		ext = ".mp3";
+
+	QDir podcastDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	if (!podcastDir.cd("podcasts/download"))
+	{
+		podcastDir.mkpath("podcasts/download");
+		podcastDir.cd("podcasts/download");
+	}
+
+	return QString("%1%2").arg(podcastDir.absoluteFilePath(e->guid)).arg(ext);
+}
+
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 {
 	if (reply->error())
@@ -111,7 +138,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 		delete _handle;
 		_handle = nullptr;
 
-		emit downloadComplete(*_currentDownload);
+		emit downloadComplete(this, *_currentDownload);
 	}
 
 	reply->disconnect(this);
@@ -135,20 +162,4 @@ void EpisodeCache::_onReadyRead()
 		if(_handle)
 			_handle->write(_reply->readAll());
 	}
-}
-
-QString EpisodeCache::_getTmpDownloadFilename()
-{
-	QString ext = "";
-	if (_currentDownload->mediaFormat == "audio/mpeg")
-		ext = ".mp3";
-
-	QDir podcastDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (!podcastDir.cd("podcasts/download"))
-	{
-		podcastDir.mkpath("podcasts/download");
-		podcastDir.cd("podcasts/download");
-	}
-
-	return QString("%1%2").arg(podcastDir.absoluteFilePath(_currentDownload->guid)).arg(ext);
 }

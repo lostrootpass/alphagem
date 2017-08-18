@@ -24,6 +24,7 @@ public:
 	void setImageDownloader(ImageDownloader* imageDownloader);
 
 public slots:
+	void onDownloadStarted(const QModelIndex& index);
 	void onEpisodeSelected(const QModelIndex& index);
 
 private:
@@ -46,7 +47,6 @@ private slots:
 	void on_actionAbout_triggered();
 
 	//Toolbar
-	void on_actionDownload_triggered();
 	void on_actionHome_triggered();
 	void on_actionRefresh_triggered();
 
@@ -54,13 +54,9 @@ private slots:
 	void on_action_DeleteFeed_triggered();
 
 	/* Custom slots */
-	void onDownloadComplete(const Episode& e);
+	void onDownloadComplete(const EpisodeCache* cache, const Episode& e);
 	void onDownloadFailed(const Episode& e, QString error);
 	void onDownloadProgress(const Episode& e, qint64 bytesDownloaded);
-	void onStatusBarUpdate(QString& text);
-	void onFeedListUpdated();
-
-	void onEpisodeHighlighted(const QModelIndex& index);
-
 	void onFeedSelected(const QModelIndex& index);
+	void onStatusBarUpdate(QString& text);
 };

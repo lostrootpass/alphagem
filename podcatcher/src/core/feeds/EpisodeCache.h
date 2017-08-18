@@ -19,13 +19,15 @@ public:
 	~EpisodeCache();
 
 	static bool isDownloaded(const Episode* e);
+	static qint64 getPartialDownloadSize(const Episode* e);
 	static QUrl getEpisodeUrl(const Episode* e);
+	static QString getTmpDownloadFilename(const Episode* e);
 
 	void downloadEpisode(const Episode& e);
 	bool downloadInProgress() { return (_reply != nullptr); }
 
 signals:
-	void downloadComplete(const Episode& e);
+	void downloadComplete(const EpisodeCache* cache, const Episode& e);
 	void downloadFailed(const Episode& e, QString error);
 	void downloadProgressUpdated(const Episode& e, qint64 bytesDownloaded);
 
@@ -40,6 +42,4 @@ private:
 	QNetworkReply* _reply;
 
 	const Episode* _currentDownload;
-
-	QString _getTmpDownloadFilename();
 };
