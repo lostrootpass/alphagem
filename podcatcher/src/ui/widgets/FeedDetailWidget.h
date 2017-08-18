@@ -30,4 +30,10 @@ private:
 
 	FeedCache* _feedCache;
 	ImageDownloader* _imageDownloader;
+	int _feedIndex;
+
+private slots:
+	void on_refreshButton_clicked();
+
+	void onFeedListUpdated();
 };

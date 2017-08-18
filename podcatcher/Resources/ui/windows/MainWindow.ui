@@ -91,7 +91,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionRefresh"/>
    <addaction name="actionHome"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -119,14 +118,9 @@
     <string>&amp;Quit</string>
    </property>
   </action>
-  <action name="actionRefresh">
-   <property name="text">
-    <string>&amp;Refresh</string>
-   </property>
-  </action>
   <action name="actionHome">
    <property name="text">
-    <string>Home</string>
+    <string>&amp;Feeds</string>
    </property>
   </action>
   <action name="action_DeleteFeed">

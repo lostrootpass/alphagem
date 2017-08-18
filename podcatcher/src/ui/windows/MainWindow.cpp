@@ -143,9 +143,10 @@ void MainWindow::onDownloadFailed(const Episode&, QString error)
 	statusBar()->showMessage(message);
 }
 
-void MainWindow::onDownloadProgress(const Episode&, qint64 bytesDownloaded)
+void MainWindow::onDownloadProgress(const Episode& e, qint64 bytesDownloaded)
 {
-	QString message = QString(tr("Downloading... (%1KB)")).arg(bytesDownloaded / 1024);
+	QString message = QString(tr("Downloading... (%1KB) [%2]"))
+		.arg(bytesDownloaded / 1024).arg(e.title);
 	statusBar()->showMessage(message);
 }
 
@@ -156,7 +157,7 @@ void MainWindow::onDownloadStarted(const QModelIndex& index)
 	const Episode& ep = model->getEpisode(index);
 
 	if (_epCache)
-		_epCache->downloadEpisode(ep);
+		_epCache->enqueueDownload(ep);
 
 	EpisodeDetailWidget* w = qobject_cast<EpisodeDetailWidget*>(ui.episodeListView->indexWidget(index));
 	if (w && _epCache)

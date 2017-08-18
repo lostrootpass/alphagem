@@ -57,10 +57,13 @@ void EpisodeDetailWidget::refresh()
 	_setDownloadButtonStatus(&e);
 }
 
-void EpisodeDetailWidget::onDownloadProgressUpdate(const Episode&, qint64)
+void EpisodeDetailWidget::onDownloadProgressUpdate(const Episode& e, qint64)
 {
-	ui.downloadButton->setText(tr("Downloading..."));
-	ui.downloadButton->setEnabled(false);
+	if (e.guid == _model->getEpisode(_index).guid)
+	{
+		ui.downloadButton->setText(tr("Downloading..."));
+		ui.downloadButton->setEnabled(false);
+	}
 }
 
 void EpisodeDetailWidget::onDownloadFinished(const EpisodeCache* cache, const Episode& e)
@@ -95,6 +98,9 @@ void EpisodeDetailWidget::_setDownloadButtonStatus(const Episode* e)
 void EpisodeDetailWidget::on_downloadButton_clicked()
 {
 	emit download(_index);
+
+	ui.downloadButton->setEnabled(false);
+	ui.downloadButton->setText(tr("Download pending"));
 }
 
 void EpisodeDetailWidget::on_playButton_clicked()

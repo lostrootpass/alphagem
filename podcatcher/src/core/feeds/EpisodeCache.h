@@ -10,6 +10,21 @@ class QFile;
 class QNetworkAccessManager;
 class QNetworkReply;
 
+struct DownloadInfo : public QObject
+{
+	Q_OBJECT
+
+public:
+	~DownloadInfo();
+
+	QNetworkReply* reply = nullptr;
+	QFile* handle = nullptr;
+	const Episode* episode;
+
+public slots:
+	void onReadyRead();
+};
+
 class EpisodeCache : public QObject
 {
 	Q_OBJECT
@@ -23,8 +38,10 @@ public:
 	static QUrl getEpisodeUrl(const Episode* e);
 	static QString getTmpDownloadFilename(const Episode* e);
 
-	void downloadEpisode(const Episode& e);
-	bool downloadInProgress() { return (_reply != nullptr); }
+	bool downloadInProgress() { return (_downloads.size()); }
+	void downloadNext();
+
+	void enqueueDownload(const Episode& e);
 
 signals:
 	void downloadComplete(const EpisodeCache* cache, const Episode& e);
@@ -34,12 +51,8 @@ signals:
 private slots:
 	void _downloadFinished(QNetworkReply* reply);
 	void _downloadProgressUpdated(qint64 done, qint64 total);
-	void _onReadyRead();
-
+	
 private:
+	QList<DownloadInfo*> _downloads;
 	QNetworkAccessManager* _mgr;
-	QFile* _handle;
-	QNetworkReply* _reply;
-
-	const Episode* _currentDownload;
 };

@@ -13,6 +13,9 @@ FeedDetailWidget::~FeedDetailWidget()
 void FeedDetailWidget::setFeedCache(FeedCache& cache)
 {
 	_feedCache = &cache;
+
+	connect(_feedCache, &FeedCache::feedListUpdated,
+		this, &FeedDetailWidget::onFeedListUpdated);
 }
 
 void FeedDetailWidget::setImageDownloader(ImageDownloader& downloader)
@@ -26,9 +29,9 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 
 	if (!feeds.size()) return;
 
-	const int feedIndex = index.row();
+	_feedIndex = index.row();
 
-	Feed* feed = &feeds[feedIndex];
+	Feed* feed = &feeds[_feedIndex];
 
 	ui.titleLabel->setText(feed->title);
 	ui.descriptionLabel->setText(feed->description);
@@ -36,4 +39,18 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 
 	if (_imageDownloader)
 		_imageDownloader->setImage(QUrl(feed->imageUrl), *ui.feedIcon);
+}
+
+void FeedDetailWidget::on_refreshButton_clicked()
+{
+	ui.refreshButton->setEnabled(false);
+	ui.refreshButton->setText(tr("Refreshing..."));
+
+	_feedCache->refresh(_feedIndex);
+}
+
+void FeedDetailWidget::onFeedListUpdated()
+{
+	ui.refreshButton->setEnabled(true);
+	ui.refreshButton->setText(tr("Refresh"));
 }

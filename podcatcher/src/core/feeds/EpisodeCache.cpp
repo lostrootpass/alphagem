@@ -5,8 +5,35 @@
 #include <QNetworkAccessManager>
 #include <QStandardPaths>
 
+
+DownloadInfo::~DownloadInfo()
+{
+	if (handle != nullptr)
+	{
+		handle->close();
+		delete handle;
+	}
+
+	if (reply != nullptr)
+	{
+		reply->deleteLater();
+	}
+}
+
+void DownloadInfo::onReadyRead()
+{
+	qint64 dataSize = reply->bytesAvailable();
+
+	if (dataSize > 0)
+	{
+		if (handle)
+			handle->write(reply->readAll());
+	}
+}
+
+
 EpisodeCache::EpisodeCache(QObject *parent)
-	: QObject(parent), _currentDownload(nullptr), _handle(nullptr), _reply(nullptr)
+	: QObject(parent)
 {
 	_mgr = new QNetworkAccessManager(this);
 
@@ -16,11 +43,6 @@ EpisodeCache::EpisodeCache(QObject *parent)
 
 EpisodeCache::~EpisodeCache()
 {
-	if (_handle)
-	{
-		_handle->close();
-		delete _handle;
-	}
 }
 
 bool EpisodeCache::isDownloaded(const Episode* e)
@@ -47,29 +69,49 @@ qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
 	return -1;
 }
 
-void EpisodeCache::downloadEpisode(const Episode& e)
+void EpisodeCache::downloadNext()
 {
-	_currentDownload = &e;
-	_handle = new QFile(getTmpDownloadFilename(_currentDownload));
+	if (!_downloads.size()) return;
 
-	QNetworkRequest req(QUrl(e.mediaUrl));
+	DownloadInfo* info = _downloads.first();
+
+	QNetworkRequest req(QUrl(info->episode->mediaUrl));
 	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
-	if (_handle->exists())
+	if (info->handle->exists())
 	{
-		QByteArray rangeHeader = "bytes=" + QByteArray::number(_handle->size()) + "-";
+		QByteArray rangeHeader = "bytes=" + QByteArray::number(info->handle->size()) + "-";
 		req.setRawHeader("Range", rangeHeader);
 	}
 
-	_reply = _mgr->get(req);
+	info->reply = _mgr->get(req);
 
-	connect(_reply, &QNetworkReply::downloadProgress,
+	connect(info->reply, &QNetworkReply::downloadProgress,
 		this, &EpisodeCache::_downloadProgressUpdated);
 
-	connect(_reply, &QNetworkReply::readyRead,
-		this, &EpisodeCache::_onReadyRead);
+	connect(info->reply, &QNetworkReply::readyRead,
+		info, &DownloadInfo::onReadyRead);
 
-	_handle->open(QIODevice::WriteOnly | QIODevice::Append);
+	info->handle->open(QIODevice::WriteOnly | QIODevice::Append);
+}
+
+void EpisodeCache::enqueueDownload(const Episode& e)
+{
+	for (const DownloadInfo* i : _downloads)
+	{
+		if (i->episode->guid == e.guid)
+			return;
+	}
+
+	DownloadInfo* info = new DownloadInfo;
+
+	info->episode = &e;
+	info->handle = new QFile(getTmpDownloadFilename(&e));
+
+	_downloads.push_back(info);
+
+	if (_downloads.size() == 1)
+		downloadNext();
 }
 
 QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
@@ -110,9 +152,12 @@ QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
 
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 {
+	DownloadInfo* info = _downloads.first();
+	const Episode* e = info->episode;
+
 	if (reply->error())
 	{
-		emit downloadFailed(*_currentDownload, reply->errorString());
+		emit downloadFailed(*e, reply->errorString());
 	}
 	else
 	{
@@ -120,7 +165,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 
 		if (ext == "")
 		{
-			if(_currentDownload->mediaFormat == "audio/mpeg")
+			if(e->mediaFormat == "audio/mpeg")
 				ext = "mp3";
 		}
 
@@ -131,35 +176,23 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 			podcastDir.cd("podcasts");
 		}
 
-		QString outName = QString("%2.%3").arg(_currentDownload->guid).arg(ext);
+		QString outName = QString("%2.%3").arg(e->guid).arg(ext);
 		
-		_handle->close();
-		_handle->rename(podcastDir.absoluteFilePath(outName));
-		delete _handle;
-		_handle = nullptr;
-
-		emit downloadComplete(this, *_currentDownload);
+		info->handle->close();
+		info->handle->rename(podcastDir.absoluteFilePath(outName));
+		
+		emit downloadComplete(this, *e);
 	}
 
-	reply->disconnect(this);
-	reply->deleteLater();
-	_reply = nullptr;
+	info->reply->disconnect(this);
+	delete info;
 
-	_currentDownload = nullptr;
+	_downloads.pop_front();
+
+	downloadNext();
 }
 
 void EpisodeCache::_downloadProgressUpdated(qint64 done, qint64)
 {
-	emit downloadProgressUpdated(*_currentDownload, done);
-}
-
-void EpisodeCache::_onReadyRead()
-{
-	qint64 dataSize = _reply->bytesAvailable();
-
-	if (dataSize > 0)
-	{
-		if(_handle)
-			_handle->write(_reply->readAll());
-	}
+	emit downloadProgressUpdated(*_downloads.first()->episode, done);
 }
