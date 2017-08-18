@@ -33,6 +33,9 @@ private:
 
 private slots:
 	/* Auto generated slots */
+	void on_jumpBackButton_clicked();
+	void on_jumpForwardButton_clicked();
 	void on_playPauseButton_clicked();
 
+	void onFinished();
 };

@@ -51,7 +51,11 @@
        </widget>
       </item>
       <item>
-       <widget class="PlaybackControlWidget" name="playbackControlWidget" native="true"/>
+       <widget class="PlaybackControlWidget" name="playbackControlWidget" native="true">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>

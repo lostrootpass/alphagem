@@ -12,6 +12,7 @@ AudioPlayer::AudioPlayer(QObject *parent)
 	: QObject(parent), _playlist(nullptr)
 {
 	_mediaPlayer = new QMediaPlayer();
+	connect(_mediaPlayer, &QMediaPlayer::stateChanged, this, &AudioPlayer::onStateChange);
 }
 
 AudioPlayer::~AudioPlayer()
@@ -54,4 +55,12 @@ void AudioPlayer::onPlayPauseToggle()
 		_mediaPlayer->play();
 
 	emit pauseStatusChanged(!wasPlaying);
+}
+
+void AudioPlayer::onStateChange(QMediaPlayer::State state)
+{
+	if (state == QMediaPlayer::State::StoppedState)
+	{
+		emit finished();
+	}
 }

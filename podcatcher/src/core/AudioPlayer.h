@@ -24,9 +24,13 @@ public slots:
 
 signals:
 	void episodeChanged(const Episode* ep);
+	void finished();
 	void pauseStatusChanged(bool paused);
 
 private:
 	QMediaPlayer* _mediaPlayer;
 	QMediaPlaylist* _playlist;
+
+private slots:
+	void onStateChange(QMediaPlayer::State state);
 };
