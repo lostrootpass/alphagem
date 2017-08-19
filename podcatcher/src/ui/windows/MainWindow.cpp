@@ -32,6 +32,14 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::connectEpisodeWidget(EpisodeDetailWidget* w)
+{
+	connect(w, &EpisodeDetailWidget::play, this, &MainWindow::onEpisodeSelected);
+	connect(w, &EpisodeDetailWidget::download, this, &MainWindow::onDownloadStarted);
+
+	w->connectToCache(_epCache);
+}
+
 void MainWindow::setAudioPlayer(AudioPlayer* player)
 {
 	_audioPlayer = player;
@@ -162,11 +170,7 @@ void MainWindow::onDownloadStarted(const QModelIndex& index)
 	EpisodeDetailWidget* w = qobject_cast<EpisodeDetailWidget*>(ui.episodeListView->indexWidget(index));
 	if (w && _epCache)
 	{
-		connect(_epCache, &EpisodeCache::downloadProgressUpdated,
-			w, &EpisodeDetailWidget::onDownloadProgressUpdate);
-
-		connect(_epCache, &EpisodeCache::downloadComplete,
-			w, &EpisodeDetailWidget::onDownloadFinished);
+		w->connectToCache(_epCache);
 	}
 }
 

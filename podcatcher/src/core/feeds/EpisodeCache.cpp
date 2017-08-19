@@ -69,6 +69,27 @@ qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
 	return -1;
 }
 
+DownloadStatus EpisodeCache::downloadStatus(const Episode& e) const
+{
+	for (const DownloadInfo* i : _downloads)
+	{
+		if (i->episode->guid == e.guid)
+		{
+			if (i->handle->isOpen())
+				return DownloadStatus::DownloadInProgress;
+			else
+				return DownloadStatus::DownloadInQueue;
+		}
+	}
+
+	if (isDownloaded(&e))
+	{
+		return DownloadStatus::DownloadComplete;
+	}
+
+	return DownloadStatus::DownloadNotInQueue;
+}
+
 void EpisodeCache::downloadNext()
 {
 	if (!_downloads.size()) return;

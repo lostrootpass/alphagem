@@ -17,6 +17,8 @@ public:
 	EpisodeDetailWidget(const EpisodeListModel& m, const QModelIndex& idx, QWidget *parent = Q_NULLPTR);
 	~EpisodeDetailWidget();
 
+	void connectToCache(EpisodeCache* cache);
+
 	void refresh();
 
 signals:

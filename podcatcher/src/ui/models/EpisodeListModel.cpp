@@ -55,8 +55,7 @@ EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) cons
 {
 	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, index, nullptr);
 	MainWindow* w = qobject_cast<MainWindow*>(_view->window());
-	connect(e, &EpisodeDetailWidget::play, w, &MainWindow::onEpisodeSelected);
-	connect(e, &EpisodeDetailWidget::download, w, &MainWindow::onDownloadStarted);
+	w->connectEpisodeWidget(e);
 
 	//Item view will take ownership of the widget for us.
 	return e;

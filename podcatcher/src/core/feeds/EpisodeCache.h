@@ -10,6 +10,21 @@ class QFile;
 class QNetworkAccessManager;
 class QNetworkReply;
 
+enum class DownloadStatus
+{
+	/* Download has completed, file is stored locally */
+	DownloadComplete,
+
+	/* Download of this particular file is in progress right now */
+	DownloadInProgress,
+
+	/* The file is in the queue waiting to be downloaded */
+	DownloadInQueue,
+
+	/* The file is not cached locally, downloading, or pending */
+	DownloadNotInQueue
+};
+
 struct DownloadInfo : public QObject
 {
 	Q_OBJECT
@@ -39,6 +54,7 @@ public:
 	static QString getTmpDownloadFilename(const Episode* e);
 
 	bool downloadInProgress() { return (_downloads.size()); }
+	DownloadStatus downloadStatus(const Episode& e) const;
 	void downloadNext();
 
 	void enqueueDownload(const Episode& e);

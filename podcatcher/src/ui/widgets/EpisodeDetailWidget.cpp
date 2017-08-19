@@ -22,6 +22,27 @@ EpisodeDetailWidget::~EpisodeDetailWidget()
 {
 }
 
+void EpisodeDetailWidget::connectToCache(EpisodeCache* cache)
+{
+	connect(cache, &EpisodeCache::downloadProgressUpdated,
+		this, &EpisodeDetailWidget::onDownloadProgressUpdate);
+
+	connect(cache, &EpisodeCache::downloadComplete,
+		this, &EpisodeDetailWidget::onDownloadFinished);
+
+	DownloadStatus status = cache->downloadStatus(_model->getEpisode(_index));
+	if (status == DownloadStatus::DownloadInQueue)
+	{
+		ui.downloadButton->setEnabled(false);
+		ui.downloadButton->setText(tr("Download pending"));
+	}
+	else if (status == DownloadStatus::DownloadInProgress)
+	{
+		ui.downloadButton->setEnabled(false);
+		ui.downloadButton->setText(tr("Downloading..."));
+	}
+}
+
 void EpisodeDetailWidget::refresh()
 {
 	Episode& e = _model->getEpisode(_index);

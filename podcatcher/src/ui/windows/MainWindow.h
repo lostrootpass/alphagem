@@ -5,6 +5,7 @@
 
 class AudioPlayer;
 class EpisodeCache;
+class EpisodeDetailWidget;
 class FeedCache;
 class ImageDownloader;
 struct Feed;
@@ -17,6 +18,8 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
 	~MainWindow();
+
+	void connectEpisodeWidget(EpisodeDetailWidget* w);
 
 	void setAudioPlayer(AudioPlayer* player);
 	void setEpisodeCache(EpisodeCache* epCache);
