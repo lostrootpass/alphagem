@@ -68,6 +68,11 @@ void EpisodeDetailWidget::refresh()
 
 	ui.playButton->setText(formatString);
 
+	if (_core->defaultPlaylist()->contains(&_model->getEpisode(_index)))
+		ui.addToPlaylistButton->setText(tr("Remove From Playlist"));
+	else
+		ui.addToPlaylistButton->setText(tr("Add To Playlist"));
+
 	_setDownloadButtonStatus(&e);
 }
 
@@ -123,6 +128,28 @@ void EpisodeDetailWidget::_setDownloadButtonStatus(const Episode* e)
 	}
 }
 
+void EpisodeDetailWidget::on_addToPlaylistButton_clicked()
+{
+	Playlist* p = _core->defaultPlaylist();
+	Episode* e = &_model->getEpisode(_index);
+
+	if (!p->contains(e))
+	{
+		p->add(e);
+
+		connect(_core->audioPlayer(), &AudioPlayer::episodeChanged,
+			this, &EpisodeDetailWidget::onEpisodeChanged);
+	}
+	else
+	{
+		p->remove(e);
+
+		_core->audioPlayer()->disconnect(this);
+	}
+
+	refresh();
+}
+
 void EpisodeDetailWidget::on_downloadButton_clicked()
 {
 	emit download(_index);
@@ -139,4 +166,13 @@ void EpisodeDetailWidget::on_playButton_clicked()
 	_core->audioPlayer()->playEpisode(&_model->getEpisode(_index));
 
 	refresh();
+}
+
+void EpisodeDetailWidget::onEpisodeChanged(const Episode* e)
+{
+	if (e->guid == _episode->guid)
+	{
+		_core->audioPlayer()->disconnect(this);
+		refresh();
+	}
 }

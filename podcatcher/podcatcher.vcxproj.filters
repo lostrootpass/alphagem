@@ -189,6 +189,15 @@
     <ClCompile Include="src\core\Core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Playlist.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Playlist.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Playlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\ui\windows\MainWindow.h">
@@ -255,6 +264,9 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="src\ui\widgets\PlaybackSlider.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\core\Playlist.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -94,22 +94,29 @@
     </widget>
    </item>
    <item>
-     <layout class="QHBoxLayout" name="buttonLayout">
-       <item>
-         <widget class="QPushButton" name="playButton">
-           <property name="text">
-             <string>Play</string>
-           </property>
-         </widget>
-       </item>
-       <item>
-         <widget class="QPushButton" name="downloadButton">
-           <property name="text">
-             <string>Download</string>
-           </property>
-         </widget>
-       </item>
-     </layout>
+    <layout class="QHBoxLayout" name="buttonLayout">
+     <item>
+      <widget class="QPushButton" name="playButton">
+       <property name="text">
+        <string>Play</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="downloadButton">
+       <property name="text">
+        <string>Download</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addToPlaylistButton">
+       <property name="text">
+        <string>&amp;Add to Playlist</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

@@ -6,6 +6,9 @@ class EpisodeCache;
 class FeedCache;
 class ImageDownloader;
 
+#include <QList>
+#include "Playlist.h"
+
 class Core
 {
 public:
@@ -17,9 +20,19 @@ public:
 	inline FeedCache* feedCache() const { return _feedCache; }
 	inline ImageDownloader* imageDownloader() const { return _imageDownloader; }
 
+	inline Playlist* defaultPlaylist() 
+	{
+		if (!_playlists.size())
+			_playlists.push_back(new Playlist(QObject::tr("Playlist")));
+
+		return _playlists.first();
+	}
+
 	void init();
 
 private:
+	QList<Playlist*> _playlists;
+
 	AudioPlayer* _audioPlayer;
 	EpisodeCache* _episodeCache;
 	FeedCache* _feedCache;

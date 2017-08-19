@@ -43,6 +43,9 @@ private:
 	void _setDownloadButtonStatus(const Episode* e);
 
 private slots:
+	void on_addToPlaylistButton_clicked();
 	void on_downloadButton_clicked();
 	void on_playButton_clicked();
+
+	void onEpisodeChanged(const Episode* e);
 };

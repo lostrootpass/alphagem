@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QMediaPlayer>
 
+#include "core/Core.h"
+
 class QMediaPlaylist;
 
 struct Episode;
@@ -12,7 +14,7 @@ class AudioPlayer : public QObject
 	Q_OBJECT
 
 public:
-	AudioPlayer(QObject *parent);
+	AudioPlayer(Core& core, QObject *parent);
 	~AudioPlayer();
 
 	inline const QMediaPlayer* getMediaPlayer() const { return _mediaPlayer; }
@@ -30,6 +32,7 @@ signals:
 private:
 	QMediaPlayer* _mediaPlayer;
 	QMediaPlaylist* _playlist;
+	Core* _core;
 
 private slots:
 	void onStateChange(QMediaPlayer::State state);

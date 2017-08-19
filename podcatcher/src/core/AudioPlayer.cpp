@@ -8,8 +8,8 @@
 #include "core/feeds/Feed.h"
 #include "core/feeds/EpisodeCache.h"
 
-AudioPlayer::AudioPlayer(QObject *parent)
-	: QObject(parent), _playlist(nullptr)
+AudioPlayer::AudioPlayer(Core& core, QObject *parent)
+	: QObject(parent), _core(&core), _playlist(nullptr)
 {
 	_mediaPlayer = new QMediaPlayer();
 	connect(_mediaPlayer, &QMediaPlayer::stateChanged, this, &AudioPlayer::onStateChange);
@@ -61,6 +61,16 @@ void AudioPlayer::onStateChange(QMediaPlayer::State state)
 {
 	if (state == QMediaPlayer::State::StoppedState)
 	{
-		emit finished();
+		Playlist* p = _core->defaultPlaylist();
+
+		if(!p->episodes.size())
+			emit finished();
+		else
+		{
+			Episode* e = p->episodes.first();
+			p->episodes.pop_front();
+
+			playEpisode(e);
+		}
 	}
 }

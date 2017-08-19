@@ -18,11 +18,18 @@ Core::~Core()
 	delete _episodeCache;
 	delete _feedCache;
 	delete _imageDownloader;
+
+	for (Playlist* p : _playlists)
+	{
+		delete p;
+	}
+
+	_playlists.clear();
 }
 
 void Core::init()
 {
-	_audioPlayer = new AudioPlayer(nullptr);
+	_audioPlayer = new AudioPlayer(*this, nullptr);
 	
 	_episodeCache = new EpisodeCache(nullptr);
 	
