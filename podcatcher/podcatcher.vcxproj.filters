@@ -186,6 +186,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_PlaybackSlider.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\ui\windows\MainWindow.h">
@@ -276,6 +279,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_EpisodeDetailWidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Core.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

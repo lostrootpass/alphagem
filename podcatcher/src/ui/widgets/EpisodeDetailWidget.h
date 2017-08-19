@@ -5,6 +5,9 @@
 
 #include <QModelIndex>
 
+#include "core/Core.h"
+#include "core/feeds/Feed.h"
+
 #include "ui/models/EpisodeListModel.h"
 
 class EpisodeCache;
@@ -14,10 +17,10 @@ class EpisodeDetailWidget : public QWidget
 	Q_OBJECT
 
 public:
-	EpisodeDetailWidget(const EpisodeListModel& m, const QModelIndex& idx, QWidget *parent = Q_NULLPTR);
+	EpisodeDetailWidget(const EpisodeListModel& m, Core& core, const QModelIndex& idx, QWidget *parent = Q_NULLPTR);
 	~EpisodeDetailWidget();
 
-	void connectToCache(EpisodeCache* cache);
+	void connectToCache();
 
 	void refresh();
 
@@ -27,13 +30,15 @@ signals:
 	
 public slots:
 	void onDownloadProgressUpdate(const Episode& e, qint64 progress);
-	void onDownloadFinished(const EpisodeCache*, const Episode& e);
+	void onDownloadFinished(const Episode& e);
 
 private:
 	Ui::EpisodeDetailWidget ui;
-
 	QModelIndex _index;
+
 	const EpisodeListModel* _model;
+	Episode* _episode;
+	Core* _core;
 
 	void _setDownloadButtonStatus(const Episode* e);
 

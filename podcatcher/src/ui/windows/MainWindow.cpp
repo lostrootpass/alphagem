@@ -17,69 +17,45 @@
 
 #include "ui/widgets/EpisodeDetailWidget.h"
 
-MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent), _feedCache(nullptr), _epCache(nullptr)
+MainWindow::MainWindow(Core& core, QWidget *parent)
+	: QMainWindow(parent), _core(&core)
 {
 	ui.setupUi(this);
-
-	ui.episodeListView->setVisible(false);
-	ui.feedDetailWidget->setVisible(false);
-
-	ui.episodeListView->setItemDelegate(new EpisodeItemDelegate(ui.episodeListView));
 }
 
 MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::connectEpisodeWidget(EpisodeDetailWidget* w)
+void MainWindow::init()
 {
-	connect(w, &EpisodeDetailWidget::play, this, &MainWindow::onEpisodeSelected);
-	connect(w, &EpisodeDetailWidget::download, this, &MainWindow::onDownloadStarted);
+	ui.episodeListView->setVisible(false);
+	ui.feedDetailWidget->setVisible(false);
 
-	w->connectToCache(_epCache);
-}
+	ui.episodeListView->setItemDelegate(new EpisodeItemDelegate(ui.episodeListView));
 
-void MainWindow::setAudioPlayer(AudioPlayer* player)
-{
-	_audioPlayer = player;
 
-	ui.playbackControlWidget->connectToAudioPlayer(_audioPlayer);
-}
+	ui.playbackControlWidget->connectToAudioPlayer(_core->audioPlayer());
 
-void MainWindow::setEpisodeCache(EpisodeCache* epCache)
-{
-	_epCache = epCache;
 
-	connect(_epCache, &EpisodeCache::downloadComplete,
+	connect(_core->episodeCache(), &EpisodeCache::downloadComplete,
 		this, &MainWindow::onDownloadComplete);
-	connect(_epCache, &EpisodeCache::downloadFailed, this, &MainWindow::onDownloadFailed);
-	connect(_epCache, &EpisodeCache::downloadProgressUpdated, this, &MainWindow::onDownloadProgress);
-}
+	connect(_core->episodeCache(), &EpisodeCache::downloadFailed, this, &MainWindow::onDownloadFailed);
+	connect(_core->episodeCache(), &EpisodeCache::downloadProgressUpdated, this, &MainWindow::onDownloadProgress);
 
-void MainWindow::setFeedCache(FeedCache* cache)
-{
-	_feedCache = cache;
 
-	FeedListModel* flm = new FeedListModel(*cache, this);
+	FeedListModel* flm = new FeedListModel(*_core, this);
 	ui.feedListView->setModel(flm);
 
 	connect(ui.feedListView, &QListView::activated, this, &MainWindow::onFeedSelected);
 
-	ui.feedDetailWidget->setFeedCache(*cache);
+	ui.feedDetailWidget->setCore(_core);
 	connect(ui.feedListView, &QListView::activated, ui.feedDetailWidget, &FeedDetailWidget::onFeedSelected);
 	ui.feedListView->addAction(ui.action_DeleteFeed);
-	
 
-	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView, *_feedCache, -1, this);
+
+	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView, *_core, -1, this);
 	ui.episodeListView->setModel(model);
-}
-
-void MainWindow::setImageDownloader(ImageDownloader* imageDownloader)
-{
-	_imageDownloader = imageDownloader;
-
-	ui.feedDetailWidget->setImageDownloader(*imageDownloader);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -87,10 +63,7 @@ void MainWindow::on_actionAdd_Feed_triggered()
 	AddFeedWindow* feedWindow = new AddFeedWindow();
 	feedWindow->setAttribute(Qt::WA_DeleteOnClose);
 
-	if (_feedCache)
-	{
-		connect(feedWindow, &AddFeedWindow::feedAdded, _feedCache, &FeedCache::onFeedAdded);
-	}
+	connect(feedWindow, &AddFeedWindow::feedAdded, _core->feedCache(), &FeedCache::onFeedAdded);
 
 	feedWindow->show();
 }
@@ -122,10 +95,7 @@ void MainWindow::on_actionHome_triggered()
 
 void MainWindow::on_actionRefresh_triggered()
 {
-	if (_feedCache)
-	{
-		_feedCache->refresh(ui.feedListView->currentIndex().row());
-	}
+	_core->feedCache()->refresh(ui.feedListView->currentIndex().row());
 }
 
 void MainWindow::on_action_DeleteFeed_triggered()
@@ -136,10 +106,10 @@ void MainWindow::on_action_DeleteFeed_triggered()
 
 	if (!i.isValid()) return;
 
-	_feedCache->removeFeed(i.row());
+	_core->feedCache()->removeFeed(i.row());
 }
 
-void MainWindow::onDownloadComplete(const EpisodeCache*, const Episode& e)
+void MainWindow::onDownloadComplete(const Episode& e)
 {
 	QString message = QString(tr("Download complete: %1")).arg(e.title);
 	statusBar()->showMessage(message);
@@ -158,40 +128,14 @@ void MainWindow::onDownloadProgress(const Episode& e, qint64 bytesDownloaded)
 	statusBar()->showMessage(message);
 }
 
-void MainWindow::onDownloadStarted(const QModelIndex& index)
-{
-	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
-
-	const Episode& ep = model->getEpisode(index);
-
-	if (_epCache)
-		_epCache->enqueueDownload(ep);
-
-	EpisodeDetailWidget* w = qobject_cast<EpisodeDetailWidget*>(ui.episodeListView->indexWidget(index));
-	if (w && _epCache)
-	{
-		w->connectToCache(_epCache);
-	}
-}
-
 void MainWindow::onStatusBarUpdate(QString& text)
 {
 	statusBar()->showMessage(text);
 }
 
-void MainWindow::onEpisodeSelected(const QModelIndex& index)
-{
-	EpisodeListModel* model = (EpisodeListModel*)ui.episodeListView->model();
-
-	const Episode& ep = model->getEpisode(index);
-
-	_audioPlayer->playEpisode(&ep);
-	model->markAsPlayed(index);
-}
-
 void MainWindow::onFeedSelected(const QModelIndex& index)
 {
-	QVector<Feed>& feeds = _feedCache->feeds();
+	QVector<Feed>& feeds = _core->feedCache()->feeds();
 
 	if (!feeds.size()) return;
 

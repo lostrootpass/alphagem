@@ -202,7 +202,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 		info->handle->close();
 		info->handle->rename(podcastDir.absoluteFilePath(outName));
 		
-		emit downloadComplete(this, *e);
+		emit downloadComplete(*e);
 	}
 
 	info->reply->disconnect(this);

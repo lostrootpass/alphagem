@@ -49,7 +49,8 @@ void PlaybackControlWidget::onEpisodeChanged(const Episode* episode)
 	ui.playbackSlider->setMinimum(0);
 	ui.playbackSlider->setMaximum(episode->duration * 1000);
 	ui.playbackSlider->setTickInterval(episode->duration);
-
+	ui.playbackSlider->setValue(0);
+	
 	ui.playPauseButton->setText("Pause");
 
 	setEnabled(true);

@@ -60,7 +60,7 @@ public:
 	void enqueueDownload(const Episode& e);
 
 signals:
-	void downloadComplete(const EpisodeCache* cache, const Episode& e);
+	void downloadComplete(const Episode& e);
 	void downloadFailed(const Episode& e, QString error);
 	void downloadProgressUpdated(const Episode& e, qint64 bytesDownloaded);
 

@@ -1,7 +1,11 @@
 #include "FeedDetailWidget.h"
 
+#include "core/Core.h"
+#include "core/ImageDownloader.h"
+#include "core/feeds/FeedCache.h"
+
 FeedDetailWidget::FeedDetailWidget(QWidget *parent)
-	: QWidget(parent), _feedCache(nullptr)
+	: QWidget(parent)
 {
 	ui.setupUi(this);
 }
@@ -10,22 +14,16 @@ FeedDetailWidget::~FeedDetailWidget()
 {
 }
 
-void FeedDetailWidget::setFeedCache(FeedCache& cache)
+void FeedDetailWidget::setCore(Core* core)
 {
-	_feedCache = &cache;
-
-	connect(_feedCache, &FeedCache::feedListUpdated,
+	_core = core;
+	connect(_core->feedCache(), &FeedCache::feedListUpdated,
 		this, &FeedDetailWidget::onFeedListUpdated);
-}
-
-void FeedDetailWidget::setImageDownloader(ImageDownloader& downloader)
-{
-	_imageDownloader = &downloader;
 }
 
 void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 {
-	QVector<Feed>& feeds = _feedCache->feeds();
+	QVector<Feed>& feeds = _core->feedCache()->feeds();
 
 	if (!feeds.size()) return;
 
@@ -37,8 +35,7 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 	ui.descriptionLabel->setText(feed->description);
 	ui.feedIcon->clear();
 
-	if (_imageDownloader)
-		_imageDownloader->setImage(QUrl(feed->imageUrl), *ui.feedIcon);
+	_core->imageDownloader()->setImage(QUrl(feed->imageUrl), *ui.feedIcon);
 }
 
 void FeedDetailWidget::on_refreshButton_clicked()
@@ -46,7 +43,7 @@ void FeedDetailWidget::on_refreshButton_clicked()
 	ui.refreshButton->setEnabled(false);
 	ui.refreshButton->setText(tr("Refreshing..."));
 
-	_feedCache->refresh(_feedIndex);
+	_core->feedCache()->refresh(_feedIndex);
 }
 
 void FeedDetailWidget::onFeedListUpdated()

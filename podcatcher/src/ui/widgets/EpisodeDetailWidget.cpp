@@ -1,19 +1,22 @@
 #include "EpisodeDetailWidget.h"
 
-#include "core/feeds/Feed.h"
-
 #include <ctime>
 #include <iomanip>
 #include <sstream>
 
 #include <QDateTime>
 
+#include "core/AudioPlayer.h"
 #include "core/feeds/EpisodeCache.h"
+#include "core/feeds/Feed.h"
 
-EpisodeDetailWidget::EpisodeDetailWidget(const EpisodeListModel& m, const QModelIndex& idx, QWidget *parent)
-	: QWidget(parent), _model(&m), _index(idx)
+EpisodeDetailWidget::EpisodeDetailWidget(const EpisodeListModel& m, 
+	Core& core, const QModelIndex& idx, QWidget *parent)
+	: QWidget(parent), _core(&core), _model(&m), _index(idx)
 {
 	ui.setupUi(this);
+
+	_episode = &_model->getEpisode(_index);
 
 	refresh();
 }
@@ -22,25 +25,15 @@ EpisodeDetailWidget::~EpisodeDetailWidget()
 {
 }
 
-void EpisodeDetailWidget::connectToCache(EpisodeCache* cache)
+void EpisodeDetailWidget::connectToCache()
 {
+	EpisodeCache* cache = _core->episodeCache();
+
 	connect(cache, &EpisodeCache::downloadProgressUpdated,
 		this, &EpisodeDetailWidget::onDownloadProgressUpdate);
 
 	connect(cache, &EpisodeCache::downloadComplete,
 		this, &EpisodeDetailWidget::onDownloadFinished);
-
-	DownloadStatus status = cache->downloadStatus(_model->getEpisode(_index));
-	if (status == DownloadStatus::DownloadInQueue)
-	{
-		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Download pending"));
-	}
-	else if (status == DownloadStatus::DownloadInProgress)
-	{
-		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Downloading..."));
-	}
 }
 
 void EpisodeDetailWidget::refresh()
@@ -87,11 +80,11 @@ void EpisodeDetailWidget::onDownloadProgressUpdate(const Episode& e, qint64)
 	}
 }
 
-void EpisodeDetailWidget::onDownloadFinished(const EpisodeCache* cache, const Episode& e)
+void EpisodeDetailWidget::onDownloadFinished(const Episode& e)
 {
 	if (e.guid == _model->getEpisode(_index).guid)
 	{
-		cache->disconnect(this);
+		_core->episodeCache()->disconnect(this);
 
 		refresh();
 	}
@@ -99,20 +92,34 @@ void EpisodeDetailWidget::onDownloadFinished(const EpisodeCache* cache, const Ep
 
 void EpisodeDetailWidget::_setDownloadButtonStatus(const Episode* e)
 {
-	const bool downloaded = EpisodeCache::isDownloaded(e);
-	ui.downloadButton->setEnabled(!downloaded);
+	DownloadStatus status = _core->episodeCache()->downloadStatus(_model->getEpisode(_index));
 
-	if (downloaded)
+	switch (status)
 	{
+	case DownloadStatus::DownloadComplete:
+		ui.downloadButton->setEnabled(false);
 		ui.downloadButton->setText(tr("Downloaded"));
-	}
-	else
-	{
-		qint64 bytesSoFar = EpisodeCache::getPartialDownloadSize(e);
-		if (bytesSoFar != -1)
+		break;
+	case DownloadStatus::DownloadInProgress:
+		ui.downloadButton->setEnabled(false);
+		ui.downloadButton->setText(tr("Downloading..."));
+		break;
+	case DownloadStatus::DownloadInQueue:
+		ui.downloadButton->setEnabled(false);
+		ui.downloadButton->setText(tr("Download pending"));
+		break;
+	case DownloadStatus::DownloadNotInQueue:
 		{
-			ui.downloadButton->setText(tr("Resume download"));
+			ui.downloadButton->setEnabled(true);
+
+			qint64 bytesSoFar = EpisodeCache::getPartialDownloadSize(e);
+			if (bytesSoFar != -1)
+				ui.downloadButton->setText(tr("Resume download"));
+			else
+				ui.downloadButton->setText(tr("Download"));
 		}
+		
+		break;
 	}
 }
 
@@ -120,13 +127,16 @@ void EpisodeDetailWidget::on_downloadButton_clicked()
 {
 	emit download(_index);
 
-	ui.downloadButton->setEnabled(false);
-	ui.downloadButton->setText(tr("Download pending"));
+	_core->episodeCache()->enqueueDownload(_model->getEpisode(_index));
+
+	refresh();
 }
 
 void EpisodeDetailWidget::on_playButton_clicked()
 {
 	emit play(_index);
+
+	_core->audioPlayer()->playEpisode(&_model->getEpisode(_index));
 
 	refresh();
 }

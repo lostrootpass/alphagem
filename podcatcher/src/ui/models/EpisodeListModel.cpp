@@ -3,8 +3,8 @@
 #include "ui/widgets/EpisodeDetailWidget.h"
 #include "MainWindow.h"
 
-EpisodeListModel::EpisodeListModel(QListView& view, FeedCache& cache, int feed, QObject* parent) 
-	: QAbstractListModel(parent), _view(&view), _feedCache(&cache), _feedIndex(feed)
+EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObject* parent) 
+	: QAbstractListModel(parent), _view(&view), _core(&core), _feedIndex(feed)
 {
 }
 
@@ -24,7 +24,7 @@ QVariant EpisodeListModel::data(const QModelIndex &, int ) const
 
 Episode& EpisodeListModel::getEpisode(const QModelIndex& index) const
 {
-	return _feedCache->episodes(_feedIndex)[_epCount() - 1 - index.row()];
+	return _core->feedCache()->episodes(_feedIndex)[_epCount() - 1 - index.row()];
 }
 
 void EpisodeListModel::markAsPlayed(const QModelIndex& index)
@@ -53,9 +53,8 @@ void EpisodeListModel::setFeedIndex(int newIndex)
 
 EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
 {
-	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, index, nullptr);
-	MainWindow* w = qobject_cast<MainWindow*>(_view->window());
-	w->connectEpisodeWidget(e);
+	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, *_core, index, nullptr);
+	connect(e, &EpisodeDetailWidget::play, this, &EpisodeListModel::markAsPlayed);
 
 	//Item view will take ownership of the widget for us.
 	return e;

@@ -5,9 +5,7 @@
 #include <QNetworkAccessManager>
 #include "ui_FeedDetailWidget.h"
 
-#include "core/ImageDownloader.h"
-#include "core/feeds/Feed.h"
-#include "core/feeds/FeedCache.h"
+class Core;
 
 class QNetworkReply;
 
@@ -19,8 +17,7 @@ public:
 	FeedDetailWidget(QWidget *parent = Q_NULLPTR);
 	~FeedDetailWidget();
 
-	void setFeedCache(FeedCache& cache);
-	void setImageDownloader(ImageDownloader& downloader);
+	void setCore(Core* c);
 
 public slots:
 	void onFeedSelected(const QModelIndex& index);
@@ -28,8 +25,7 @@ public slots:
 private:
 	Ui::FeedDetailWidget ui;
 
-	FeedCache* _feedCache;
-	ImageDownloader* _imageDownloader;
+	Core* _core;
 	int _feedIndex;
 
 private slots:

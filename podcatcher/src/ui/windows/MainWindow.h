@@ -3,11 +3,9 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_MainWindow.h"
 
-class AudioPlayer;
-class EpisodeCache;
+#include "core/Core.h"
+
 class EpisodeDetailWidget;
-class FeedCache;
-class ImageDownloader;
 struct Feed;
 struct Episode;
 
@@ -16,27 +14,15 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = Q_NULLPTR);
+	MainWindow(Core& core, QWidget *parent = Q_NULLPTR);
 	~MainWindow();
 
-	void connectEpisodeWidget(EpisodeDetailWidget* w);
-
-	void setAudioPlayer(AudioPlayer* player);
-	void setEpisodeCache(EpisodeCache* epCache);
-	void setFeedCache(FeedCache* cache);
-	void setImageDownloader(ImageDownloader* imageDownloader);
-
-public slots:
-	void onDownloadStarted(const QModelIndex& index);
-	void onEpisodeSelected(const QModelIndex& index);
+	void init();
 
 private:
 	Ui::MainWindowClass ui;
 
-	AudioPlayer* _audioPlayer;
-	EpisodeCache* _epCache;
-	FeedCache* _feedCache;
-	ImageDownloader* _imageDownloader;
+	Core* _core;
 
 private slots:
 	/* Auto generated slots */
@@ -57,7 +43,7 @@ private slots:
 	void on_action_DeleteFeed_triggered();
 
 	/* Custom slots */
-	void onDownloadComplete(const EpisodeCache* cache, const Episode& e);
+	void onDownloadComplete(const Episode& e);
 	void onDownloadFailed(const Episode& e, QString error);
 	void onDownloadProgress(const Episode& e, qint64 bytesDownloaded);
 	void onFeedSelected(const QModelIndex& index);
