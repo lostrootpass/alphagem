@@ -116,7 +116,7 @@ void EpisodeCache::downloadNext()
 	info->handle->open(QIODevice::WriteOnly | QIODevice::Append);
 }
 
-void EpisodeCache::enqueueDownload(const Episode& e)
+void EpisodeCache::enqueueDownload(Episode& e)
 {
 	for (const DownloadInfo* i : _downloads)
 	{

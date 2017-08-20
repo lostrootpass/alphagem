@@ -9,6 +9,12 @@
 
 class EpisodeDetailWidget;
 
+enum class EpisodeListType
+{
+	Downloads,
+	Feed
+};
+
 class EpisodeListModel : public QAbstractListModel
 {
 	Q_OBJECT
@@ -24,17 +30,19 @@ public:
 
 	void refreshIndex(const QModelIndex& index);
 
+	void refreshList();
+
 	void setFeedIndex(int newIndex);
+
+	void showDownloadList();
 
 private:
 	QListView* _view;
 	Core* _core;
 	int _feedIndex;
+	EpisodeListType _listType;
 
-	inline int _epCount() const 
-	{
-		return _feedIndex == -1 ? 0 : _core->feedCache()->episodes(_feedIndex).size();
-	}
+	int _epCount() const;
 
 	EpisodeDetailWidget* _getWidget(const QModelIndex& index) const;
 

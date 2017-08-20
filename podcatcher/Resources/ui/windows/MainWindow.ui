@@ -96,6 +96,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionHome"/>
+   <addaction name="actionDownloads"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout_Qt">
@@ -133,6 +134,11 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+  </action>
+  <action name="actionDownloads">
+   <property name="text">
+    <string>Downloads</string>
    </property>
   </action>
  </widget>

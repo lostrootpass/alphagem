@@ -86,16 +86,25 @@ void MainWindow::on_actionAbout_triggered()
 	window->show();
 }
 
+void MainWindow::on_actionDownloads_triggered()
+{
+	QVector<Feed>& feeds = _core->feedCache()->feeds();
+
+	if (!feeds.size()) return;
+
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	elm->showDownloadList();
+
+	ui.feedDetailWidget->setVisible(true);
+	ui.feedListView->setVisible(false);
+	ui.episodeListView->setVisible(true);
+}
+
 void MainWindow::on_actionHome_triggered()
 {
 	ui.feedDetailWidget->setVisible(false);
 	ui.feedListView->setVisible(true);
 	ui.episodeListView->setVisible(false);
-}
-
-void MainWindow::on_actionRefresh_triggered()
-{
-	_core->feedCache()->refresh(ui.feedListView->currentIndex().row());
 }
 
 void MainWindow::on_action_DeleteFeed_triggered()
@@ -113,6 +122,9 @@ void MainWindow::onDownloadComplete(const Episode& e)
 {
 	QString message = QString(tr("Download complete: %1")).arg(e.title);
 	statusBar()->showMessage(message);
+
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	elm->refreshList();
 }
 
 void MainWindow::onDownloadFailed(const Episode&, QString error)

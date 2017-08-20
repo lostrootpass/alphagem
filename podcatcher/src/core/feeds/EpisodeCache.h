@@ -34,7 +34,7 @@ public:
 
 	QNetworkReply* reply = nullptr;
 	QFile* handle = nullptr;
-	const Episode* episode;
+	Episode* episode;
 
 public slots:
 	void onReadyRead();
@@ -54,10 +54,11 @@ public:
 	static QString getTmpDownloadFilename(const Episode* e);
 
 	bool downloadInProgress() { return (_downloads.size()); }
+	const QList<DownloadInfo*>& downloadList() { return _downloads; }
 	DownloadStatus downloadStatus(const Episode& e) const;
 	void downloadNext();
 
-	void enqueueDownload(const Episode& e);
+	void enqueueDownload(Episode& e);
 
 signals:
 	void downloadComplete(const Episode& e);

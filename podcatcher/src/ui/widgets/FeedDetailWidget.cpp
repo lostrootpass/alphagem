@@ -8,6 +8,7 @@ FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+	ui.refreshButton->setVisible(false);
 }
 
 FeedDetailWidget::~FeedDetailWidget()
@@ -34,6 +35,7 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 	ui.titleLabel->setText(feed->title);
 	ui.descriptionLabel->setText(feed->description);
 	ui.feedIcon->clear();
+	ui.refreshButton->setVisible(true);
 
 	_core->imageDownloader()->setImage(QUrl(feed->imageUrl), *ui.feedIcon);
 }
