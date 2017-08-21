@@ -51,7 +51,7 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 
 			if (n == "item")
 			{
-				Episode e;
+				Episode e = {};
 				e.listened = false;
 
 				if (!_parseItemData(xml, &e, untilGuid))
@@ -132,7 +132,25 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode, QString
 			}
 			else if (n == "itunes:duration")
 			{
-				episode->duration = xml->readElementText().toInt();
+				int el1, el2, el3;
+				int numElements = sscanf_s(xml->readElementText().toUtf8(),
+					"%d:%d:%d", &el1, &el2, &el3);
+
+				switch (numElements)
+				{
+				case 2:
+					//MM:SS
+					episode->duration = (el1 * 60) + (el2);
+					break;
+
+				case 3:
+					//HH:MM:SS
+					episode->duration = (el1 * 60 * 60) + (el2 * 60) + (el3);
+					break;
+				default:
+					//This should never happen, but you never know.
+					break;
+				}
 			}
 			else if (n == "enclosure")
 			{

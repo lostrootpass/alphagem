@@ -62,11 +62,18 @@ void EpisodeDetailWidget::refresh()
 		listenText = QString(tr("New"));
 	ui.listenStatusLabel->setText(listenText);
 
-	QString formatString = QString(tr("Play (%1:%2)"))
-		.arg(e.duration / 60, 2, 10, QChar('0'))
-		.arg(e.duration % 60, 2, 10, QChar('0'));
+	if (e.duration > 0)
+	{
+		QString formatString = QString(tr("Play (%1:%2)"))
+			.arg(e.duration / 60, 2, 10, QChar('0'))
+			.arg(e.duration % 60, 2, 10, QChar('0'));
 
-	ui.playButton->setText(formatString);
+		ui.playButton->setText(formatString);
+	}
+	else
+	{
+		ui.playButton->setText(tr("Play"));
+	}
 
 	if (_core->defaultPlaylist()->contains(&_model->getEpisode(_index)))
 		ui.addToPlaylistButton->setText(tr("Remove From Playlist"));
