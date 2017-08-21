@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>87</height>
+    <height>92</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -107,6 +107,16 @@
        </property>
        <property name="shortcut">
         <string>Right</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="nextEpisodeButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>&gt;&gt;</string>
        </property>
       </widget>
      </item>

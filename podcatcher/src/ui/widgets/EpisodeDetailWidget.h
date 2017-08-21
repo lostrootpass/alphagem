@@ -27,7 +27,6 @@ public:
 signals:
 	void download(const QModelIndex& index);
 	void play(const QModelIndex& index);
-	void playlistChanged();
 	
 public slots:
 	void onDownloadProgressUpdate(const Episode& e, qint64 progress);

@@ -35,7 +35,7 @@ void MainWindow::init()
 	ui.episodeListView->setItemDelegate(new EpisodeItemDelegate(ui.episodeListView));
 
 
-	ui.playbackControlWidget->connectToAudioPlayer(_core->audioPlayer());
+	ui.playbackControlWidget->setupConnections(_core);
 
 
 	connect(_core->episodeCache(), &EpisodeCache::downloadComplete,

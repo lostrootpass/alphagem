@@ -1,6 +1,8 @@
 #include "PlaybackControlWidget.h"
 
 #include "core/AudioPlayer.h"
+#include "core/Core.h"
+#include "core/Playlist.h"
 #include "core/feeds/Feed.h"
 
 //Skip five seconds per forward/back
@@ -29,17 +31,28 @@ PlaybackControlWidget::~PlaybackControlWidget()
 {
 }
 
-void PlaybackControlWidget::connectToAudioPlayer(AudioPlayer* player)
+void PlaybackControlWidget::setupConnections(Core* core)
 {
-	_player = player;
-	connect(player, &AudioPlayer::episodeChanged, this, &PlaybackControlWidget::onEpisodeChanged);
-	connect(player, &AudioPlayer::finished, this, &PlaybackControlWidget::onFinished);
-	connect(player, &AudioPlayer::pauseStatusChanged, this, &PlaybackControlWidget::onPauseStatusChanged);
-	connect(player->getMediaPlayer(), &QMediaPlayer::positionChanged, this, &PlaybackControlWidget::onPlayerPositionChanged);
+	_core = core;
+	_player = core->audioPlayer();
 
-	connect(this, &PlaybackControlWidget::pauseToggled, player, &AudioPlayer::onPlayPauseToggle);
+	connect(_player, &AudioPlayer::episodeChanged,
+		this, &PlaybackControlWidget::onEpisodeChanged);
+	connect(_player, &AudioPlayer::finished,
+		this, &PlaybackControlWidget::onFinished);
+	connect(_player, &AudioPlayer::pauseStatusChanged,
+		this, &PlaybackControlWidget::onPauseStatusChanged);
+	connect(_player->getMediaPlayer(), &QMediaPlayer::positionChanged,
+		this, &PlaybackControlWidget::onPlayerPositionChanged);
 
-	connect(ui.playbackSlider, &PlaybackSlider::valueChanged, player->getMediaPlayer(), &QMediaPlayer::setPosition);
+	connect(this, &PlaybackControlWidget::pauseToggled,
+		_player, &AudioPlayer::onPlayPauseToggle);
+
+	connect(ui.playbackSlider, &PlaybackSlider::valueChanged,
+		_player->getMediaPlayer(), &QMediaPlayer::setPosition);
+
+	connect(core->defaultPlaylist(), &Playlist::playlistUpdated,
+		this, &PlaybackControlWidget::onPlaylistUpdated);
 }
 
 void PlaybackControlWidget::onEpisodeChanged(const Episode* episode)
@@ -81,6 +94,11 @@ void PlaybackControlWidget::on_jumpForwardButton_clicked()
 	ui.playbackSlider->setValue(ui.playbackSlider->sliderPosition() + JUMP_MS);
 }
 
+void PlaybackControlWidget::on_nextEpisodeButton_clicked()
+{
+	_player->nextEpisode();
+}
+
 void PlaybackControlWidget::on_playPauseButton_clicked()
 {
 	emit pauseToggled();
@@ -90,4 +108,10 @@ void PlaybackControlWidget::onFinished()
 {
 	ui.episodeName->setText("");
 	setEnabled(false);
+}
+
+void PlaybackControlWidget::onPlaylistUpdated()
+{
+	const bool hasMore = (bool)(_core->defaultPlaylist()->episodes.size());
+	ui.nextEpisodeButton->setEnabled(hasMore);
 }

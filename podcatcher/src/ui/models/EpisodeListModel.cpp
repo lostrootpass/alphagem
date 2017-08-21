@@ -11,7 +11,7 @@ EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObjec
 	: QAbstractListModel(parent), _view(&view), _core(&core), _feedIndex(feed),
 	_listType(EpisodeListType::Feed)
 {
-	connect(_core->audioPlayer(), &AudioPlayer::episodeChanged,
+	connect(_core->defaultPlaylist(), &Playlist::playlistUpdated,
 		this, &EpisodeListModel::onPlaylistChanged);
 }
 
@@ -133,8 +133,7 @@ EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) cons
 {
 	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, *_core, index, nullptr);
 	connect(e, &EpisodeDetailWidget::play, this, &EpisodeListModel::markAsPlayed);
-	connect(e, &EpisodeDetailWidget::playlistChanged, this, &EpisodeListModel::onPlaylistChanged);
-
+	
 	//Item view will take ownership of the widget for us.
 	return e;
 }

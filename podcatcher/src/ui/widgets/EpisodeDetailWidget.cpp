@@ -147,8 +147,6 @@ void EpisodeDetailWidget::on_addToPlaylistButton_clicked()
 		_core->audioPlayer()->disconnect(this);
 	}
 
-	emit playlistChanged();
-
 	refresh();
 }
 
@@ -165,7 +163,13 @@ void EpisodeDetailWidget::on_playButton_clicked()
 {
 	emit play(_index);
 
-	_core->audioPlayer()->playEpisode(&_model->getEpisode(_index));
+	const Episode* ep = &_model->getEpisode(_index);
+
+	const QList<Episode*>& list = _core->defaultPlaylist()->episodes;
+	if (list.size() && list.first() == ep)
+		_core->audioPlayer()->nextEpisode();
+	else
+		_core->audioPlayer()->playEpisode(ep);
 
 	refresh();
 }

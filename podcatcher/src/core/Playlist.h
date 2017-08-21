@@ -12,18 +12,19 @@ struct Playlist : public QObject
 public:
 	Playlist(QString name);
 
-	void add(Episode* e)
-	{
-		if(!contains(e))
-			episodes.push_back(e);
-	}
+	void add(Episode* e);
 
 	bool contains(const Episode* e) const;
+
+	Episode* popFront();
 
 	void remove(Episode* e);
 
 	QString name;
 	QList<Episode*> episodes;
+
+signals:
+	void playlistUpdated();
 };
 
 #endif

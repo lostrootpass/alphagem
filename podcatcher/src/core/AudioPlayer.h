@@ -19,6 +19,8 @@ public:
 
 	inline const QMediaPlayer* getMediaPlayer() const { return _mediaPlayer; }
 
+	void nextEpisode();
+
 	void playEpisode(const Episode* episode);
 
 public slots:
@@ -35,5 +37,5 @@ private:
 	Core* _core;
 
 private slots:
-	void onStateChange(QMediaPlayer::State state);
+	void onStateChange(QMediaPlayer::MediaStatus state);
 };

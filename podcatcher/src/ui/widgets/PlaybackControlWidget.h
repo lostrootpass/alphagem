@@ -6,6 +6,7 @@
 struct Episode;
 
 class AudioPlayer;
+class Core;
 
 class PlaybackControlWidget : public QWidget
 {
@@ -15,7 +16,7 @@ public:
 	PlaybackControlWidget(QWidget *parent = Q_NULLPTR);
 	~PlaybackControlWidget();
 
-	void connectToAudioPlayer(AudioPlayer* player);
+	void setupConnections(Core* core);
 
 signals:
 	void pauseToggled();
@@ -30,12 +31,15 @@ private:
 	Ui::PlaybackControlWidget ui;
 
 	AudioPlayer* _player;
+	Core* _core;
 
 private slots:
 	/* Auto generated slots */
 	void on_jumpBackButton_clicked();
 	void on_jumpForwardButton_clicked();
+	void on_nextEpisodeButton_clicked();
 	void on_playPauseButton_clicked();
 
 	void onFinished();
+	void onPlaylistUpdated();
 };

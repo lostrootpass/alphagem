@@ -12,11 +12,26 @@ AudioPlayer::AudioPlayer(Core& core, QObject *parent)
 	: QObject(parent), _core(&core), _playlist(nullptr)
 {
 	_mediaPlayer = new QMediaPlayer();
-	connect(_mediaPlayer, &QMediaPlayer::stateChanged, this, &AudioPlayer::onStateChange);
+	connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
+		this, &AudioPlayer::onStateChange);
 }
 
 AudioPlayer::~AudioPlayer()
 {
+}
+
+void AudioPlayer::nextEpisode()
+{
+	Playlist* p = _core->defaultPlaylist();
+
+	if (!p->episodes.size())
+		emit finished();
+	else
+	{
+		Episode* e = p->popFront();
+
+		playEpisode(e);
+	}
 }
 
 void AudioPlayer::playEpisode(const Episode* episode)
@@ -24,10 +39,6 @@ void AudioPlayer::playEpisode(const Episode* episode)
 	if (!_mediaPlayer)
 	{
 		_mediaPlayer = new QMediaPlayer();
-	}
-	else
-	{
-		_mediaPlayer->stop();
 	}
 
 	if (!_playlist)
@@ -41,6 +52,7 @@ void AudioPlayer::playEpisode(const Episode* episode)
 	}
 
 	_playlist->addMedia(EpisodeCache::getEpisodeUrl(episode));
+	_mediaPlayer->setPosition(0);
 	_mediaPlayer->play();
 
 	emit episodeChanged(episode);
@@ -57,20 +69,10 @@ void AudioPlayer::onPlayPauseToggle()
 	emit pauseStatusChanged(!wasPlaying);
 }
 
-void AudioPlayer::onStateChange(QMediaPlayer::State state)
+void AudioPlayer::onStateChange(QMediaPlayer::MediaStatus state)
 {
-	if (state == QMediaPlayer::State::StoppedState)
+	if (state == QMediaPlayer::MediaStatus::EndOfMedia)
 	{
-		Playlist* p = _core->defaultPlaylist();
-
-		if(!p->episodes.size())
-			emit finished();
-		else
-		{
-			Episode* e = p->episodes.first();
-			p->episodes.pop_front();
-
-			playEpisode(e);
-		}
+		nextEpisode();
 	}
 }
