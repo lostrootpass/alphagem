@@ -38,6 +38,7 @@ private slots:
 	//Toolbar
 	void on_actionDownloads_triggered();
 	void on_actionHome_triggered();
+	void on_actionPlaylist_triggered();
 
 	//Context
 	void on_action_DeleteFeed_triggered();

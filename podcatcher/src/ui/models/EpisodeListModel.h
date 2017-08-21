@@ -12,7 +12,8 @@ class EpisodeDetailWidget;
 enum class EpisodeListType
 {
 	Downloads,
-	Feed
+	Feed,
+	Playlist
 };
 
 class EpisodeListModel : public QAbstractListModel
@@ -35,6 +36,8 @@ public:
 	void setFeedIndex(int newIndex);
 
 	void showDownloadList();
+	
+	void showPlaylist();
 
 private:
 	QListView* _view;
@@ -48,5 +51,6 @@ private:
 
 private slots:
 	void markAsPlayed(const QModelIndex& index);
+	void onPlaylistChanged();
 
 };

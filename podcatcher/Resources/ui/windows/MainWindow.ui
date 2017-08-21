@@ -97,6 +97,7 @@
    </attribute>
    <addaction name="actionHome"/>
    <addaction name="actionDownloads"/>
+   <addaction name="actionPlaylist"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout_Qt">
@@ -139,6 +140,14 @@
   <action name="actionDownloads">
    <property name="text">
     <string>Downloads</string>
+   </property>
+  </action>
+  <action name="actionPlaylist">
+   <property name="text">
+    <string>Playlist</string>
+   </property>
+   <property name="toolTip">
+    <string>Playlist</string>
    </property>
   </action>
  </widget>

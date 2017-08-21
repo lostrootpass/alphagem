@@ -107,6 +107,16 @@ void MainWindow::on_actionHome_triggered()
 	ui.episodeListView->setVisible(false);
 }
 
+void MainWindow::on_actionPlaylist_triggered()
+{
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	elm->showPlaylist();
+
+	ui.feedDetailWidget->setVisible(true);
+	ui.feedListView->setVisible(false);
+	ui.episodeListView->setVisible(true);
+}
+
 void MainWindow::on_action_DeleteFeed_triggered()
 {
 	if (!ui.feedListView->isVisible()) return;

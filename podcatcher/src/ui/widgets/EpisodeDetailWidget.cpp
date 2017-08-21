@@ -147,6 +147,8 @@ void EpisodeDetailWidget::on_addToPlaylistButton_clicked()
 		_core->audioPlayer()->disconnect(this);
 	}
 
+	emit playlistChanged();
+
 	refresh();
 }
 

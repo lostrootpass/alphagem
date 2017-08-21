@@ -2,6 +2,7 @@
 
 #include <QList>
 
+#include "core/AudioPlayer.h"
 #include "core/feeds/EpisodeCache.h"
 #include "ui/widgets/EpisodeDetailWidget.h"
 #include "ui/windows/MainWindow.h"
@@ -10,6 +11,8 @@ EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObjec
 	: QAbstractListModel(parent), _view(&view), _core(&core), _feedIndex(feed),
 	_listType(EpisodeListType::Feed)
 {
+	connect(_core->audioPlayer(), &AudioPlayer::episodeChanged,
+		this, &EpisodeListModel::onPlaylistChanged);
 }
 
 EpisodeListModel::~EpisodeListModel()
@@ -37,6 +40,10 @@ Episode& EpisodeListModel::getEpisode(const QModelIndex& index) const
 	}
 		break;
 
+	case EpisodeListType::Playlist:
+		return *_core->defaultPlaylist()->episodes.at(index.row());
+		break;
+
 	case EpisodeListType::Feed:
 	default:
 		return _core->feedCache()->episodes(_feedIndex)[_epCount() - 1 - index.row()];
@@ -49,6 +56,12 @@ void EpisodeListModel::markAsPlayed(const QModelIndex& index)
 	getEpisode(index).listened = true;
 
 	emit dataChanged(index, index);
+}
+
+void EpisodeListModel::onPlaylistChanged()
+{
+	if(_listType == EpisodeListType::Playlist)
+		refreshList();
 }
 
 void EpisodeListModel::refreshIndex(const QModelIndex& index)
@@ -83,6 +96,15 @@ void EpisodeListModel::showDownloadList()
 	refreshList();
 }
 
+void EpisodeListModel::showPlaylist()
+{
+	if (_listType == EpisodeListType::Playlist) return;
+
+	_listType = EpisodeListType::Playlist;
+
+	refreshList();
+}
+
 int EpisodeListModel::_epCount() const
 {
 	switch (_listType)
@@ -93,6 +115,10 @@ int EpisodeListModel::_epCount() const
 		return list.size();
 	}
 	break;
+
+	case EpisodeListType::Playlist:
+		return _core->defaultPlaylist()->episodes.size();
+		break;
 
 	case EpisodeListType::Feed:
 	default:
@@ -107,6 +133,7 @@ EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) cons
 {
 	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, *_core, index, nullptr);
 	connect(e, &EpisodeDetailWidget::play, this, &EpisodeListModel::markAsPlayed);
+	connect(e, &EpisodeDetailWidget::playlistChanged, this, &EpisodeListModel::onPlaylistChanged);
 
 	//Item view will take ownership of the widget for us.
 	return e;
