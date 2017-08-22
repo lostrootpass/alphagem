@@ -24,13 +24,13 @@ void FeedDetailWidget::setCore(Core* core)
 
 void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 {
-	QVector<Feed>& feeds = _core->feedCache()->feeds();
+	QVector<Feed*>& feeds = _core->feedCache()->feeds();
 
 	if (!feeds.size()) return;
 
 	_feedIndex = index.row();
 
-	Feed* feed = &feeds[_feedIndex];
+	Feed* feed = feeds[_feedIndex];
 
 	ui.titleLabel->setText(feed->title);
 	ui.descriptionLabel->setText(feed->description);

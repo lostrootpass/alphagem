@@ -21,7 +21,7 @@ int FeedListModel::rowCount(const QModelIndex&) const
 
 QVariant FeedListModel::data(const QModelIndex &index, int role) const
 {
-	const QVector<Feed>& feeds = _core->feedCache()->feeds();
+	const QVector<Feed*>& feeds = _core->feedCache()->feeds();
 
 	if (!index.isValid())
 		return QVariant();
@@ -30,7 +30,7 @@ QVariant FeedListModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	if (role == Qt::DisplayRole)
-		return feeds.at(index.row()).title;
+		return feeds.at(index.row())->title;
 	else
 		return QVariant();
 }

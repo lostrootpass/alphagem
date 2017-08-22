@@ -40,7 +40,7 @@ private:
 	Episode* _episode;
 	Core* _core;
 
-	void _setDownloadButtonStatus(const Episode* e);
+	void _setDownloadButtonStatus();
 
 private slots:
 	void on_addToPlaylistButton_clicked();

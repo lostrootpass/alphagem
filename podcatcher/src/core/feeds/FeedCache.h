@@ -16,13 +16,14 @@ public:
 	~FeedCache();
 
 	Feed* feedForUrl(const QString& url);
+	Episode* getEpisode(const QString& guid);
 	void loadFromDisk();
 	void refresh(int index);
 	void removeFeed(int index);
 	void saveToDisk();
 
-	inline QVector<Episode>& episodes(int index) { return _feeds[index].episodes; }
-	inline QVector<Feed>& feeds() { return _feeds; }
+	inline QVector<Episode*>& episodes(int index) { return _feeds[index]->episodes; }
+	inline QVector<Feed*>& feeds() { return _feeds; }
 
 signals:
 	void feedListUpdated();
@@ -34,7 +35,7 @@ public slots:
 
 
 private:
-	QVector<Feed> _feeds;
+	QVector<Feed*> _feeds;
 
 	FeedParser* _feedParser;
 };

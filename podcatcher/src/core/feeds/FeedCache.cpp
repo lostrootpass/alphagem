@@ -5,67 +5,71 @@
 #include <QStandardPaths>
 
 #include "FeedParser.h"
+#include "Version.h"
 
-static const qint64 VERSION = 0x00000001;
-
-QDataStream& operator<<(QDataStream& stream, const Episode& episode)
+QDataStream& operator<<(QDataStream& stream, const Episode* episode)
 {
-	stream << episode.title;
-	stream << episode.description;
-	stream << episode.mediaUrl;
-	stream << episode.imageUrl;
-	stream << episode.guid;
-	stream << episode.mediaFormat;
-	stream << episode.shareLink;
-	stream << episode.categories;
-	stream << episode.published;
-	stream << episode.duration;
-	stream << episode.isExplicit;
-	stream << episode.listened;
+	stream << episode->title;
+	stream << episode->description;
+	stream << episode->mediaUrl;
+	stream << episode->imageUrl;
+	stream << episode->guid;
+	stream << episode->mediaFormat;
+	stream << episode->shareLink;
+	stream << episode->categories;
+	stream << episode->published;
+	stream << episode->duration;
+	stream << episode->isExplicit;
+	stream << episode->listened;
 
 	return stream;
 }
 
-QDataStream& operator>>(QDataStream& stream, Episode& episode)
+QDataStream& operator>>(QDataStream& stream, Episode*& episode)
 {
-	stream >> episode.title;
-	stream >> episode.description;
-	stream >> episode.mediaUrl;
-	stream >> episode.imageUrl;
-	stream >> episode.guid;
-	stream >> episode.mediaFormat;
-	stream >> episode.shareLink;
-	stream >> episode.categories;
-	stream >> episode.published;
-	stream >> episode.duration;
-	stream >> episode.isExplicit;
-	stream >> episode.listened;
+	episode = new Episode();
+
+	stream >> episode->title;
+	stream >> episode->description;
+	stream >> episode->mediaUrl;
+	stream >> episode->imageUrl;
+	stream >> episode->guid;
+	stream >> episode->mediaFormat;
+	stream >> episode->shareLink;
+	stream >> episode->categories;
+	stream >> episode->published;
+	stream >> episode->duration;
+	stream >> episode->isExplicit;
+	stream >> episode->listened;
 
 	return stream;
 }
 
-QDataStream& operator<<(QDataStream& stream, const Feed& feed)
+QDataStream& operator<<(QDataStream& stream, const Feed* feed)
 {
-	stream << feed.feedUrl << feed.title << feed.description << feed.imageUrl;
-	stream << feed.creator << feed.ownerName << feed.ownerEmail;
-	stream << feed.lastUpdated << feed.episodes << feed.categories;
-	stream << feed.isExplicit;
+	stream << feed->feedUrl << feed->title << feed->description << feed->imageUrl;
+	stream << feed->creator << feed->ownerName << feed->ownerEmail;
+	stream << feed->lastUpdated << feed->episodes << feed->categories;
+	stream << feed->isExplicit;
+
 	return stream;
 }
 
-QDataStream& operator >> (QDataStream& stream, Feed& feed)
+QDataStream& operator >> (QDataStream& stream, Feed*& feed)
 {
-	stream >> feed.feedUrl;
-	stream >> feed.title;
-	stream >> feed.description;
-	stream >> feed.imageUrl;
-	stream >> feed.creator;
-	stream >> feed.ownerName;
-	stream >> feed.ownerEmail;
-	stream >> feed.lastUpdated;
-	stream >> feed.episodes;
-	stream >> feed.categories;
-	stream >> feed.isExplicit;
+	feed = new Feed();
+
+	stream >> feed->feedUrl;
+	stream >> feed->title;
+	stream >> feed->description;
+	stream >> feed->imageUrl;
+	stream >> feed->creator;
+	stream >> feed->ownerName;
+	stream >> feed->ownerEmail;
+	stream >> feed->lastUpdated;
+	stream >> feed->episodes;
+	stream >> feed->categories;
+	stream >> feed->isExplicit;
 
 	return stream;
 }
@@ -77,20 +81,38 @@ FeedCache::FeedCache(QObject *parent)
 
 FeedCache::~FeedCache()
 {
+	for (Feed* f : _feeds)
+	{
+		delete f;
+	}
 }
 
 Feed* FeedCache::feedForUrl(const QString& url)
 {
-	for (Feed& f : _feeds)
+	for (Feed* f : _feeds)
 	{
-		if (f.feedUrl == url)
-			return &f;
+		if (f->feedUrl == url)
+			return f;
 	}
 
-	Feed f;
-	f.feedUrl = QString(url);
+	Feed* f = new Feed();
+	f->feedUrl = QString(url);
 	_feeds.push_back(f);
-	return &_feeds.back();
+	return f;
+}
+
+Episode* FeedCache::getEpisode(const QString& guid)
+{
+	for (const Feed* f : _feeds)
+	{
+		for (Episode* e : f->episodes)
+		{
+			if (e->guid == guid)
+				return e;
+		}
+	}
+
+	return nullptr;
 }
 
 void FeedCache::onAboutToQuit()
@@ -135,6 +157,8 @@ void FeedCache::loadFromDisk()
 	inStream >> fileVersion;
 	inStream >> _feeds;
 
+	file.close();
+
 	emit feedListUpdated();
 }
 
@@ -142,7 +166,7 @@ void FeedCache::refresh(int index)
 {
 	if (index < 0 || index >= _feeds.size()) return;
 
-	onFeedAdded(_feeds[index].feedUrl);
+	onFeedAdded(_feeds[index]->feedUrl);
 }
 
 void FeedCache::removeFeed(int index)
@@ -172,4 +196,6 @@ void FeedCache::saveToDisk()
 	QDataStream outStream(&file);
 	outStream << VERSION;
 	outStream << _feeds;
+
+	file.close();
 }

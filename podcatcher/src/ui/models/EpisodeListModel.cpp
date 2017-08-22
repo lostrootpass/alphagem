@@ -29,19 +29,24 @@ QVariant EpisodeListModel::data(const QModelIndex &, int ) const
 	return QVariant();
 }
 
-Episode& EpisodeListModel::getEpisode(const QModelIndex& index) const
+Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 {
 	switch (_listType)
 	{
 	case EpisodeListType::Downloads:
 	{
 		const QList<DownloadInfo*>& list = _core->episodeCache()->downloadList();
-		return *(list.at(index.row())->episode);
+		return (list.at(index.row())->episode);
 	}
 		break;
 
 	case EpisodeListType::Playlist:
-		return *_core->defaultPlaylist()->episodes.at(index.row());
+	{
+		Playlist* p = _core->defaultPlaylist();
+		if (p->episodes.size() > index.row())
+			return p->episodes.at(index.row());
+		return nullptr;
+	}
 		break;
 
 	case EpisodeListType::Feed:
@@ -53,7 +58,7 @@ Episode& EpisodeListModel::getEpisode(const QModelIndex& index) const
 
 void EpisodeListModel::markAsPlayed(const QModelIndex& index)
 {
-	getEpisode(index).listened = true;
+	getEpisode(index)->listened = true;
 
 	emit dataChanged(index, index);
 }

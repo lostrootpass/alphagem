@@ -198,6 +198,9 @@
     <ClCompile Include="src\core\Playlist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Core.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\ui\windows\MainWindow.h">
@@ -269,6 +272,9 @@
     <CustomBuild Include="src\core\Playlist.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\core\Core.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h">
@@ -292,7 +298,7 @@
     <ClInclude Include="GeneratedFiles\ui_EpisodeDetailWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\Core.h">
+    <ClInclude Include="src\core\Version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

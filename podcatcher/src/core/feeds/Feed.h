@@ -27,6 +27,15 @@ struct Episode
 
 struct Feed
 {
+	Feed() {}
+	~Feed()
+	{
+		for (Episode* e : episodes)
+		{
+			delete e;
+		}
+	}
+
 	QString feedUrl;
 	QString title;
 	QString link;
@@ -39,7 +48,7 @@ struct Feed
 
 	std::time_t lastUpdated;
 
-	QVector<Episode> episodes;
+	QVector<Episode*> episodes;
 	QVector<QString> categories;
 
 	bool isExplicit;

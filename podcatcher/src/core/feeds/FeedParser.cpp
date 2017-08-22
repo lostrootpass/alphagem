@@ -59,10 +59,10 @@ void FeedParser::_parseOwnerData(QXmlStreamReader* xml, Feed* feed)
 
 void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 {
-	QVector<Episode> newEpisodes;
+	QVector<Episode*> newEpisodes;
 	QString untilGuid = "";
 	if (feed->episodes.size())
-		untilGuid = feed->episodes.back().guid;
+		untilGuid = feed->episodes.back()->guid;
 
 	while (!(xml->name() == "channel" && xml->isEndElement()))
 	{
@@ -74,10 +74,10 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 
 			if (n == "item")
 			{
-				Episode e = {};
-				e.listened = false;
+				Episode* e = new Episode();
+				e->listened = false;
 
-				if (!_parseItemData(xml, &e, untilGuid))
+				if (!_parseItemData(xml, e, untilGuid))
 				{
 					break;
 				}

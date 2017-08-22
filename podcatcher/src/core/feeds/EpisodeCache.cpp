@@ -1,10 +1,15 @@
 #include "EpisodeCache.h"
 
+#include <QDataStream>
 #include <QDir>
 #include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QStandardPaths>
 
+#include "core/Core.h"
+#include "core/Version.h"
+
+#include "core/feeds/FeedCache.h"
 
 DownloadInfo::~DownloadInfo()
 {
@@ -116,23 +121,77 @@ void EpisodeCache::downloadNext()
 	info->handle->open(QIODevice::WriteOnly | QIODevice::Append);
 }
 
-void EpisodeCache::enqueueDownload(Episode& e)
+void EpisodeCache::enqueueDownload(Episode* e)
 {
 	for (const DownloadInfo* i : _downloads)
 	{
-		if (i->episode->guid == e.guid)
+		if (i->episode == e)
 			return;
 	}
 
 	DownloadInfo* info = new DownloadInfo;
 
-	info->episode = &e;
-	info->handle = new QFile(getTmpDownloadFilename(&e));
+	info->episode = e;
+	info->handle = new QFile(getTmpDownloadFilename(e));
 
 	_downloads.push_back(info);
 
 	if (_downloads.size() == 1)
 		downloadNext();
+}
+
+void EpisodeCache::loadDownloadQueueFromDisk(Core* core)
+{
+	QString path =
+		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QDir dir(path);
+	QString filePath = dir.filePath("downloads.pod");
+
+	QFile file(filePath);
+	if (!file.exists())
+		return;
+
+	file.open(QIODevice::ReadOnly);
+	QDataStream inStream(&file);
+	qint64 fileVersion;
+	inStream >> fileVersion;
+
+	QVector<QString> guids;
+	inStream >> guids;
+
+	for (const QString& s : guids)
+	{
+		enqueueDownload(core->feedCache()->getEpisode(s));
+	}
+
+	file.close();
+}
+
+void EpisodeCache::saveDownloadQueueToDisk()
+{
+	QString path =
+		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QDir dir(path);
+	if (!dir.exists())
+		dir.mkdir(".");
+
+	QString filePath = dir.filePath("downloads.pod");
+
+	QFile file(filePath);
+	file.open(QIODevice::WriteOnly);
+	QDataStream outStream(&file);
+	outStream << VERSION;
+
+	QVector<QString> guids;
+
+	for (const DownloadInfo* i : _downloads)
+	{
+		guids.push_back(i->episode->guid);
+	}
+
+	outStream << guids;
+
+	file.close();
 }
 
 QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
@@ -169,6 +228,11 @@ QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
 	}
 
 	return QString("%1%2").arg(podcastDir.absoluteFilePath(e->guid)).arg(ext);
+}
+
+void EpisodeCache::onAboutToQuit()
+{
+	saveDownloadQueueToDisk();
 }
 
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)

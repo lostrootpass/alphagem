@@ -88,7 +88,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionDownloads_triggered()
 {
-	QVector<Feed>& feeds = _core->feedCache()->feeds();
+	QVector<Feed*>& feeds = _core->feedCache()->feeds();
 
 	if (!feeds.size()) return;
 
@@ -157,7 +157,7 @@ void MainWindow::onStatusBarUpdate(QString& text)
 
 void MainWindow::onFeedSelected(const QModelIndex& index)
 {
-	QVector<Feed>& feeds = _core->feedCache()->feeds();
+	QVector<Feed*>& feeds = _core->feedCache()->feeds();
 
 	if (!feeds.size()) return;
 

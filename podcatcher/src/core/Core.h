@@ -7,6 +7,7 @@ class FeedCache;
 class ImageDownloader;
 
 #include <QList>
+
 #include "Playlist.h"
 
 class Core
@@ -28,7 +29,7 @@ public:
 		return _playlists.first();
 	}
 
-	void init();
+	void init(QApplication* app);
 
 private:
 	QList<Playlist*> _playlists;

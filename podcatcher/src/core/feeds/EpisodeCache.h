@@ -10,6 +10,8 @@ class QFile;
 class QNetworkAccessManager;
 class QNetworkReply;
 
+class Core;
+
 enum class DownloadStatus
 {
 	/* Download has completed, file is stored locally */
@@ -58,7 +60,14 @@ public:
 	DownloadStatus downloadStatus(const Episode& e) const;
 	void downloadNext();
 
-	void enqueueDownload(Episode& e);
+	void enqueueDownload(Episode* e);
+
+	void loadDownloadQueueFromDisk(Core* core);
+
+	void saveDownloadQueueToDisk();
+
+public slots:
+	void onAboutToQuit();
 
 signals:
 	void downloadComplete(const Episode& e);

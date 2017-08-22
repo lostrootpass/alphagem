@@ -1,5 +1,7 @@
 #include "Core.h"
 
+#include <QtWidgets/QApplication>
+
 #include "AudioPlayer.h"
 #include "EpisodeCache.h"
 #include "Feed.h"
@@ -27,14 +29,21 @@ Core::~Core()
 	_playlists.clear();
 }
 
-void Core::init()
+void Core::init(QApplication* app)
 {
 	_audioPlayer = new AudioPlayer(*this, nullptr);
-	
-	_episodeCache = new EpisodeCache(nullptr);
 	
 	_feedCache = new FeedCache(nullptr);
 	_feedCache->loadFromDisk();
 
+	_episodeCache = new EpisodeCache(nullptr);
+	_episodeCache->loadDownloadQueueFromDisk(this);
+	
 	_imageDownloader = new ImageDownloader(nullptr);
+
+
+	QObject::connect(app, &QApplication::aboutToQuit,
+		_feedCache, &FeedCache::onAboutToQuit);
+	QObject::connect(app, &QApplication::aboutToQuit,
+		_episodeCache, &EpisodeCache::onAboutToQuit);
 }

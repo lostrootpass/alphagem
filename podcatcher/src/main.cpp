@@ -13,9 +13,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 
 	Core core;
-	core.init();
-
-	QObject::connect(&a, &QApplication::aboutToQuit, core.feedCache(), &FeedCache::onAboutToQuit);
+	core.init(&a);
 
 	MainWindow w(core);
 	w.init();

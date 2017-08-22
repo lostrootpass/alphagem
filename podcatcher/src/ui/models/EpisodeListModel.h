@@ -27,7 +27,7 @@ public:
 	int rowCount(const QModelIndex &parent) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 
-	Episode& getEpisode(const QModelIndex& index) const;
+	Episode* getEpisode(const QModelIndex& index) const;
 
 	void refreshIndex(const QModelIndex& index);
 
