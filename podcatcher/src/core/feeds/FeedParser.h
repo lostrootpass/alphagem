@@ -27,6 +27,7 @@ private:
 	QNetworkAccessManager _netMgr;
 	QNetworkReply* _reply;
 
+	void _parseOwnerData(QXmlStreamReader* xml, Feed* feed);
 	void _parseChannelData(QXmlStreamReader* xml, Feed* feed);
 	void _parseImageData(QXmlStreamReader*xml, Feed* feed);
 	bool _parseItemData(QXmlStreamReader* xml, Episode* episode, QString untilGuid);

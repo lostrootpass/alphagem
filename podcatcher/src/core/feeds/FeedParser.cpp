@@ -31,7 +31,30 @@ void FeedParser::parseFromRemoteFile(QString& url)
 {
 	_reply = _netMgr.get(QNetworkRequest(QUrl(url)));
 
-	connect(_reply, &QNetworkReply::downloadProgress, this, &FeedParser::_progressUpdated);
+	connect(_reply, &QNetworkReply::downloadProgress,
+		this, &FeedParser::_progressUpdated);
+}
+
+void FeedParser::_parseOwnerData(QXmlStreamReader* xml, Feed* feed)
+{
+	while (!(xml->qualifiedName() == "itunes:owner" && xml->isEndElement()))
+	{
+		xml->readNext();
+
+		if (xml->isStartElement())
+		{
+			QStringRef n = xml->name();
+
+			if (n == "name")
+			{
+				feed->ownerName = xml->readElementText();
+			}
+			else if (n == "email")
+			{
+				feed->ownerEmail = xml->readElementText();
+			}
+		}
+	}
 }
 
 void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
@@ -85,6 +108,37 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 			{
 				feed->lastUpdated = toTime(xml->readElementText());
 			}
+			else if (n == "itunes:explicit")
+			{
+				feed->isExplicit = (xml->readElementText() == "yes");
+			}
+			else if (n == "category")
+			{
+				QString cat = xml->readElementText();
+				if (!feed->categories.contains(cat))
+					feed->categories.push_back(cat);
+			}
+			else if (n == "itunes:category")
+			{
+				QString cat = xml->attributes().value("text").toString();
+				if (!feed->categories.contains(cat))
+					feed->categories.push_back(cat);
+			}
+			else if (n == "itunes:owner")
+			{
+				_parseOwnerData(xml, feed);
+			}
+			else if (n == "itunes:author")
+			{
+				feed->creator = xml->readElementText();
+			}
+			else if (n == "media:credit")
+			{
+				if (xml->attributes().value("role") == "author")
+				{
+					feed->creator = xml->readElementText();
+				}
+			}
 		}
 	}
 
@@ -109,7 +163,8 @@ void FeedParser::_parseImageData(QXmlStreamReader*xml, Feed* feed)
 
 //Parse an item element and turn it in to an episode.
 //Returns: true if the episode was added, false if episode guid was untilGuid
-bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode, QString untilGuid)
+bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode,
+	QString untilGuid)
 {
 	while (!(xml->name() == "item" && xml->isEndElement()))
 	{
@@ -138,6 +193,10 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode, QString
 
 				switch (numElements)
 				{
+				case 1:
+					//SS
+					episode->duration = (el1);
+					break;
 				case 2:
 					//MM:SS
 					episode->duration = (el1 * 60) + (el2);
@@ -164,6 +223,26 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode, QString
 			else if (n == "guid")
 			{
 				episode->guid = xml->readElementText();
+			}
+			else if (n == "itunes:explicit")
+			{
+				episode->isExplicit = (xml->readElementText() == "yes");
+			}
+			else if (n == "category")
+			{
+				QString cat = xml->readElementText();
+				if(!episode->categories.contains(cat))
+					episode->categories.push_back(cat);
+			}
+			else if (n == "itunes:category")
+			{
+				QString cat = xml->attributes().value("text").toString();
+				if (!episode->categories.contains(cat))
+					episode->categories.push_back(cat);
+			}
+			else if (n == "link")
+			{
+				episode->shareLink = xml->readElementText();
 			}
 		}
 	}

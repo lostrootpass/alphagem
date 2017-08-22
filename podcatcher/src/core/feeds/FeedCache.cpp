@@ -16,8 +16,11 @@ QDataStream& operator<<(QDataStream& stream, const Episode& episode)
 	stream << episode.imageUrl;
 	stream << episode.guid;
 	stream << episode.mediaFormat;
+	stream << episode.shareLink;
+	stream << episode.categories;
 	stream << episode.published;
 	stream << episode.duration;
+	stream << episode.isExplicit;
 	stream << episode.listened;
 
 	return stream;
@@ -31,8 +34,11 @@ QDataStream& operator>>(QDataStream& stream, Episode& episode)
 	stream >> episode.imageUrl;
 	stream >> episode.guid;
 	stream >> episode.mediaFormat;
+	stream >> episode.shareLink;
+	stream >> episode.categories;
 	stream >> episode.published;
 	stream >> episode.duration;
+	stream >> episode.isExplicit;
 	stream >> episode.listened;
 
 	return stream;
@@ -40,8 +46,10 @@ QDataStream& operator>>(QDataStream& stream, Episode& episode)
 
 QDataStream& operator<<(QDataStream& stream, const Feed& feed)
 {
-	stream << feed.feedUrl << feed.title << feed.description << feed.imageUrl << feed.lastUpdated;
-	stream << feed.episodes;
+	stream << feed.feedUrl << feed.title << feed.description << feed.imageUrl;
+	stream << feed.creator << feed.ownerName << feed.ownerEmail;
+	stream << feed.lastUpdated << feed.episodes << feed.categories;
+	stream << feed.isExplicit;
 	return stream;
 }
 
@@ -51,8 +59,13 @@ QDataStream& operator >> (QDataStream& stream, Feed& feed)
 	stream >> feed.title;
 	stream >> feed.description;
 	stream >> feed.imageUrl;
+	stream >> feed.creator;
+	stream >> feed.ownerName;
+	stream >> feed.ownerEmail;
 	stream >> feed.lastUpdated;
 	stream >> feed.episodes;
+	stream >> feed.categories;
+	stream >> feed.isExplicit;
 
 	return stream;
 }
@@ -91,7 +104,8 @@ void FeedCache::onFeedAdded(QString& url)
 	{
 		_feedParser = new FeedParser(this);
 
-		connect(_feedParser, &FeedParser::feedRetrieved, this, &FeedCache::onFeedRetrieved);
+		connect(_feedParser, &FeedParser::feedRetrieved,
+			this, &FeedCache::onFeedRetrieved);
 	}
 
 	_feedParser->parseFromRemoteFile(url);
@@ -106,7 +120,8 @@ void FeedCache::onFeedRetrieved(Feed*)
 
 void FeedCache::loadFromDisk()
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path =
+		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 	QDir dir(path);
 	QString filePath = dir.filePath("feeds.pod");
 
@@ -143,7 +158,8 @@ void FeedCache::removeFeed(int index)
 
 void FeedCache::saveToDisk()
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path = 
+		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 	QDir dir(path);
 	if (!dir.exists())
 		dir.mkdir(".");
