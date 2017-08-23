@@ -62,13 +62,6 @@ public:
 
 	void enqueueDownload(Episode* e);
 
-	void loadDownloadQueueFromDisk(Core* core);
-
-	void saveDownloadQueueToDisk();
-
-public slots:
-	void onAboutToQuit();
-
 signals:
 	void downloadComplete(const Episode& e);
 	void downloadFailed(const Episode& e, QString error);

@@ -7,6 +7,7 @@
 #include "Feed.h"
 #include "FeedCache.h"
 #include "ImageDownloader.h"
+#include "State.h"
 
 Core::Core() : _audioPlayer(nullptr), _episodeCache(nullptr),
 	_feedCache(nullptr), _imageDownloader(nullptr)
@@ -35,15 +36,20 @@ void Core::init(QApplication* app)
 	
 	_feedCache = new FeedCache(nullptr);
 	_feedCache->loadFromDisk();
-
-	_episodeCache = new EpisodeCache(nullptr);
-	_episodeCache->loadDownloadQueueFromDisk(this);
-	
-	_imageDownloader = new ImageDownloader(nullptr);
-
-
 	QObject::connect(app, &QApplication::aboutToQuit,
 		_feedCache, &FeedCache::onAboutToQuit);
+
+	_episodeCache = new EpisodeCache(nullptr);
+
+	_imageDownloader = new ImageDownloader(nullptr);
+
+	_state = new State(this);
 	QObject::connect(app, &QApplication::aboutToQuit,
-		_episodeCache, &EpisodeCache::onAboutToQuit);
+		_state, &State::onAboutToQuit);
+}
+
+void Core::loadState()
+{
+	if(_state)
+		_state->loadFromDisk();
 }

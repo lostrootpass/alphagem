@@ -5,6 +5,7 @@ class AudioPlayer;
 class EpisodeCache;
 class FeedCache;
 class ImageDownloader;
+class State;
 
 #include <QList>
 
@@ -31,6 +32,8 @@ public:
 
 	void init(QApplication* app);
 
+	void loadState();
+
 private:
 	QList<Playlist*> _playlists;
 
@@ -38,6 +41,7 @@ private:
 	EpisodeCache* _episodeCache;
 	FeedCache* _feedCache;
 	ImageDownloader* _imageDownloader;
+	State* _state;
 };
 
 #endif

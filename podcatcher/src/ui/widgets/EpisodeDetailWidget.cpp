@@ -170,9 +170,14 @@ void EpisodeDetailWidget::on_playButton_clicked()
 
 	const QList<Episode*>& list = _core->defaultPlaylist()->episodes;
 	if (list.size() && list.first() == _episode)
+	{
 		_core->audioPlayer()->nextEpisode();
+	}
 	else
-		_core->audioPlayer()->playEpisode(_episode);
+	{
+		_core->defaultPlaylist()->emplaceFront(_episode);
+		_core->audioPlayer()->nextEpisode();
+	}
 
 	refresh();
 }

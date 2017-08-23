@@ -26,6 +26,25 @@ bool Playlist::contains(const Episode* e) const
 	return false;
 }
 
+void Playlist::emplaceFront(Episode* e)
+{
+	int idx = episodes.indexOf(e);
+	if (idx > 0)
+		episodes.move(idx, 0);
+	else if(idx == -1)
+		episodes.push_front(e);
+	
+	emit playlistUpdated();
+}
+
+Episode* Playlist::front() const
+{
+	if (episodes.size())
+		return episodes.first();
+
+	return nullptr;
+}
+
 Episode* Playlist::popFront()
 {
 	Episode* e = episodes.first();

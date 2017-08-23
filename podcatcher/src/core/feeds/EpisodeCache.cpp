@@ -21,6 +21,7 @@ DownloadInfo::~DownloadInfo()
 
 	if (reply != nullptr)
 	{
+		reply->abort();
 		reply->deleteLater();
 	}
 }
@@ -52,11 +53,11 @@ EpisodeCache::~EpisodeCache()
 
 bool EpisodeCache::isDownloaded(const Episode* e)
 {
-	QDir podcastDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (podcastDir.cd("podcasts"))
+	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	if (dir.cd("podcasts"))
 	{
 		QStringList filter(e->guid + ".*");
-		QStringList list = podcastDir.entryList(filter);
+		QStringList list = dir.entryList(filter);
 
 		return (list.size());
 	}
@@ -106,7 +107,8 @@ void EpisodeCache::downloadNext()
 
 	if (info->handle->exists())
 	{
-		QByteArray rangeHeader = "bytes=" + QByteArray::number(info->handle->size()) + "-";
+		qint64 size = info->handle->size();
+		QByteArray rangeHeader = "bytes=" + QByteArray::number(size) + "-";
 		req.setRawHeader("Range", rangeHeader);
 	}
 
@@ -140,74 +142,20 @@ void EpisodeCache::enqueueDownload(Episode* e)
 		downloadNext();
 }
 
-void EpisodeCache::loadDownloadQueueFromDisk(Core* core)
-{
-	QString path =
-		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-	QDir dir(path);
-	QString filePath = dir.filePath("downloads.pod");
-
-	QFile file(filePath);
-	if (!file.exists())
-		return;
-
-	file.open(QIODevice::ReadOnly);
-	QDataStream inStream(&file);
-	qint64 fileVersion;
-	inStream >> fileVersion;
-
-	QVector<QString> guids;
-	inStream >> guids;
-
-	for (const QString& s : guids)
-	{
-		enqueueDownload(core->feedCache()->getEpisode(s));
-	}
-
-	file.close();
-}
-
-void EpisodeCache::saveDownloadQueueToDisk()
-{
-	QString path =
-		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-	QDir dir(path);
-	if (!dir.exists())
-		dir.mkdir(".");
-
-	QString filePath = dir.filePath("downloads.pod");
-
-	QFile file(filePath);
-	file.open(QIODevice::WriteOnly);
-	QDataStream outStream(&file);
-	outStream << VERSION;
-
-	QVector<QString> guids;
-
-	for (const DownloadInfo* i : _downloads)
-	{
-		guids.push_back(i->episode->guid);
-	}
-
-	outStream << guids;
-
-	file.close();
-}
-
 QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
 {
 	if (!e) return QUrl();
 
 	QUrl url(e->mediaUrl);
 
-	QDir podcastDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (podcastDir.cd("podcasts"))
+	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	if (dir.cd("podcasts"))
 	{
 		QStringList filter(e->guid + ".*");
-		QStringList list = podcastDir.entryList(filter);
+		QStringList list = dir.entryList(filter);
 
 		if (list.size())
-			url = QUrl(podcastDir.absoluteFilePath(list[0]));
+			url = QUrl(dir.absoluteFilePath(list[0]));
 	}
 
 	return url;
@@ -220,19 +168,14 @@ QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
 	if (e->mediaFormat == "audio/mpeg")
 		ext = ".mp3";
 
-	QDir podcastDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (!podcastDir.cd("podcasts/download"))
+	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	if (!dir.cd("podcasts/download"))
 	{
-		podcastDir.mkpath("podcasts/download");
-		podcastDir.cd("podcasts/download");
+		dir.mkpath("podcasts/download");
+		dir.cd("podcasts/download");
 	}
 
-	return QString("%1%2").arg(podcastDir.absoluteFilePath(e->guid)).arg(ext);
-}
-
-void EpisodeCache::onAboutToQuit()
-{
-	saveDownloadQueueToDisk();
+	return QString("%1%2").arg(dir.absoluteFilePath(e->guid)).arg(ext);
 }
 
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
@@ -246,7 +189,8 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 	}
 	else
 	{
-		QString ext = QFileInfo(reply->url().toString(QUrl::RemoveQuery)).completeSuffix();
+		QString baseUrl = reply->url().toString(QUrl::RemoveQuery);
+		QString ext = QFileInfo(baseUrl).completeSuffix();
 
 		if (ext == "")
 		{
@@ -254,17 +198,17 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 				ext = "mp3";
 		}
 
-		QDir podcastDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-		if (!podcastDir.cd("podcasts"))
+		QDir d = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+		if (!d.cd("podcasts"))
 		{
-			podcastDir.mkdir("podcasts");
-			podcastDir.cd("podcasts");
+			d.mkdir("podcasts");
+			d.cd("podcasts");
 		}
 
 		QString outName = QString("%2.%3").arg(e->guid).arg(ext);
 		
 		info->handle->close();
-		info->handle->rename(podcastDir.absoluteFilePath(outName));
+		info->handle->rename(d.absoluteFilePath(outName));
 		
 		emit downloadComplete(*e);
 	}

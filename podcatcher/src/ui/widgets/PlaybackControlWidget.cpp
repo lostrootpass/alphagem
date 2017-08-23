@@ -71,7 +71,7 @@ void PlaybackControlWidget::onEpisodeChanged(const Episode* episode)
 
 void PlaybackControlWidget::onPauseStatusChanged(bool paused)
 {
-	ui.playPauseButton->setText(paused ? "Pause" : "Play");
+	ui.playPauseButton->setText(paused ? "Play" : "Pause");
 }
 
 void PlaybackControlWidget::onPlayerPositionChanged(qint64 milliseconds)
@@ -96,6 +96,10 @@ void PlaybackControlWidget::on_jumpForwardButton_clicked()
 
 void PlaybackControlWidget::on_nextEpisodeButton_clicked()
 {
+	Episode* first = _core->defaultPlaylist()->episodes.front();
+	if(first == _core->audioPlayer()->currentEpisode())
+		_core->defaultPlaylist()->popFront();
+
 	_player->nextEpisode();
 }
 
@@ -112,6 +116,6 @@ void PlaybackControlWidget::onFinished()
 
 void PlaybackControlWidget::onPlaylistUpdated()
 {
-	const bool hasMore = (bool)(_core->defaultPlaylist()->episodes.size());
+	const bool hasMore = (_core->defaultPlaylist()->episodes.size() > 1);
 	ui.nextEpisodeButton->setEnabled(hasMore);
 }

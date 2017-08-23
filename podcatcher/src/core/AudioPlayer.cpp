@@ -9,7 +9,7 @@
 #include "core/feeds/EpisodeCache.h"
 
 AudioPlayer::AudioPlayer(Core& core, QObject *parent)
-	: QObject(parent), _core(&core), _playlist(nullptr)
+	: QObject(parent), _core(&core), _playlist(nullptr), _current(nullptr)
 {
 	_mediaPlayer = new QMediaPlayer();
 	connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
@@ -28,9 +28,9 @@ void AudioPlayer::nextEpisode()
 		emit finished();
 	else
 	{
-		Episode* e = p->popFront();
-
-		playEpisode(e);
+		_current = p->front();
+		
+		playEpisode(_current);
 	}
 }
 
@@ -55,24 +55,38 @@ void AudioPlayer::playEpisode(const Episode* episode)
 	_mediaPlayer->setPosition(0);
 	_mediaPlayer->play();
 
+	_current = episode;
 	emit episodeChanged(episode);
+}
+
+void AudioPlayer::pause()
+{
+	_mediaPlayer->pause();
+	emit pauseStatusChanged(true);
+}
+
+void AudioPlayer::setPosition(qint64 pos)
+{
+	_mediaPlayer->setPosition(pos);
 }
 
 void AudioPlayer::onPlayPauseToggle()
 {
-	bool wasPlaying = (_mediaPlayer->state() == QMediaPlayer::State::PlayingState);
+	QMediaPlayer::State state = _mediaPlayer->state();
+	bool wasPlaying = (state == QMediaPlayer::State::PlayingState);
 	if (wasPlaying)
 		_mediaPlayer->pause();
 	else
 		_mediaPlayer->play();
 
-	emit pauseStatusChanged(!wasPlaying);
+	emit pauseStatusChanged(wasPlaying);
 }
 
 void AudioPlayer::onStateChange(QMediaPlayer::MediaStatus state)
 {
 	if (state == QMediaPlayer::MediaStatus::EndOfMedia)
 	{
+		_core->defaultPlaylist()->popFront();
 		nextEpisode();
 	}
 }

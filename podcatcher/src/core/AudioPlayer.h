@@ -17,11 +17,17 @@ public:
 	AudioPlayer(Core& core, QObject *parent);
 	~AudioPlayer();
 
-	inline const QMediaPlayer* getMediaPlayer() const { return _mediaPlayer; }
+	inline QMediaPlayer* getMediaPlayer() const { return _mediaPlayer; }
+
+	const Episode* currentEpisode() const { return _current; }
 
 	void nextEpisode();
 
 	void playEpisode(const Episode* episode);
+
+	void pause();
+
+	void setPosition(qint64 pos);
 
 public slots:
 	void onPlayPauseToggle();
@@ -35,6 +41,7 @@ private:
 	QMediaPlayer* _mediaPlayer;
 	QMediaPlaylist* _playlist;
 	Core* _core;
+	const Episode* _current;
 
 private slots:
 	void onStateChange(QMediaPlayer::MediaStatus state);

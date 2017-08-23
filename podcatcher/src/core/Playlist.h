@@ -16,6 +16,10 @@ public:
 
 	bool contains(const Episode* e) const;
 
+	void emplaceFront(Episode* e);
+
+	Episode* front() const;
+
 	Episode* popFront();
 
 	void remove(Episode* e);
