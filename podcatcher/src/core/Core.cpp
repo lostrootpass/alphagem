@@ -35,7 +35,6 @@ void Core::init(QApplication* app)
 	_audioPlayer = new AudioPlayer(*this, nullptr);
 	
 	_feedCache = new FeedCache(nullptr);
-	_feedCache->loadFromDisk();
 	QObject::connect(app, &QApplication::aboutToQuit,
 		_feedCache, &FeedCache::onAboutToQuit);
 
@@ -50,6 +49,9 @@ void Core::init(QApplication* app)
 
 void Core::loadState()
 {
+	if(_feedCache)
+		_feedCache->loadFromDisk();
+
 	if(_state)
 		_state->loadFromDisk();
 }

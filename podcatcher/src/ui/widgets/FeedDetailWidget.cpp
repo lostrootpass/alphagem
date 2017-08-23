@@ -37,7 +37,7 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 	ui.feedIcon->clear();
 	ui.refreshButton->setVisible(true);
 
-	_core->imageDownloader()->setImage(QUrl(feed->imageUrl), *ui.feedIcon);
+	_core->imageDownloader()->getImage(QUrl(feed->imageUrl), ui.feedIcon);
 }
 
 void FeedDetailWidget::on_refreshButton_clicked()

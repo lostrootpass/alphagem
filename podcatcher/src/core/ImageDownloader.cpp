@@ -6,8 +6,29 @@
 #include <QNetworkReply>
 #include <QStandardPaths>
 
+
+ImageDownload::~ImageDownload()
+{
+	if (handle)
+	{
+		handle->close();
+		delete handle;
+	}
+
+	if (reply)
+	{
+		reply->abort();
+		reply->deleteLater();
+	}
+}
+
+void ImageDownload::onReadyRead()
+{
+	handle->write(reply->readAll());
+}
+
 ImageDownloader::ImageDownloader(QObject *parent)
-	: QObject(parent), _reply(nullptr), _handle(nullptr)
+	: QObject(parent)
 {
 	connect(&_mgr, &QNetworkAccessManager::finished,
 		this, &ImageDownloader::onImageDownloaded);
@@ -15,63 +36,73 @@ ImageDownloader::ImageDownloader(QObject *parent)
 
 ImageDownloader::~ImageDownloader()
 {
-	if (_reply)
-	{
-		_reply->abort();
-		_reply->deleteLater();
-	}
-
-	if (_handle)
-	{
-		_handle->close();
-		delete _handle;
-	}
 }
 
-void ImageDownloader::setImage(QUrl url, QLabel& label)
+void ImageDownloader::getImage(QUrl url, QLabel* label)
 {
-	_label = &label;
-
-	if (_reply)
-	{
-		_reply->abort();
-		_reply->deleteLater();
-	}
-
 	QFile cached(_getCachedLocation(url));
 
 	if (cached.exists())
 	{
+		QString n = cached.fileName();
 		QPixmap px;
-		cached.open(QIODevice::ReadOnly);
-		px.loadFromData(cached.readAll());
-		cached.close();
-		_setPixmap(px);
+		px.load(n, nullptr, Qt::ImageConversionFlag::DiffuseAlphaDither);
+		
+		if(label) 
+			_setPixmap(px, label);
+
 		return;
 	}
 
+	ImageDownload* download = new ImageDownload(url.toString());
+	_downloads.push_back(download);
+
+	download->label = label;
+
 	QNetworkRequest req(url);
+	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
-	_handle = new QFile(_getDownloadLocation(url));
+	download->handle = new QFile(_getDownloadLocation(url));
 
-	if(_handle->exists())
+	if(download->handle->exists())
 	{
-		QByteArray rangeHeader = "bytes=" + QByteArray::number(_handle->size()) + "-";
+		QByteArray rangeHeader = 
+			"bytes=" + QByteArray::number(download->handle->size()) + "-";
 		req.setRawHeader("Range", rangeHeader);
 	}
 
+	download->reply = _mgr.get(req);
 
-	_reply = _mgr.get(req);
+	connect(download->reply, &QNetworkReply::readyRead,
+		download, &ImageDownload::onReadyRead);
 
-	connect(_reply, &QNetworkReply::readyRead,
-		this, &ImageDownloader::_readyRead);
+	download->handle->open(QIODevice::ReadWrite | QIODevice::Append);
+}
 
-	_handle->open(QIODevice::ReadWrite | QIODevice::Append);
+bool ImageDownloader::isCached(QUrl url)
+{
+	QFile cached(_getCachedLocation(url));
+
+	return cached.exists();
+}
+
+void ImageDownloader::loadPixmap(QUrl url, QPixmap* px)
+{
+	QFile cached(_getCachedLocation(url));
+
+	if (cached.exists())
+	{
+		QString n = cached.fileName();
+		px->load(n, nullptr, Qt::ImageConversionFlag::DiffuseAlphaDither);
+
+		return;
+	}
 }
 
 QString ImageDownloader::_getCachedLocation(QUrl url)
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path = 
+		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 	QDir dir(path);
 	if (!dir.cd("images"))
 	{
@@ -84,7 +115,8 @@ QString ImageDownloader::_getCachedLocation(QUrl url)
 
 QString ImageDownloader::_getDownloadLocation(QUrl url)
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path = 
+		QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 	QDir dir(path);
 	if (!dir.cd("images/download"))
 	{
@@ -97,38 +129,59 @@ QString ImageDownloader::_getDownloadLocation(QUrl url)
 
 QString ImageDownloader::_getDownloadName(QUrl url)
 {
-	return QString(QCryptographicHash::hash(url.toString().toUtf8(), QCryptographicHash::Sha1).toHex());
+	QByteArray utf8 = url.toString().toUtf8();
+	QByteArray hash = QCryptographicHash::hash(utf8, QCryptographicHash::Sha1);
+	return QString(hash.toHex());
 }
 
-void ImageDownloader::_readyRead()
+void ImageDownloader::_setPixmap(QPixmap& pixmap, QLabel* label)
 {
-	_handle->write(_reply->readAll());
-}
-
-void ImageDownloader::_setPixmap(QPixmap& pixmap)
-{
-	_label->setPixmap(pixmap.scaled(_label->size(), Qt::KeepAspectRatio));
+	label->setPixmap(pixmap.scaled(label->size(), Qt::KeepAspectRatio,
+		Qt::SmoothTransformation));
 }
 
 void ImageDownloader::onImageDownloaded(QNetworkReply* reply)
 {
+	int i;
+	for (i = 0; i < _downloads.size(); ++i)
+	{
+		if (_downloads[i]->reply == reply)
+		{
+			break;
+		}
+	}
+
+	ImageDownload* download = _downloads[i];
+	
 	reply->disconnect(this);
-	_reply = nullptr;
 
 	if (reply->error())
 	{
 		reply->deleteLater();
+		_downloads.remove(i);
+
 		return;
 	}
 
 	QPixmap px;
-	_handle->seek(0);
-	px.loadFromData(_handle->readAll());
-	_setPixmap(px);
+	download->handle->seek(0);
+	px.loadFromData(download->handle->readAll());
+	if (download->label)
+	{
+		_setPixmap(px, download->label);
+	}
+	else
+	{
+		emit imageDownloaded(&px, download->requestedUrl);
+	}
 
-	_handle->close();
-	delete _handle;
+	download->handle->close();
 
-	QFile::rename(_getDownloadLocation(reply->url()), _getCachedLocation(reply->url()));
+	QString dl = _getDownloadLocation(download->requestedUrl);
+	QString cl = _getCachedLocation(download->requestedUrl);
+	QFile::rename(dl, cl);
+	
 	reply->deleteLater();
+	delete _downloads[i];
+	_downloads.remove(i);
 }

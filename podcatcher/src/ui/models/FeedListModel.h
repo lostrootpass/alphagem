@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QPixmap>
+#include <QVector>
 
 #include "core/Core.h"
 
@@ -17,7 +19,11 @@ public:
 
 private:
 	Core* _core;
+	mutable QVector<QPixmap*> _thumbnails;
+
+	void _clearThumbnails();
 
 private slots:
 	void onFeedListUpdated();
+	void onThumbnailDownloaded(QPixmap* px, QString url);
 };

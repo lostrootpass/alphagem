@@ -13,6 +13,7 @@
 
 #include "ui/models/EpisodeItemDelegate.h"
 #include "ui/models/EpisodeListModel.h"
+#include "ui/models/FeedItemDelegate.h"
 #include "ui/models/FeedListModel.h"
 
 #include "ui/widgets/EpisodeDetailWidget.h"
@@ -32,29 +33,37 @@ void MainWindow::init()
 	ui.episodeListView->setVisible(false);
 	ui.feedDetailWidget->setVisible(false);
 
-	ui.episodeListView->setItemDelegate(new EpisodeItemDelegate(ui.episodeListView));
-
+	{
+		EpisodeItemDelegate* eid = new EpisodeItemDelegate(ui.episodeListView);
+		ui.episodeListView->setItemDelegate(eid);
+		ui.feedListView->setItemDelegate(new FeedItemDelegate(ui.feedListView));
+	}
 
 	ui.playbackControlWidget->setupConnections(_core);
 
 
 	connect(_core->episodeCache(), &EpisodeCache::downloadComplete,
 		this, &MainWindow::onDownloadComplete);
-	connect(_core->episodeCache(), &EpisodeCache::downloadFailed, this, &MainWindow::onDownloadFailed);
-	connect(_core->episodeCache(), &EpisodeCache::downloadProgressUpdated, this, &MainWindow::onDownloadProgress);
+	connect(_core->episodeCache(), &EpisodeCache::downloadFailed,
+		this, &MainWindow::onDownloadFailed);
+	connect(_core->episodeCache(), &EpisodeCache::downloadProgressUpdated,
+		this, &MainWindow::onDownloadProgress);
 
 
 	FeedListModel* flm = new FeedListModel(*_core, this);
 	ui.feedListView->setModel(flm);
 
-	connect(ui.feedListView, &QListView::activated, this, &MainWindow::onFeedSelected);
+	connect(ui.feedListView, &QListView::clicked,
+		this, &MainWindow::onFeedSelected);
 
 	ui.feedDetailWidget->setCore(_core);
-	connect(ui.feedListView, &QListView::activated, ui.feedDetailWidget, &FeedDetailWidget::onFeedSelected);
+	connect(ui.feedListView, &QListView::clicked,
+		ui.feedDetailWidget, &FeedDetailWidget::onFeedSelected);
 	ui.feedListView->addAction(ui.action_DeleteFeed);
 
 
-	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView, *_core, -1, this);
+	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView,
+		*_core, -1, this);
 	ui.episodeListView->setModel(model);
 }
 
@@ -63,7 +72,8 @@ void MainWindow::on_actionAdd_Feed_triggered()
 	AddFeedWindow* feedWindow = new AddFeedWindow();
 	feedWindow->setAttribute(Qt::WA_DeleteOnClose);
 
-	connect(feedWindow, &AddFeedWindow::feedAdded, _core->feedCache(), &FeedCache::onFeedAdded);
+	connect(feedWindow, &AddFeedWindow::feedAdded,
+		_core->feedCache(), &FeedCache::onFeedAdded);
 
 	feedWindow->show();
 }
