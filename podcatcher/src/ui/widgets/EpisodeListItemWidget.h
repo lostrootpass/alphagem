@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include "ui_EpisodeDetailWidget.h"
+#include "ui_EpisodeListItemWidget.h"
 
 #include <QModelIndex>
 
@@ -12,13 +12,13 @@
 
 class EpisodeCache;
 
-class EpisodeDetailWidget : public QWidget
+class EpisodeListItemWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	EpisodeDetailWidget(const EpisodeListModel& m, Core& core, const QModelIndex& idx, QWidget *parent = Q_NULLPTR);
-	~EpisodeDetailWidget();
+	EpisodeListItemWidget(const EpisodeListModel& m, Core& core, const QModelIndex& idx, QWidget *parent = Q_NULLPTR);
+	~EpisodeListItemWidget();
 
 	void connectToCache();
 

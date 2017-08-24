@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EpisodeDetailWidget</class>
- <widget class="QWidget" name="EpisodeDetailWidget">
+ <class>EpisodeListItemWidget</class>
+ <widget class="QWidget" name="EpisodeListItemWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -22,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>EpisodeDetailWidget</string>
+   <string>EpisodeListItemWidget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

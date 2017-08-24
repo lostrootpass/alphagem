@@ -4,7 +4,7 @@
 
 #include "core/AudioPlayer.h"
 #include "core/feeds/EpisodeCache.h"
-#include "ui/widgets/EpisodeDetailWidget.h"
+#include "ui/widgets/EpisodeListItemWidget.h"
 #include "ui/windows/MainWindow.h"
 
 EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObject* parent) 
@@ -127,8 +127,8 @@ int EpisodeListModel::_epCount() const
 	
 }
 
-EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
+EpisodeListItemWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
 {
 	//Item view will take ownership of the widget for us.
-	return new EpisodeDetailWidget(*this, *_core, index, nullptr);
+	return new EpisodeListItemWidget(*this, *_core, index, nullptr);
 }

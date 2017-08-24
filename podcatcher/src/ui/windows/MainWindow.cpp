@@ -17,7 +17,7 @@
 #include "ui/models/FeedItemDelegate.h"
 #include "ui/models/FeedListModel.h"
 
-#include "ui/widgets/EpisodeDetailWidget.h"
+#include "ui/widgets/EpisodeListItemWidget.h"
 
 MainWindow::MainWindow(Core& core, QWidget *parent)
 	: QMainWindow(parent), _core(&core)
@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::init()
 {
-	ui.episodeListView->setVisible(false);
+	ui.stackedWidget->setCurrentWidget(ui.feedListLayout);
 	ui.feedDetailWidget->setVisible(false);
 
 	{
@@ -135,15 +135,13 @@ void MainWindow::on_actionDownloads_triggered()
 	elm->showDownloadList();
 
 	ui.feedDetailWidget->setVisible(true);
-	ui.feedListView->setVisible(false);
-	ui.episodeListView->setVisible(true);
+	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
 
 void MainWindow::on_actionHome_triggered()
 {
 	ui.feedDetailWidget->setVisible(false);
-	ui.feedListView->setVisible(true);
-	ui.episodeListView->setVisible(false);
+	ui.stackedWidget->setCurrentWidget(ui.feedListLayout);
 }
 
 void MainWindow::on_actionPlaylist_triggered()
@@ -152,8 +150,7 @@ void MainWindow::on_actionPlaylist_triggered()
 	elm->showPlaylist();
 
 	ui.feedDetailWidget->setVisible(true);
-	ui.feedListView->setVisible(false);
-	ui.episodeListView->setVisible(true);
+	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
 
 void MainWindow::on_action_DeleteFeed_triggered()
@@ -204,6 +201,5 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 	elm->setFeedIndex(index.row());
 
 	ui.feedDetailWidget->setVisible(true);
-	ui.feedListView->setVisible(false);
-	ui.episodeListView->setVisible(true);
+	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }

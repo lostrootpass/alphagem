@@ -1,4 +1,4 @@
-#include "EpisodeDetailWidget.h"
+#include "EpisodeListItemWidget.h"
 
 #include <ctime>
 #include <iomanip>
@@ -10,7 +10,7 @@
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/Feed.h"
 
-EpisodeDetailWidget::EpisodeDetailWidget(const EpisodeListModel& m, 
+EpisodeListItemWidget::EpisodeListItemWidget(const EpisodeListModel& m, 
 	Core& core, const QModelIndex& idx, QWidget *parent)
 	: QWidget(parent), _core(&core), _model(&m), _index(idx)
 {
@@ -19,27 +19,27 @@ EpisodeDetailWidget::EpisodeDetailWidget(const EpisodeListModel& m,
 	_episode = _model->getEpisode(_index);
 
 	connect(_episode, &Episode::updated, 
-		this, &EpisodeDetailWidget::onEpisodeUpdated);
+		this, &EpisodeListItemWidget::onEpisodeUpdated);
 
 	refresh();
 }
 
-EpisodeDetailWidget::~EpisodeDetailWidget()
+EpisodeListItemWidget::~EpisodeListItemWidget()
 {
 }
 
-void EpisodeDetailWidget::connectToCache()
+void EpisodeListItemWidget::connectToCache()
 {
 	EpisodeCache* cache = _core->episodeCache();
 
 	connect(cache, &EpisodeCache::downloadProgressUpdated,
-		this, &EpisodeDetailWidget::onDownloadProgressUpdate);
+		this, &EpisodeListItemWidget::onDownloadProgressUpdate);
 
 	connect(cache, &EpisodeCache::downloadComplete,
-		this, &EpisodeDetailWidget::onDownloadFinished);
+		this, &EpisodeListItemWidget::onDownloadFinished);
 }
 
-void EpisodeDetailWidget::refresh()
+void EpisodeListItemWidget::refresh()
 {
 	ui.titleLabel->setText(_episode->title);
 
@@ -87,7 +87,7 @@ void EpisodeDetailWidget::refresh()
 	_setDownloadButtonStatus();
 }
 
-void EpisodeDetailWidget::onDownloadProgressUpdate(const Episode& e, qint64)
+void EpisodeListItemWidget::onDownloadProgressUpdate(const Episode& e, qint64)
 {
 	if (&e == _episode)
 	{
@@ -96,7 +96,7 @@ void EpisodeDetailWidget::onDownloadProgressUpdate(const Episode& e, qint64)
 	}
 }
 
-void EpisodeDetailWidget::onDownloadFinished(const Episode& e)
+void EpisodeListItemWidget::onDownloadFinished(const Episode& e)
 {
 	if (&e == _episode)
 	{
@@ -106,7 +106,7 @@ void EpisodeDetailWidget::onDownloadFinished(const Episode& e)
 	}
 }
 
-void EpisodeDetailWidget::_setDownloadButtonStatus()
+void EpisodeListItemWidget::_setDownloadButtonStatus()
 {
 	DownloadStatus status = _core->episodeCache()->downloadStatus(*_episode);
 
@@ -139,7 +139,7 @@ void EpisodeDetailWidget::_setDownloadButtonStatus()
 	}
 }
 
-void EpisodeDetailWidget::on_addToPlaylistButton_clicked()
+void EpisodeListItemWidget::on_addToPlaylistButton_clicked()
 {
 	Playlist* p = _core->defaultPlaylist();
 	
@@ -148,7 +148,7 @@ void EpisodeDetailWidget::on_addToPlaylistButton_clicked()
 		p->add(_episode);
 
 		connect(_core->audioPlayer(), &AudioPlayer::episodeChanged,
-			this, &EpisodeDetailWidget::onEpisodeChanged);
+			this, &EpisodeListItemWidget::onEpisodeChanged);
 	}
 	else
 	{
@@ -160,7 +160,7 @@ void EpisodeDetailWidget::on_addToPlaylistButton_clicked()
 	refresh();
 }
 
-void EpisodeDetailWidget::on_downloadButton_clicked()
+void EpisodeListItemWidget::on_downloadButton_clicked()
 {
 	emit download(_index);
 
@@ -169,7 +169,7 @@ void EpisodeDetailWidget::on_downloadButton_clicked()
 	refresh();
 }
 
-void EpisodeDetailWidget::on_playButton_clicked()
+void EpisodeListItemWidget::on_playButton_clicked()
 {
 	emit play(_episode);
 
@@ -187,7 +187,7 @@ void EpisodeDetailWidget::on_playButton_clicked()
 	refresh();
 }
 
-void EpisodeDetailWidget::onEpisodeChanged(const Episode* e)
+void EpisodeListItemWidget::onEpisodeChanged(const Episode* e)
 {
 	if (e == _episode)
 	{
@@ -196,7 +196,7 @@ void EpisodeDetailWidget::onEpisodeChanged(const Episode* e)
 	}
 }
 
-void EpisodeDetailWidget::onEpisodeUpdated()
+void EpisodeListItemWidget::onEpisodeUpdated()
 {
 	refresh();
 }

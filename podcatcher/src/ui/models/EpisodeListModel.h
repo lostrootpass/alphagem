@@ -7,7 +7,7 @@
 #include "core/feeds/Feed.h"
 #include "core/feeds/FeedCache.h"
 
-class EpisodeDetailWidget;
+class EpisodeListItemWidget;
 
 enum class EpisodeListType
 {
@@ -47,7 +47,7 @@ private:
 
 	int _epCount() const;
 
-	EpisodeDetailWidget* _getWidget(const QModelIndex& index) const;
+	EpisodeListItemWidget* _getWidget(const QModelIndex& index) const;
 
 private slots:
 	void onPlaylistChanged();

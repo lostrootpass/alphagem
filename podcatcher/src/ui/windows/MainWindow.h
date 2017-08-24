@@ -5,7 +5,7 @@
 
 #include "core/Core.h"
 
-class EpisodeDetailWidget;
+class EpisodeListItemWidget;
 struct Feed;
 struct Episode;
 
