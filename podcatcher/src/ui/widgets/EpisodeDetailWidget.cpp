@@ -39,7 +39,9 @@ void EpisodeDetailWidget::connectToCache()
 void EpisodeDetailWidget::refresh()
 {
 	ui.titleLabel->setText(_episode->title);
-	ui.descLabel->setText(_episode->description);
+
+	if (_episode->description != "")
+		ui.descLabel->setText(_episode->description);
 
 	struct tm now = { 0 };
 	std::time_t t = time(0);

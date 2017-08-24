@@ -83,7 +83,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Description</string>
+      <string>&lt;span style='font-style: italic'&gt;No description.&lt;/span&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
