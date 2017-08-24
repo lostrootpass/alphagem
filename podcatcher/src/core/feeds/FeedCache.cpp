@@ -219,7 +219,7 @@ void FeedCache::saveToDisk()
 	if (!dir.exists())
 		dir.mkdir(".");
 
-	QString filePath = dir.filePath("feeds.pod");
+	QString filePath = dir.filePath("feeds.pod.tmp");
 
 	QFile file(filePath);
 	file.open(QIODevice::WriteOnly);
@@ -229,4 +229,7 @@ void FeedCache::saveToDisk()
 	outStream << _feeds;
 
 	file.close();
+
+	QFile::remove(dir.filePath("feeds.pod"));
+	QFile::rename(filePath, dir.filePath("feeds.pod"));
 }
