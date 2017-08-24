@@ -1,12 +1,15 @@
 #ifndef FEED_H_
 #define FEED_H_
 
+#include <QObject>
 #include <QString>
 #include <QVector>
 #include <ctime>
 
-struct Episode
+struct Episode : public QObject
 {
+	Q_OBJECT;
+public:
 	QString title;
 	QString description;
 	QString mediaUrl;
@@ -23,6 +26,15 @@ struct Episode
 
 	bool isExplicit;
 	bool listened;
+
+	inline void setListened(bool l = true)
+	{
+		listened = l;
+		emit updated();
+	}
+
+signals:
+	void updated();
 };
 
 struct Feed

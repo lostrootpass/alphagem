@@ -34,7 +34,7 @@ void AudioPlayer::nextEpisode()
 	}
 }
 
-void AudioPlayer::playEpisode(const Episode* episode)
+void AudioPlayer::playEpisode(Episode* episode)
 {
 	if (!_mediaPlayer)
 	{
@@ -56,6 +56,7 @@ void AudioPlayer::playEpisode(const Episode* episode)
 	_mediaPlayer->play();
 
 	_current = episode;
+	_current->setListened(true);
 	emit episodeChanged(episode);
 }
 

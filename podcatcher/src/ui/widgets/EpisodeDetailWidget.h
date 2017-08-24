@@ -26,7 +26,7 @@ public:
 
 signals:
 	void download(const QModelIndex& index);
-	void play(const QModelIndex& index);
+	void play(Episode* e);
 	
 public slots:
 	void onDownloadProgressUpdate(const Episode& e, qint64 progress);
@@ -48,4 +48,5 @@ private slots:
 	void on_playButton_clicked();
 
 	void onEpisodeChanged(const Episode* e);
+	void onEpisodeUpdated();
 };

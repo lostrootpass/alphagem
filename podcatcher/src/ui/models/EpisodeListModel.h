@@ -50,7 +50,6 @@ private:
 	EpisodeDetailWidget* _getWidget(const QModelIndex& index) const;
 
 private slots:
-	void markAsPlayed(const QModelIndex& index);
 	void onPlaylistChanged();
 
 };

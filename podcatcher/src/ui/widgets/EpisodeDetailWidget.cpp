@@ -18,6 +18,9 @@ EpisodeDetailWidget::EpisodeDetailWidget(const EpisodeListModel& m,
 
 	_episode = _model->getEpisode(_index);
 
+	connect(_episode, &Episode::updated, 
+		this, &EpisodeDetailWidget::onEpisodeUpdated);
+
 	refresh();
 }
 
@@ -168,7 +171,7 @@ void EpisodeDetailWidget::on_downloadButton_clicked()
 
 void EpisodeDetailWidget::on_playButton_clicked()
 {
-	emit play(_index);
+	emit play(_episode);
 
 	const QList<Episode*>& list = _core->defaultPlaylist()->episodes;
 	if (list.size() && list.first() == _episode)
@@ -191,4 +194,9 @@ void EpisodeDetailWidget::onEpisodeChanged(const Episode* e)
 		_core->audioPlayer()->disconnect(this);
 		refresh();
 	}
+}
+
+void EpisodeDetailWidget::onEpisodeUpdated()
+{
+	refresh();
 }

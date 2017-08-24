@@ -23,7 +23,7 @@ public:
 
 	void nextEpisode();
 
-	void playEpisode(const Episode* episode);
+	void playEpisode(Episode* episode);
 
 	void pause();
 
@@ -41,7 +41,7 @@ private:
 	QMediaPlayer* _mediaPlayer;
 	QMediaPlaylist* _playlist;
 	Core* _core;
-	const Episode* _current;
+	Episode* _current;
 
 private slots:
 	void onStateChange(QMediaPlayer::MediaStatus state);

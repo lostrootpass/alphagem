@@ -56,13 +56,6 @@ Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 	}
 }
 
-void EpisodeListModel::markAsPlayed(const QModelIndex& index)
-{
-	getEpisode(index)->listened = true;
-
-	emit dataChanged(index, index);
-}
-
 void EpisodeListModel::onPlaylistChanged()
 {
 	if(_listType == EpisodeListType::Playlist)
@@ -136,9 +129,6 @@ int EpisodeListModel::_epCount() const
 
 EpisodeDetailWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
 {
-	EpisodeDetailWidget* e = new EpisodeDetailWidget(*this, *_core, index, nullptr);
-	connect(e, &EpisodeDetailWidget::play, this, &EpisodeListModel::markAsPlayed);
-	
 	//Item view will take ownership of the widget for us.
-	return e;
+	return new EpisodeDetailWidget(*this, *_core, index, nullptr);
 }
