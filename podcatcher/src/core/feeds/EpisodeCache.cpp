@@ -11,6 +11,13 @@
 
 #include "core/feeds/FeedCache.h"
 
+QString sha1(QString s)
+{
+	QByteArray utf8 = s.toUtf8();
+	QByteArray hash = QCryptographicHash::hash(utf8, QCryptographicHash::Sha1);
+	return QString(hash.toHex());
+}
+
 DownloadInfo::~DownloadInfo()
 {
 	if (handle != nullptr)
@@ -56,7 +63,7 @@ bool EpisodeCache::isDownloaded(const Episode* e)
 	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 	if (dir.cd("podcasts"))
 	{
-		QStringList filter(e->guid + ".*");
+		QStringList filter(sha1(e->guid) + ".*");
 		QStringList list = dir.entryList(filter);
 
 		return (list.size());
@@ -151,7 +158,7 @@ QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
 	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 	if (dir.cd("podcasts"))
 	{
-		QStringList filter(e->guid + ".*");
+		QStringList filter(sha1(e->guid) + ".*");
 		QStringList list = dir.entryList(filter);
 
 		if (list.size())
@@ -175,7 +182,8 @@ QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
 		dir.cd("podcasts/download");
 	}
 
-	return QString("%1%2").arg(dir.absoluteFilePath(e->guid)).arg(ext);
+	//Hash the guid as not all guids use filename-friendly formats (e.g. URLs)
+	return QString("%1%2").arg(dir.absoluteFilePath(sha1(e->guid))).arg(ext);
 }
 
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
@@ -205,7 +213,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 			d.cd("podcasts");
 		}
 
-		QString outName = QString("%2.%3").arg(e->guid).arg(ext);
+		QString outName = QString("%2.%3").arg(sha1(e->guid)).arg(ext);
 		
 		info->handle->close();
 		info->handle->rename(d.absoluteFilePath(outName));
