@@ -1,5 +1,6 @@
 #include "FeedParser.h"
 
+#include <QDebug>
 #include <QXmlStreamReader>
 
 #include "Feed.h"
@@ -27,12 +28,10 @@ FeedParser::~FeedParser()
 {
 }
 
-void FeedParser::parseFromRemoteFile(QString& url)
+void FeedParser::queueFeedDownload(const QString& url)
 {
-	_reply = _netMgr.get(QNetworkRequest(QUrl(url)));
-
-	connect(_reply, &QNetworkReply::downloadProgress,
-		this, &FeedParser::_progressUpdated);
+	_parseQueue.push_back(url);
+	_parseNext();
 }
 
 void FeedParser::_parseOwnerData(QXmlStreamReader* xml, Feed* feed)
@@ -142,6 +141,7 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 		}
 	}
 
+	qDebug() << newEpisodes.size() << " eps retrieved for " << feed->title;
 	feed->episodes.append(newEpisodes);
 }
 
@@ -253,6 +253,22 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode,
 	return true;
 }
 
+void FeedParser::_parseFromRemoteFile(QString& url)
+{
+	_reply = _netMgr.get(QNetworkRequest(QUrl(url)));
+
+	connect(_reply, &QNetworkReply::downloadProgress,
+		this, &FeedParser::_progressUpdated);
+}
+
+void FeedParser::_parseNext()
+{
+	if (_reply || !_parseQueue.size()) return;
+	
+	QString next = _parseQueue.takeFirst();
+	_parseFromRemoteFile(next);
+}
+
 void FeedParser::_downloadFinished(QNetworkReply* reply)
 {
 	if (reply->error())
@@ -286,6 +302,9 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 	
 	reply->disconnect(this);
 	reply->deleteLater();
+
+	_reply = nullptr;
+	_parseNext();
 }
 
 void FeedParser::_progressUpdated(qint64 received, qint64 total)

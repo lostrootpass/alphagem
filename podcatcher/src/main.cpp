@@ -24,5 +24,7 @@ int main(int argc, char *argv[])
 	//...avoid showing the UI until here, to avoid unresponsiveness.
 	w.show();
 
+	core.feedCache()->refreshAll();
+
 	return a.exec();
 }

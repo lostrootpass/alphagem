@@ -19,6 +19,7 @@ public:
 	Episode* getEpisode(const QString& guid);
 	void loadFromDisk();
 	void refresh(int index);
+	void refreshAll();
 	void removeFeed(int index);
 	void saveToDisk();
 
@@ -30,7 +31,7 @@ signals:
 
 public slots:
 	void onAboutToQuit();
-	void onFeedAdded(QString& url);
+	void onFeedAdded(const QString& url);
 	void onFeedRetrieved(Feed* feed);
 
 

@@ -120,7 +120,7 @@ void FeedCache::onAboutToQuit()
 	saveToDisk();
 }
 
-void FeedCache::onFeedAdded(QString& url)
+void FeedCache::onFeedAdded(const QString& url)
 {
 	if (!_feedParser)
 	{
@@ -130,7 +130,7 @@ void FeedCache::onFeedAdded(QString& url)
 			this, &FeedCache::onFeedRetrieved);
 	}
 
-	_feedParser->parseFromRemoteFile(url);
+	_feedParser->queueFeedDownload(url);
 }
 
 void FeedCache::onFeedRetrieved(Feed*)
@@ -167,6 +167,14 @@ void FeedCache::refresh(int index)
 	if (index < 0 || index >= _feeds.size()) return;
 
 	onFeedAdded(_feeds[index]->feedUrl);
+}
+
+void FeedCache::refreshAll()
+{
+	for (const Feed* f : _feeds)
+	{
+		onFeedAdded(f->feedUrl);
+	}
 }
 
 void FeedCache::removeFeed(int index)
