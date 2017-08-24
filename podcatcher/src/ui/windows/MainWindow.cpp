@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 
+#include <QFileDialog>
 #include <QProgressBar>
 
 #include "AddFeedWindow.h"
@@ -76,6 +77,34 @@ void MainWindow::on_actionAdd_Feed_triggered()
 		_core->feedCache(), &FeedCache::onFeedAdded);
 
 	feedWindow->show();
+}
+
+void MainWindow::on_actionExport_OPML_triggered()
+{
+	QFileDialog* dialog = new QFileDialog(this);
+	dialog->setModal(true);
+	dialog->setDefaultSuffix(".opml");
+	dialog->setFileMode(QFileDialog::AnyFile);
+	dialog->setNameFilter(tr("OPML Files (*.opml)"));
+	dialog->setWindowTitle(tr("Export OPML"));
+	
+	connect(dialog, &QFileDialog::fileSelected,
+		_core->feedCache(), &FeedCache::onOPMLExported);
+
+	dialog->show();
+}
+
+void MainWindow::on_actionImport_OPML_triggered()
+{
+	QFileDialog* dialog = new QFileDialog(this);
+	dialog->setModal(true);
+	dialog->setNameFilter(tr("OPML Files (*.opml)"));
+	dialog->setWindowTitle(tr("Import OPML"));
+
+	connect(dialog, &QFileDialog::fileSelected, 
+		_core->feedCache(), &FeedCache::onOPMLImported);
+
+	dialog->show();
 }
 
 void MainWindow::on_actionQuit_triggered()

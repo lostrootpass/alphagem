@@ -216,6 +216,15 @@
     <ClCompile Include="src\ui\models\FeedItemDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_OPMLParser.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_OPMLParser.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\feeds\OPMLParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\ui\windows\MainWindow.h">
@@ -294,6 +303,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="src\ui\models\FeedItemDelegate.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\core\feeds\OPMLParser.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -100,6 +100,9 @@
     </property>
     <addaction name="actionAdd_Feed"/>
     <addaction name="separator"/>
+    <addaction name="actionImport_OPML"/>
+    <addaction name="actionExport_OPML"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -172,6 +175,16 @@
    </property>
    <property name="toolTip">
     <string>Playlist</string>
+   </property>
+  </action>
+  <action name="actionImport_OPML">
+   <property name="text">
+    <string>&amp;Import OPML</string>
+   </property>
+  </action>
+  <action name="actionExport_OPML">
+   <property name="text">
+    <string>&amp;Export OPML</string>
    </property>
   </action>
  </widget>

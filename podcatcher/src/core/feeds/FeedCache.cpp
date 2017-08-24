@@ -5,7 +5,9 @@
 #include <QStandardPaths>
 
 #include "FeedParser.h"
-#include "Version.h"
+#include "OPMLParser.h"
+
+#include "core/Version.h"
 
 QDataStream& operator<<(QDataStream& stream, const Episode* episode)
 {
@@ -47,7 +49,8 @@ QDataStream& operator>>(QDataStream& stream, Episode*& episode)
 
 QDataStream& operator<<(QDataStream& stream, const Feed* feed)
 {
-	stream << feed->feedUrl << feed->title << feed->description << feed->imageUrl;
+	stream << feed->feedUrl << feed->title << feed->link;
+	stream << feed->description << feed->imageUrl;
 	stream << feed->creator << feed->ownerName << feed->ownerEmail;
 	stream << feed->lastUpdated << feed->episodes << feed->categories;
 	stream << feed->isExplicit;
@@ -61,6 +64,7 @@ QDataStream& operator >> (QDataStream& stream, Feed*& feed)
 
 	stream >> feed->feedUrl;
 	stream >> feed->title;
+	stream >> feed->link;
 	stream >> feed->description;
 	stream >> feed->imageUrl;
 	stream >> feed->creator;
@@ -138,6 +142,25 @@ void FeedCache::onFeedRetrieved(Feed*)
 	saveToDisk();
 
 	emit feedListUpdated();
+}
+
+void FeedCache::onOPMLExported(const QString& fileName)
+{
+	OPMLParser opml(this);
+	opml.save(fileName, _feeds);
+}
+
+void FeedCache::onOPMLImported(const QString& fileName)
+{
+	OPMLParser opml(this);
+	opml.parse(fileName);
+
+	const QVector<QString>& feedURLs = opml.urls();
+
+	for (const QString& url : feedURLs)
+	{
+		onFeedAdded(url);
+	}
 }
 
 void FeedCache::loadFromDisk()

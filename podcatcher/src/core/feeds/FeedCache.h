@@ -33,6 +33,8 @@ public slots:
 	void onAboutToQuit();
 	void onFeedAdded(const QString& url);
 	void onFeedRetrieved(Feed* feed);
+	void onOPMLExported(const QString& fileName);
+	void onOPMLImported(const QString& fileName);
 
 
 private:
