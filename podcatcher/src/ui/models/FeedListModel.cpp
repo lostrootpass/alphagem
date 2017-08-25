@@ -67,6 +67,10 @@ QVariant FeedListModel::data(const QModelIndex &index, int role) const
 
 		return *p;
 	}
+	else if (role == FeedDataRole::UnplayedEpCount)
+	{
+		return feed->countUnplayed();
+	}
 	
 	return QVariant();
 }

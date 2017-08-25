@@ -64,6 +64,20 @@ struct Feed
 	QVector<QString> categories;
 
 	bool isExplicit;
+
+	int countUnplayed()
+	{
+		//Could probably cache this, but need to handle updates from the eps.
+		int c = 0;
+
+		for (const Episode* e : episodes)
+		{
+			if (!e->listened)
+				++c;
+		}
+
+		return c;
+	}
 };
 
 #endif

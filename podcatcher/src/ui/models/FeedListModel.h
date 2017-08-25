@@ -6,6 +6,11 @@
 
 #include "core/Core.h"
 
+enum FeedDataRole
+{
+	UnplayedEpCount = Qt::UserRole + 1
+};
+
 class FeedListModel : public QAbstractListModel
 {
 	Q_OBJECT
