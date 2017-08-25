@@ -13,6 +13,9 @@ EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObjec
 {
 	connect(_core->defaultPlaylist(), &Playlist::playlistUpdated,
 		this, &EpisodeListModel::onPlaylistChanged);
+
+	connect(_core->feedCache(), &FeedCache::feedListUpdated,
+		this, &EpisodeListModel::onFeedUpdated);
 }
 
 EpisodeListModel::~EpisodeListModel()
@@ -54,6 +57,11 @@ Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 		return _core->feedCache()->episodes(_feedIndex)[_epCount() - 1 - index.row()];
 		break;
 	}
+}
+
+void EpisodeListModel::onFeedUpdated()
+{
+	refreshList();
 }
 
 void EpisodeListModel::onPlaylistChanged()
