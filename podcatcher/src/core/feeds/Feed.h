@@ -18,10 +18,9 @@ public:
 	QString mediaFormat;
 	QString shareLink;
 	QString author;
+	QString published;
 
 	QVector<QString> categories;
-
-	std::time_t published;
 
 	qint32 duration;
 
@@ -59,7 +58,7 @@ struct Feed
 	QString ownerName;
 	QString ownerEmail;
 
-	std::time_t lastUpdated;
+	QString lastUpdated;
 
 	QVector<Episode*> episodes;
 	QVector<QString> categories;

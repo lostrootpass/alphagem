@@ -7,6 +7,7 @@
 #include <QDateTime>
 
 #include "core/AudioPlayer.h"
+#include "core/TimeUtil.h"
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/Feed.h"
 
@@ -36,21 +37,14 @@ void EpisodeListItemWidget::refresh()
 
 	if (_episode->description != "")
 		ui.descLabel->setText(_episode->description);
+	else
+	{
+		QString default = 
+			tr("<span style='font-style: italic'>No description.</span>");
+		ui.descLabel->setText(default);
+	}
 
-	struct tm now = { 0 };
-	std::time_t t = time(0);
-	localtime_s(&now, &t);
-
-	struct tm episode = { 0 };
-	localtime_s(&episode, &_episode->published);
-
-	QString format(tr("ddd dd MMM"));
-	if (now.tm_year > episode.tm_year)
-		format = QString(tr("ddd dd MMM yyyy"));
-
-	QString s = QDateTime::fromTime_t(_episode->published).toString(format);
-
-	ui.dateLabel->setText(s);
+	ui.dateLabel->setText(commonTimestamp(_episode->published));
 
 	QString listenText("");
 	if (!_episode->listened)

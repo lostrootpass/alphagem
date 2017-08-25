@@ -4,6 +4,7 @@
 #include <QLabel>
 
 #include "core/Core.h"
+#include "core/TimeUtil.h"
 #include "core/feeds/Feed.h"
 
 EpisodeDetailWidget::EpisodeDetailWidget(QWidget *parent)
@@ -29,8 +30,14 @@ void EpisodeDetailWidget::setEpisode(Episode* e)
 	_episode = e;
 	ui.title->setText(e->title);
 
-	if(e->description != "")
-		ui.description->setText(e->description);
+	if (_episode->description != "")
+		ui.description->setText(_episode->description);
+	else
+	{
+		QString default =
+			tr("<span style='font-style: italic'>No description.</span>");
+		ui.description->setText(default);
+	}
 
 	ui.newLabel->setVisible(!e->listened);
 
@@ -42,61 +49,23 @@ void EpisodeDetailWidget::setEpisode(Episode* e)
 
 void EpisodeDetailWidget::_setByline()
 {
-	struct tm now = { 0 };
-	std::time_t t = time(0);
-	gmtime_s(&now, &t);
+	QDateTime dt = parseDateTime(_episode->published);
+	QDateTime now = QDateTime::currentDateTimeUtc();
+	QString timeAgo = relativeTimeBetween(now, dt);
 
-	struct tm episode = { 0 };
-	gmtime_s(&episode, &_episode->published);
-
-	QString dateFormat(tr("dddd dd MMM HH:mm"));
-	if (now.tm_year > episode.tm_year)
-		dateFormat = QString(tr("ddd dd MMM yyyy"));
-
-	QDateTime pub = QDateTime::fromTime_t(_episode->published);
-	QString s = pub.toString(dateFormat);
-
-	QString timeAgo("");
-	{
-		QDateTime cur = QDateTime::fromTime_t(t);
-		qint64 secs = pub.secsTo(cur);
-		qint64 mins = secs / 60;
-		qint64 hours = mins / 60;
-		qint64 days = hours / 24;
-
-		if (days > 0)
-		{
-			if (days > 7)
-			{
-				timeAgo = QString("%1w %2d ago")
-					.arg(days / 7).arg(days % 7);
-			}
-			else
-			{
-				hours -= (days * 24);
-				timeAgo = QString("%1d %2h ago")
-					.arg(days).arg((hours));
-			}
-		}
-		else
-		{
-			mins -= (hours * 60);
-			timeAgo = QString("%1h %2m ago").arg(hours).arg(mins);
-		}
-	}
-
-	QString format = QString(tr("%1 (%2)")).arg(s).arg(timeAgo);
+	QString timestamp = commonTimestamp(_episode->published);
+	timestamp = QString(tr("%1 (%2)")).arg(timestamp).arg(timeAgo);
 
 	QString bylineText("");
 	if (_episode->author == "")
 	{
 		bylineText = QString(tr("Posted on %2"))
-			.arg(format);
+			.arg(timestamp);
 	}
 	else
 	{
 		bylineText = QString(tr("Posted by %1 on %2"))
-			.arg(_episode->author).arg(format);
+			.arg(_episode->author).arg(timestamp);
 	}
 
 	ui.byline->setText(bylineText);
@@ -114,6 +83,9 @@ void EpisodeDetailWidget::_setMetadata()
 		QString link = linkFormat.arg(_episode->shareLink);
 		metatext += metaFormat.arg(tr("Link")).arg(link);
 	}
+
+	metatext += metaFormat
+		.arg(tr("Published")).arg(_episode->published);
 
 	ui.metadata->setText(metatext);
 }

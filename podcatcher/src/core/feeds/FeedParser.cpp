@@ -105,7 +105,7 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 			}
 			else if (n == "lastBuildDate")
 			{
-				feed->lastUpdated = toTime(xml->readElementText());
+				feed->lastUpdated = xml->readElementText();
 			}
 			else if (n == "itunes:explicit")
 			{
@@ -183,7 +183,7 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode,
 			}
 			else if (n == "pubDate")
 			{
-				episode->published = toTime(xml->readElementText());
+				episode->published = xml->readElementText();
 			}
 			else if (n == "itunes:duration")
 			{
