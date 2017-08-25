@@ -231,6 +231,24 @@
     <ClCompile Include="GeneratedFiles\Release\moc_EpisodeListItemWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_EpisodeDetailWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_EpisodeDetailWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\widgets\EpisodeDetailWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_EpisodeControlWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_EpisodeControlWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\widgets\EpisodeControlWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\ui\windows\MainWindow.h">
@@ -290,9 +308,6 @@
     <CustomBuild Include="src\core\ImageDownloader.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="Resources\ui\widgets\EpisodeDetailWidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="src\ui\widgets\PlaybackSlider.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -317,6 +332,21 @@
     <CustomBuild Include="src\ui\widgets\EpisodeListItemWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Resources\ui\widgets\EpisodeListItemWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\ui\widgets\EpisodeDetailWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Resources\ui\widgets\EpisodeDetailWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\ui\widgets\EpisodeControlWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Resources\ui\widgets\EpisodeControlWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h">
@@ -334,11 +364,17 @@
     <ClInclude Include="GeneratedFiles\ui_FeedDetailWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_EpisodeListItemWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_EpisodeDetailWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\Version.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GeneratedFiles\ui_EpisodeControlWidget.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -66,6 +66,10 @@ void MainWindow::init()
 	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView,
 		*_core, -1, this);
 	ui.episodeListView->setModel(model);
+	connect(ui.episodeListView, &QListView::doubleClicked,
+		this, &MainWindow::onEpisodeSelected);
+
+	ui.episodeDetailWidget->init(_core);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -184,6 +188,13 @@ void MainWindow::onDownloadProgress(const Episode& e, qint64 bytesDownloaded)
 	QString message = QString(tr("Downloading... (%1KB) [%2]"))
 		.arg(bytesDownloaded / 1024).arg(e.title);
 	statusBar()->showMessage(message);
+}
+
+void MainWindow::onEpisodeSelected(const QModelIndex& index)
+{
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	ui.episodeDetailWidget->setEpisode(elm->getEpisode(index));
+	ui.stackedWidget->setCurrentWidget(ui.episodeDetailLayout);
 }
 
 void MainWindow::onStatusBarUpdate(QString& text)

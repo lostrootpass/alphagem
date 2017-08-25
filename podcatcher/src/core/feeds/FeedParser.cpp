@@ -244,6 +244,15 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode,
 			{
 				episode->shareLink = xml->readElementText();
 			}
+			else if (n == "itunes:author")
+			{
+				episode->author = xml->readElementText();
+			}
+			else if (n == "media:credit")
+			{
+				if (xml->attributes().value("role") == "author")
+					episode->author = xml->readElementText();
+			}
 		}
 	}
 

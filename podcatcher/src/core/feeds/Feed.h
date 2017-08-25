@@ -17,6 +17,7 @@ public:
 	QString guid;
 	QString mediaFormat;
 	QString shareLink;
+	QString author;
 
 	QVector<QString> categories;
 

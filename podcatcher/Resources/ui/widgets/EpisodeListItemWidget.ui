@@ -69,7 +69,7 @@
    <item>
     <widget class="QLabel" name="descLabel">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -94,33 +94,19 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="buttonLayout">
-     <item>
-      <widget class="QPushButton" name="playButton">
-       <property name="text">
-        <string>Play</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="downloadButton">
-       <property name="text">
-        <string>Download</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="addToPlaylistButton">
-       <property name="text">
-        <string>&amp;Add to Playlist</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="EpisodeControlWidget" name="controlWidget" native="true"/>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>EpisodeControlWidget</class>
+   <extends>QWidget</extends>
+   <header>ui/widgets/episodecontrolwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -20,33 +20,16 @@ public:
 	EpisodeListItemWidget(const EpisodeListModel& m, Core& core, const QModelIndex& idx, QWidget *parent = Q_NULLPTR);
 	~EpisodeListItemWidget();
 
-	void connectToCache();
-
 	void refresh();
 
-signals:
-	void download(const QModelIndex& index);
-	void play(Episode* e);
-	
-public slots:
-	void onDownloadProgressUpdate(const Episode& e, qint64 progress);
-	void onDownloadFinished(const Episode& e);
-
 private:
-	Ui::EpisodeDetailWidget ui;
+	Ui::EpisodeListItemWidget ui;
 	QModelIndex _index;
 
 	const EpisodeListModel* _model;
 	Episode* _episode;
 	Core* _core;
 
-	void _setDownloadButtonStatus();
-
 private slots:
-	void on_addToPlaylistButton_clicked();
-	void on_downloadButton_clicked();
-	void on_playButton_clicked();
-
-	void onEpisodeChanged(const Episode* e);
 	void onEpisodeUpdated();
 };

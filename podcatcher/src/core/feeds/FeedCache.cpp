@@ -18,6 +18,7 @@ QDataStream& operator<<(QDataStream& stream, const Episode* episode)
 	stream << episode->guid;
 	stream << episode->mediaFormat;
 	stream << episode->shareLink;
+	stream << episode->author;
 	stream << episode->categories;
 	stream << episode->published;
 	stream << episode->duration;
@@ -38,6 +39,7 @@ QDataStream& operator>>(QDataStream& stream, Episode*& episode)
 	stream >> episode->guid;
 	stream >> episode->mediaFormat;
 	stream >> episode->shareLink;
+	stream >> episode->author;
 	stream >> episode->categories;
 	stream >> episode->published;
 	stream >> episode->duration;

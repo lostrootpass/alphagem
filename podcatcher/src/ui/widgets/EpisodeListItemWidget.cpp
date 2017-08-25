@@ -21,22 +21,13 @@ EpisodeListItemWidget::EpisodeListItemWidget(const EpisodeListModel& m,
 	connect(_episode, &Episode::updated, 
 		this, &EpisodeListItemWidget::onEpisodeUpdated);
 
+	ui.controlWidget->init(&core);
+
 	refresh();
 }
 
 EpisodeListItemWidget::~EpisodeListItemWidget()
 {
-}
-
-void EpisodeListItemWidget::connectToCache()
-{
-	EpisodeCache* cache = _core->episodeCache();
-
-	connect(cache, &EpisodeCache::downloadProgressUpdated,
-		this, &EpisodeListItemWidget::onDownloadProgressUpdate);
-
-	connect(cache, &EpisodeCache::downloadComplete,
-		this, &EpisodeListItemWidget::onDownloadFinished);
 }
 
 void EpisodeListItemWidget::refresh()
@@ -66,134 +57,7 @@ void EpisodeListItemWidget::refresh()
 		listenText = QString(tr("New"));
 	ui.listenStatusLabel->setText(listenText);
 
-	if (_episode->duration > 0)
-	{
-		QString formatString = QString(tr("Play (%1:%2)"))
-			.arg(_episode->duration / 60, 2, 10, QChar('0'))
-			.arg(_episode->duration % 60, 2, 10, QChar('0'));
-
-		ui.playButton->setText(formatString);
-	}
-	else
-	{
-		ui.playButton->setText(tr("Play"));
-	}
-
-	if (_core->defaultPlaylist()->contains(_episode))
-		ui.addToPlaylistButton->setText(tr("Remove From Playlist"));
-	else
-		ui.addToPlaylistButton->setText(tr("Add To Playlist"));
-
-	_setDownloadButtonStatus();
-}
-
-void EpisodeListItemWidget::onDownloadProgressUpdate(const Episode& e, qint64)
-{
-	if (&e == _episode)
-	{
-		ui.downloadButton->setText(tr("Downloading..."));
-		ui.downloadButton->setEnabled(false);
-	}
-}
-
-void EpisodeListItemWidget::onDownloadFinished(const Episode& e)
-{
-	if (&e == _episode)
-	{
-		_core->episodeCache()->disconnect(this);
-
-		refresh();
-	}
-}
-
-void EpisodeListItemWidget::_setDownloadButtonStatus()
-{
-	DownloadStatus status = _core->episodeCache()->downloadStatus(*_episode);
-
-	switch (status)
-	{
-	case DownloadStatus::DownloadComplete:
-		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Downloaded"));
-		break;
-	case DownloadStatus::DownloadInProgress:
-		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Downloading..."));
-		break;
-	case DownloadStatus::DownloadInQueue:
-		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Download pending"));
-		break;
-	case DownloadStatus::DownloadNotInQueue:
-		{
-			ui.downloadButton->setEnabled(true);
-
-			qint64 bytesSoFar = EpisodeCache::getPartialDownloadSize(_episode);
-			if (bytesSoFar != -1)
-				ui.downloadButton->setText(tr("Resume download"));
-			else
-				ui.downloadButton->setText(tr("Download"));
-		}
-		
-		break;
-	}
-}
-
-void EpisodeListItemWidget::on_addToPlaylistButton_clicked()
-{
-	Playlist* p = _core->defaultPlaylist();
-	
-	if (!p->contains(_episode))
-	{
-		p->add(_episode);
-
-		connect(_core->audioPlayer(), &AudioPlayer::episodeChanged,
-			this, &EpisodeListItemWidget::onEpisodeChanged);
-	}
-	else
-	{
-		p->remove(_episode);
-
-		_core->audioPlayer()->disconnect(this);
-	}
-
-	refresh();
-}
-
-void EpisodeListItemWidget::on_downloadButton_clicked()
-{
-	emit download(_index);
-
-	_core->episodeCache()->enqueueDownload(_episode);
-
-	refresh();
-}
-
-void EpisodeListItemWidget::on_playButton_clicked()
-{
-	emit play(_episode);
-
-	const QList<Episode*>& list = _core->defaultPlaylist()->episodes;
-	if (list.size() && list.first() == _episode)
-	{
-		_core->audioPlayer()->nextEpisode();
-	}
-	else
-	{
-		_core->defaultPlaylist()->emplaceFront(_episode);
-		_core->audioPlayer()->nextEpisode();
-	}
-
-	refresh();
-}
-
-void EpisodeListItemWidget::onEpisodeChanged(const Episode* e)
-{
-	if (e == _episode)
-	{
-		_core->audioPlayer()->disconnect(this);
-		refresh();
-	}
+	ui.controlWidget->update(_episode);
 }
 
 void EpisodeListItemWidget::onEpisodeUpdated()
