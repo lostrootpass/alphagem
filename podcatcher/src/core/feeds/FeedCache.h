@@ -15,9 +15,11 @@ public:
 	FeedCache(QObject *parent);
 	~FeedCache();
 
+	Feed* feedForEpisode(const Episode* e);
 	Feed* feedForUrl(const QString& url);
 	Episode* getEpisode(const QString& guid);
 	void loadFromDisk();
+	void refresh(Feed* feed);
 	void refresh(int index);
 	void refreshAll();
 	void removeFeed(int index);

@@ -6,6 +6,7 @@
 #include "ui_FeedDetailWidget.h"
 
 class Core;
+struct Feed;
 
 class QNetworkReply;
 
@@ -19,6 +20,8 @@ public:
 
 	void setCore(Core* c);
 
+	void setFeed(Feed* f);
+
 public slots:
 	void onFeedSelected(const QModelIndex& index);
 
@@ -26,7 +29,7 @@ private:
 	Ui::FeedDetailWidget ui;
 
 	Core* _core;
-	int _feedIndex;
+	Feed* _feed;
 
 private slots:
 	void on_refreshButton_clicked();

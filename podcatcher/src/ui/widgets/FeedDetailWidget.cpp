@@ -22,22 +22,36 @@ void FeedDetailWidget::setCore(Core* core)
 		this, &FeedDetailWidget::onFeedListUpdated);
 }
 
+void FeedDetailWidget::setFeed(Feed* f)
+{
+	if (_feed == f)
+		return;
+
+	if (f == nullptr)
+	{
+		_feed = nullptr;
+		setVisible(false);
+		return;
+	}
+	
+	setVisible(true);
+	_feed = f;
+
+	ui.titleLabel->setText(_feed->title);
+	ui.descriptionLabel->setText(_feed->description);
+	ui.feedIcon->clear();
+	ui.refreshButton->setVisible(true);
+
+	_core->imageDownloader()->getImage(QUrl(_feed->imageUrl), ui.feedIcon);
+}
+
 void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 {
 	QVector<Feed*>& feeds = _core->feedCache()->feeds();
 
 	if (!feeds.size()) return;
 
-	_feedIndex = index.row();
-
-	Feed* feed = feeds[_feedIndex];
-
-	ui.titleLabel->setText(feed->title);
-	ui.descriptionLabel->setText(feed->description);
-	ui.feedIcon->clear();
-	ui.refreshButton->setVisible(true);
-
-	_core->imageDownloader()->getImage(QUrl(feed->imageUrl), ui.feedIcon);
+	setFeed(feeds[index.row()]);
 }
 
 void FeedDetailWidget::on_refreshButton_clicked()
@@ -45,7 +59,7 @@ void FeedDetailWidget::on_refreshButton_clicked()
 	ui.refreshButton->setEnabled(false);
 	ui.refreshButton->setText(tr("Refreshing..."));
 
-	_core->feedCache()->refresh(_feedIndex);
+	_core->feedCache()->refresh(_feed);
 }
 
 void FeedDetailWidget::onFeedListUpdated()

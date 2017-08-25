@@ -66,6 +66,9 @@ void MainWindow::init()
 	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView,
 		*_core, -1, this);
 	ui.episodeListView->setModel(model);
+	ui.episodeListView->setMouseTracking(true);
+	connect(ui.episodeListView->selectionModel(), &QItemSelectionModel::currentChanged,
+		this, &MainWindow::onEpisodeHighlighted);
 	connect(ui.episodeListView, &QListView::doubleClicked,
 		this, &MainWindow::onEpisodeSelected);
 
@@ -138,7 +141,17 @@ void MainWindow::on_actionDownloads_triggered()
 	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
 	elm->showDownloadList();
 
-	ui.feedDetailWidget->setVisible(true);
+	const QList<DownloadInfo*> dl = _core->episodeCache()->downloadList();
+	if (!dl.size())
+	{
+		ui.feedDetailWidget->setFeed(nullptr);
+	}
+	else
+	{
+		Feed* f = _core->feedCache()->feedForEpisode(dl.first()->episode);
+		ui.feedDetailWidget->setFeed(f);
+	}
+
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
 
@@ -153,7 +166,17 @@ void MainWindow::on_actionPlaylist_triggered()
 	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
 	elm->showPlaylist();
 
-	ui.feedDetailWidget->setVisible(true);
+	Playlist* p = _core->defaultPlaylist();
+	if (!p->episodes.size())
+	{
+		ui.feedDetailWidget->setFeed(nullptr);
+	}
+	else
+	{
+		Feed* f = _core->feedCache()->feedForEpisode(p->episodes.first());
+		ui.feedDetailWidget->setFeed(f);
+	}
+
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
 
@@ -188,6 +211,13 @@ void MainWindow::onDownloadProgress(const Episode& e, qint64 bytesDownloaded)
 	QString message = QString(tr("Downloading... (%1KB) [%2]"))
 		.arg(bytesDownloaded / 1024).arg(e.title);
 	statusBar()->showMessage(message);
+}
+
+void MainWindow::onEpisodeHighlighted(const QModelIndex& index)
+{
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	Episode* e = elm->getEpisode(index);
+	ui.feedDetailWidget->setFeed(_core->feedCache()->feedForEpisode(e));
 }
 
 void MainWindow::onEpisodeSelected(const QModelIndex& index)

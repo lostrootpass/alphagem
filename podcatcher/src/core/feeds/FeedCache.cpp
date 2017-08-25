@@ -93,6 +93,20 @@ FeedCache::~FeedCache()
 	}
 }
 
+Feed* FeedCache::feedForEpisode(const Episode* e)
+{
+	for (Feed* f : _feeds)
+	{
+		for (const Episode* ep : f->episodes)
+		{
+			if (ep == e)
+				return f;
+		}
+	}
+
+	return nullptr;
+}
+
 Feed* FeedCache::feedForUrl(const QString& url)
 {
 	for (Feed* f : _feeds)
@@ -192,6 +206,11 @@ void FeedCache::refresh(int index)
 	if (index < 0 || index >= _feeds.size()) return;
 
 	onFeedAdded(_feeds[index]->feedUrl);
+}
+
+void FeedCache::refresh(Feed* feed)
+{
+	onFeedAdded(feed->feedUrl);
 }
 
 void FeedCache::refreshAll()
