@@ -55,6 +55,8 @@ public:
 	static QUrl getEpisodeUrl(const Episode* e);
 	static QString getTmpDownloadFilename(const Episode* e);
 
+	void cancelDownload(Episode* e);
+
 	bool downloadInProgress() { return (_downloads.size()); }
 	const QList<DownloadInfo*>& downloadList() { return _downloads; }
 	DownloadStatus downloadStatus(const Episode& e) const;
@@ -66,6 +68,7 @@ signals:
 	void downloadComplete(const Episode& e);
 	void downloadFailed(const Episode& e, QString error);
 	void downloadProgressUpdated(const Episode& e, qint64 bytesDownloaded);
+	void downloadQueueUpdated();
 
 private slots:
 	void _downloadFinished(QNetworkReply* reply);

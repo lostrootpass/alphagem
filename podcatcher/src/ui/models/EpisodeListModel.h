@@ -50,6 +50,7 @@ private:
 	EpisodeListItemWidget* _getWidget(const QModelIndex& index) const;
 
 private slots:
+	void onDownloadQueueUpdated();
 	void onFeedUpdated();
 	void onPlaylistChanged();
 

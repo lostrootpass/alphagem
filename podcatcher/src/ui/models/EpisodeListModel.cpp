@@ -16,6 +16,9 @@ EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObjec
 
 	connect(_core->feedCache(), &FeedCache::feedListUpdated,
 		this, &EpisodeListModel::onFeedUpdated);
+
+	connect(_core->episodeCache(), &EpisodeCache::downloadQueueUpdated,
+		this, &EpisodeListModel::onDownloadQueueUpdated);
 }
 
 EpisodeListModel::~EpisodeListModel()
@@ -57,6 +60,12 @@ Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 		return _core->feedCache()->episodes(_feedIndex)[_epCount() - 1 - index.row()];
 		break;
 	}
+}
+
+void EpisodeListModel::onDownloadQueueUpdated()
+{
+	if (_listType == EpisodeListType::Downloads)
+		refreshList();
 }
 
 void EpisodeListModel::onFeedUpdated()

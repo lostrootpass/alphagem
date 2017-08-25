@@ -70,8 +70,8 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 		ui.downloadButton->setText(tr("Downloading..."));
 		break;
 	case DownloadStatus::DownloadInQueue:
-		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Download pending"));
+		ui.downloadButton->setEnabled(true);
+		ui.downloadButton->setText(tr("Cancel download"));
 		break;
 	case DownloadStatus::DownloadNotInQueue:
 	{
@@ -114,7 +114,11 @@ void EpisodeControlWidget::on_addToPlaylistButton_clicked()
 
 void EpisodeControlWidget::on_downloadButton_clicked()
 {
-	_core->episodeCache()->enqueueDownload(_episode);
+	DownloadStatus status = _core->episodeCache()->downloadStatus(*_episode);
+	if (status == DownloadStatus::DownloadNotInQueue)
+		_core->episodeCache()->enqueueDownload(_episode);
+	else if (status == DownloadStatus::DownloadInQueue)
+		_core->episodeCache()->cancelDownload(_episode);
 
 	update(_episode);
 }

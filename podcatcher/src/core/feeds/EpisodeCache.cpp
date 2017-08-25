@@ -145,6 +145,8 @@ void EpisodeCache::enqueueDownload(Episode* e)
 
 	_downloads.push_back(info);
 
+	emit downloadQueueUpdated();
+
 	if (_downloads.size() == 1)
 		downloadNext();
 }
@@ -186,6 +188,28 @@ QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
 	return QString("%1%2").arg(dir.absoluteFilePath(sha1(e->guid))).arg(ext);
 }
 
+void EpisodeCache::cancelDownload(Episode* e)
+{
+	DownloadInfo* toRemove = nullptr;
+
+	for (DownloadInfo* d : _downloads)
+	{
+		if (d->episode == e)
+		{
+			toRemove = d;
+			break;
+		}
+	}
+
+	if (toRemove)
+	{
+		delete toRemove;
+		_downloads.removeOne(toRemove);
+
+		emit downloadQueueUpdated();
+	}
+}
+
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 {
 	DownloadInfo* info = _downloads.first();
@@ -194,6 +218,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 	if (reply->error())
 	{
 		emit downloadFailed(*e, reply->errorString());
+		emit downloadQueueUpdated();
 	}
 	else
 	{
@@ -219,6 +244,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 		info->handle->rename(d.absoluteFilePath(outName));
 		
 		emit downloadComplete(*e);
+		emit downloadQueueUpdated();
 	}
 
 	info->reply->disconnect(this);
