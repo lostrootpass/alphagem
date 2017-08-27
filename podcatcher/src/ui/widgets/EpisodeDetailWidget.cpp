@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <QLabel>
+#include <QToolTip>
 
 #include "core/Core.h"
 #include "core/TimeUtil.h"
@@ -12,6 +13,9 @@ EpisodeDetailWidget::EpisodeDetailWidget(QWidget *parent)
 {
 	ui.setupUi(this);
 	ui.metadata->setAlignment(Qt::AlignTop);
+
+	connect(ui.description, &QLabel::linkHovered,
+		this, &EpisodeDetailWidget::onLinkHovered);
 }
 
 EpisodeDetailWidget::~EpisodeDetailWidget()
@@ -88,4 +92,9 @@ void EpisodeDetailWidget::_setMetadata()
 		.arg(tr("Published")).arg(_episode->published);
 
 	ui.metadata->setText(metatext);
+}
+
+void EpisodeDetailWidget::onLinkHovered(const QString& link)
+{
+	QToolTip::showText(QCursor::pos(), link);
 }

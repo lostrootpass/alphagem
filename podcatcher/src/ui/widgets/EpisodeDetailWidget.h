@@ -28,4 +28,7 @@ private:
 
 	void _setByline();
 	void _setMetadata();
+
+private slots:
+	void onLinkHovered(const QString& link);
 };
