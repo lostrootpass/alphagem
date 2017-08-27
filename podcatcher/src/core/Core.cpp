@@ -70,12 +70,14 @@ void Core::loadState()
 void Core::removeEpisode(Episode* e)
 {
 	defaultPlaylist()->remove(e);
-	episodeCache()->cancelDownload(e);
 
 	if (_audioPlayer->currentEpisode() == e)
 	{
 		_audioPlayer->getMediaPlayer()->stop();
 	}
+
+	episodeCache()->cancelDownload(e);
+	episodeCache()->deleteLocalFile(e);
 
 	delete e;
 }

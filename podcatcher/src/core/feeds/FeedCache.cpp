@@ -213,7 +213,6 @@ void FeedCache::_clearOldEpisodes(Feed* feed)
 
 		if (epStamp < threshold)
 		{
-			//TODO: also delete associated data.
 			_core->removeEpisode(e);
 			i = feed->episodes.erase(i);
 		}
