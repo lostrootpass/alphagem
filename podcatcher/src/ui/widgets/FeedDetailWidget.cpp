@@ -4,6 +4,8 @@
 #include "core/ImageDownloader.h"
 #include "core/feeds/FeedCache.h"
 
+#include "ui/widgets/FeedIconWidget.h"
+
 #include "ui/windows/FeedSettingsWindow.h"
 
 FeedDetailWidget::FeedDetailWidget(QWidget *parent)
@@ -11,6 +13,9 @@ FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 {
 	ui.setupUi(this);
 	ui.refreshButton->setVisible(false);
+
+	connect(ui.feedIcon, &FeedIconWidget::clicked,
+		this, &FeedDetailWidget::onIconClicked);
 }
 
 FeedDetailWidget::~FeedDetailWidget()
@@ -71,6 +76,11 @@ void FeedDetailWidget::on_settingsButton_clicked()
 	fsw->setWindowModality(Qt::ApplicationModal);
 	fsw->setWindowTitle(tr("Feed Settings"));
 	fsw->show();
+}
+
+void FeedDetailWidget::onIconClicked()
+{
+	emit iconClicked(_feed);
 }
 
 void FeedDetailWidget::onRefreshStarted(Feed*)

@@ -63,6 +63,8 @@ void MainWindow::init()
 	ui.feedDetailWidget->setCore(_core);
 	connect(ui.feedListView, &QListView::clicked,
 		ui.feedDetailWidget, &FeedDetailWidget::onFeedSelected);
+	connect(ui.feedDetailWidget, &FeedDetailWidget::iconClicked,
+		this, &MainWindow::onFeedJump);
 	ui.feedListView->addAction(ui.action_DeleteFeed);
 
 
@@ -77,6 +79,9 @@ void MainWindow::init()
 		this, &MainWindow::onEpisodeSelected);
 
 	ui.episodeDetailWidget->init(_core);
+
+	connect(ui.playbackControlWidget, &PlaybackControlWidget::episodeSelected,
+		this, &MainWindow::onEpisodeJump);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -234,11 +239,28 @@ void MainWindow::onEpisodeHighlighted(const QModelIndex& index)
 	ui.feedDetailWidget->setFeed(_core->feedCache()->feedForEpisode(e));
 }
 
+void MainWindow::onEpisodeJump(Episode* e)
+{
+	Feed* f = _core->feedCache()->feedForEpisode(e);
+	ui.feedDetailWidget->setFeed(f);
+	ui.feedDetailWidget->setVisible(true);
+	ui.episodeDetailWidget->setEpisode(e);
+	ui.stackedWidget->setCurrentWidget(ui.episodeDetailLayout);
+}
+
 void MainWindow::onEpisodeSelected(const QModelIndex& index)
 {
 	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
 	ui.episodeDetailWidget->setEpisode(elm->getEpisode(index));
 	ui.stackedWidget->setCurrentWidget(ui.episodeDetailLayout);
+}
+
+void MainWindow::onFeedJump(Feed* f)
+{
+	ui.feedDetailWidget->setFeed(f);
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	elm->setFeedIndex(_core->feedCache()->feeds().indexOf(f));
+	ui.stackedWidget->setCurrentWidget(ui.episodeListView);
 }
 
 void MainWindow::onStatusBarUpdate(QString& text)

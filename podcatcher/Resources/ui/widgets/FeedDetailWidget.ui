@@ -51,7 +51,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="feedIcon">
+    <widget class="FeedIconWidget" name="feedIcon">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -117,6 +117,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>FeedIconWidget</class>
+   <extends>QLabel</extends>
+   <header>ui/widgets/feediconwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

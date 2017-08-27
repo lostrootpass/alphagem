@@ -33,7 +33,7 @@ public slots:
 	void onPlayPauseToggle();
 
 signals:
-	void episodeChanged(const Episode* ep);
+	void episodeChanged(Episode* ep);
 	void finished();
 	void pauseStatusChanged(bool paused);
 

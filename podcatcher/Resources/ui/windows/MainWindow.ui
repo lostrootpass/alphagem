@@ -13,110 +13,114 @@
   <property name="windowTitle">
    <string>Podcatcher</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="FeedDetailWidget" name="feedDetailWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>200</width>
-        <height>0</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QStackedWidget" name="stackedWidget">
-        <property name="currentIndex">
-         <number>2</number>
-        </property>
-        <widget class="QWidget" name="feedListLayout">
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QListView" name="feedListView">
-            <property name="contextMenuPolicy">
-             <enum>Qt::ActionsContextMenu</enum>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectItems</enum>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>150</width>
-              <height>150</height>
-             </size>
-            </property>
-            <property name="verticalScrollMode">
-             <enum>QAbstractItemView::ScrollPerPixel</enum>
-            </property>
-            <property name="resizeMode">
-             <enum>QListView::Adjust</enum>
-            </property>
-            <property name="viewMode">
-             <enum>QListView::IconMode</enum>
-            </property>
-            <property name="uniformItemSizes">
-             <bool>true</bool>
-            </property>
-            <property name="selectionRectVisible">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
+   <widget class="QWidget" name="centralWidget">
+     <layout class="QVBoxLayout" name="centralLayout">
+       <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+             <widget class="FeedDetailWidget" name="feedDetailWidget" native="true">
+               <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                 </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                 <size>
+                   <width>200</width>
+                   <height>0</height>
+                 </size>
+               </property>
+             </widget>
+           </item>
+           <item>
+             <layout class="QVBoxLayout" name="verticalLayout">
+               <item>
+                 <widget class="QStackedWidget" name="stackedWidget">
+                   <property name="currentIndex">
+                     <number>2</number>
+                   </property>
+                   <widget class="QWidget" name="feedListLayout">
+                     <layout class="QVBoxLayout" name="verticalLayout_2">
+                       <item>
+                         <widget class="QListView" name="feedListView">
+                           <property name="contextMenuPolicy">
+                             <enum>Qt::ActionsContextMenu</enum>
+                           </property>
+                           <property name="editTriggers">
+                             <set>QAbstractItemView::AllEditTriggers</set>
+                           </property>
+                           <property name="selectionBehavior">
+                             <enum>QAbstractItemView::SelectItems</enum>
+                           </property>
+                           <property name="iconSize">
+                             <size>
+                               <width>150</width>
+                               <height>150</height>
+                             </size>
+                           </property>
+                           <property name="verticalScrollMode">
+                             <enum>QAbstractItemView::ScrollPerPixel</enum>
+                           </property>
+                           <property name="resizeMode">
+                             <enum>QListView::Adjust</enum>
+                           </property>
+                           <property name="viewMode">
+                             <enum>QListView::IconMode</enum>
+                           </property>
+                           <property name="uniformItemSizes">
+                             <bool>true</bool>
+                           </property>
+                           <property name="selectionRectVisible">
+                             <bool>true</bool>
+                           </property>
+                         </widget>
+                       </item>
+                     </layout>
+                   </widget>
+                   <widget class="QWidget" name="episodeListLayout">
+                     <layout class="QVBoxLayout" name="verticalLayout_3">
+                       <item>
+                         <widget class="QListView" name="episodeListView">
+                           <property name="enabled">
+                             <bool>true</bool>
+                           </property>
+                           <property name="resizeMode">
+                             <enum>QListView::Adjust</enum>
+                           </property>
+                         </widget>
+                       </item>
+                     </layout>
+                   </widget>
+                   <widget class="QWidget" name="episodeDetailLayout">
+                     <layout class="QVBoxLayout" name="verticalLayout_4">
+                       <item>
+                         <widget class="EpisodeDetailWidget" name="episodeDetailWidget" native="true">
+                           <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                             </sizepolicy>
+                           </property>
+                         </widget>
+                       </item>
+                     </layout>
+                   </widget>
+                 </widget>
+               </item>
+             </layout>
+           </item>
          </layout>
-        </widget>
-        <widget class="QWidget" name="episodeListLayout">
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QListView" name="episodeListView">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="resizeMode">
-             <enum>QListView::Adjust</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="episodeDetailLayout">
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <widget class="EpisodeDetailWidget" name="episodeDetailWidget" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="PlaybackControlWidget" name="playbackControlWidget" native="true">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
+       </item>
+       <item>
+         <widget class="PlaybackControlWidget" name="playbackControlWidget" native="true">
+           <property name="enabled">
+             <bool>false</bool>
+           </property>
+         </widget>
+       </item>
      </layout>
-    </item>
-   </layout>
-  </widget>
+   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>

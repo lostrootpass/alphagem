@@ -2,8 +2,12 @@
 
 #include "core/AudioPlayer.h"
 #include "core/Core.h"
+#include "core/ImageDownloader.h"
 #include "core/Playlist.h"
 #include "core/feeds/Feed.h"
+#include "core/feeds/FeedCache.h"
+
+#include "ui/widgets/FeedIconWidget.h"
 
 //Skip five seconds per forward/back
 const int JUMP_MS = 5000;
@@ -53,10 +57,14 @@ void PlaybackControlWidget::setupConnections(Core* core)
 
 	connect(core->defaultPlaylist(), &Playlist::playlistUpdated,
 		this, &PlaybackControlWidget::onPlaylistUpdated);
+
+	connect(ui.episodeIcon, &FeedIconWidget::clicked,
+		this, &PlaybackControlWidget::onIconClicked);
 }
 
-void PlaybackControlWidget::onEpisodeChanged(const Episode* episode)
+void PlaybackControlWidget::onEpisodeChanged(Episode* episode)
 {
+	_episode = episode;
 	ui.episodeName->setText(episode->title);
 
 	ui.playbackSlider->setMinimum(0);
@@ -65,6 +73,9 @@ void PlaybackControlWidget::onEpisodeChanged(const Episode* episode)
 	ui.playbackSlider->setValue(0);
 	
 	ui.playPauseButton->setText("Pause");
+
+	QUrl url(_core->feedCache()->feedForEpisode(episode)->imageUrl);
+	_core->imageDownloader()->getImage(url, ui.episodeIcon);
 
 	setEnabled(true);
 }
@@ -82,6 +93,11 @@ void PlaybackControlWidget::onPlayerPositionChanged(qint64 milliseconds)
 	
 	ui.positionLabel->setText(formatString);
 	ui.playbackSlider->setSliderPosition(milliseconds);
+}
+
+void PlaybackControlWidget::onIconClicked()
+{
+	emit episodeSelected(_episode);
 }
 
 void PlaybackControlWidget::on_jumpBackButton_clicked()

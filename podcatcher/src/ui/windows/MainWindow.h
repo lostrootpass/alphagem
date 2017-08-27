@@ -51,7 +51,9 @@ private slots:
 	void onDownloadFailed(const Episode& e, QString error);
 	void onDownloadProgress(const Episode& e, qint64 bytesDownloaded);
 	void onEpisodeHighlighted(const QModelIndex& index);
+	void onEpisodeJump(Episode* e);
 	void onEpisodeSelected(const QModelIndex& index);
+	void onFeedJump(Feed* f);
 	void onFeedSelected(const QModelIndex& index);
 	void onStatusBarUpdate(QString& text);
 };

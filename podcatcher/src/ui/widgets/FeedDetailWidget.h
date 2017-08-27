@@ -22,6 +22,9 @@ public:
 
 	void setFeed(Feed* f);
 
+signals:
+	void iconClicked(Feed* f);
+
 public slots:
 	void onFeedSelected(const QModelIndex& index);
 
@@ -35,6 +38,7 @@ private slots:
 	void on_refreshButton_clicked();
 	void on_settingsButton_clicked();
 
+	void onIconClicked();
 	void onRefreshStarted(Feed* f);
 	void onFeedListUpdated();
 };

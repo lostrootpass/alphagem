@@ -19,11 +19,12 @@ public:
 	void setupConnections(Core* core);
 
 signals:
+	void episodeSelected(Episode* e);
 	void pauseToggled();
 
 public slots:
 	/* Custom slots */
-	void onEpisodeChanged(const Episode* episode);
+	void onEpisodeChanged(Episode* episode);
 	void onPauseStatusChanged(bool paused);
 	void onPlayerPositionChanged(qint64 milliseconds);
 
@@ -32,6 +33,7 @@ private:
 
 	AudioPlayer* _player;
 	Core* _core;
+	Episode* _episode;
 
 private slots:
 	/* Auto generated slots */
@@ -41,5 +43,6 @@ private slots:
 	void on_playPauseButton_clicked();
 
 	void onFinished();
+	void onIconClicked();
 	void onPlaylistUpdated();
 };
