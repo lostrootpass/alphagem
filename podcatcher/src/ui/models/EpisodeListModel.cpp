@@ -85,7 +85,7 @@ void EpisodeListModel::onDownloadQueueUpdated()
 
 void EpisodeListModel::onFeedSettingsChanged(Feed* f)
 {
-	if(f == _feed)
+	if(f == _feed || f == nullptr)
 		refreshList();
 }
 

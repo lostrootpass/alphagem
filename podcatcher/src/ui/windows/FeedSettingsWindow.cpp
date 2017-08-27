@@ -24,6 +24,7 @@ FeedSettingsWindow::FeedSettingsWindow(Core* c, Feed* f, QWidget *parent)
 	{
 		ui.feedTitleLabel->setText(tr("Default Settings"));
 		ui.markAllAsListenedButton->setVisible(false);
+		ui.useGlobalDefaultsCheckBox->setVisible(false);
 
 		_updateUI(_core->settings()->feedDefaults());
 	}
@@ -196,7 +197,10 @@ void FeedSettingsWindow::on_saveButtonBox_clicked(QAbstractButton* which)
 {
 	if (which == ui.saveButtonBox->button(QDialogButtonBox::RestoreDefaults))
 	{
-		_updateUI(_core->settings()->feedDefaults());
+		if (_feed)
+			_updateUI(_core->settings()->feedDefaults());
+		else
+			_updateUI(FeedSettings());
 	}
 }
 

@@ -135,6 +135,8 @@
     <addaction name="actionImport_OPML"/>
     <addaction name="actionExport_OPML"/>
     <addaction name="separator"/>
+    <addaction name="actionSettings"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -220,6 +222,11 @@
   <action name="actionExport_OPML">
    <property name="text">
     <string>&amp;Export OPML</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>&amp;Settings</string>
    </property>
   </action>
  </widget>

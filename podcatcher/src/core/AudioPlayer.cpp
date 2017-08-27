@@ -61,7 +61,7 @@ void AudioPlayer::playEpisode(Episode* episode)
 		_playlist->clear();
 	}
 
-	_playlist->addMedia(EpisodeCache::getEpisodeUrl(episode));
+	_playlist->addMedia(_core->episodeCache()->getEpisodeUrl(episode));
 	_mediaPlayer->play();
 
 	const Feed* f = _core->feedCache()->feedForEpisode(episode);

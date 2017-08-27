@@ -47,14 +47,8 @@ class EpisodeCache : public QObject
 	Q_OBJECT
 
 public:
-	EpisodeCache(QObject *parent);
+	EpisodeCache(Core* core, QObject *parent = nullptr);
 	~EpisodeCache();
-
-	static bool isDownloaded(const Episode* e);
-	static qint64 getPartialDownloadSize(const Episode* e);
-	static QString getCachedFilename(const Episode* e);
-	static QUrl getEpisodeUrl(const Episode* e);
-	static QString getTmpDownloadFilename(const Episode* e);
 
 	void cancelDownload(Episode* e);
 
@@ -66,6 +60,13 @@ public:
 	void downloadNext();
 
 	void enqueueDownload(Episode* e);
+
+	QString getCachedFilename(const Episode* e);
+	QUrl getEpisodeUrl(const Episode* e);
+	qint64 getPartialDownloadSize(const Episode* e);
+	QString getTmpDownloadFilename(const Episode* e);
+
+	bool isDownloaded(const Episode* e) const;
 
 signals:
 	void cacheStatusUpdated(const Episode* e);
@@ -81,4 +82,6 @@ private slots:
 private:
 	QList<DownloadInfo*> _downloads;
 	QNetworkAccessManager* _mgr;
+
+	Core* _core;
 };

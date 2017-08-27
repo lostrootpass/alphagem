@@ -69,6 +69,10 @@ QDataStream& operator>>(QDataStream& stream, FeedSettings& settings)
 Settings::Settings(Core* core, QObject *parent)
 	: QObject(parent), _core(core)
 {
+	_saveDirectory = 
+		QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	_saveDirectory += "/podcasts";
+	_saveDirectory = QDir::toNativeSeparators(_saveDirectory);
 }
 
 Settings::~Settings()
@@ -100,7 +104,7 @@ void Settings::loadFromDisk()
 	inStream >> fileVersion;
 
 	//First read in global application settings
-	//TODO
+	inStream >> _saveDirectory;
 
 	//Then read in feed defaults
 	inStream >> _feedDefaults;
@@ -134,7 +138,7 @@ void Settings::saveToDisk()
 	outStream << VERSION;
 
 	//First write global application settings
-	//TODO
+	outStream << _saveDirectory;
 
 	//Then feed defaults
 	outStream << _feedDefaults;
@@ -155,6 +159,8 @@ void Settings::saveToDisk()
 void Settings::setFeedDefaults(const FeedSettings& settings)
 {
 	_feedDefaults = settings;
+
+	emit feedSettingsChanged(nullptr);
 }
 
 void Settings::updateFeedSettings(Feed& f, const FeedSettings& settings)

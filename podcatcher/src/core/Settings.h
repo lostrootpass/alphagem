@@ -21,9 +21,13 @@ public:
 
 	void loadFromDisk();
 
+	inline const QString& saveDirectory() const { return _saveDirectory; }
+
 	void saveToDisk();
 
 	void setFeedDefaults(const FeedSettings& settings);
+
+	inline void setSaveDirectory(const QString& dir) { _saveDirectory = dir; }
 
 	void updateFeedSettings(Feed& f, const FeedSettings& settings);
 
@@ -36,4 +40,6 @@ public slots:
 private:
 	FeedSettings _feedDefaults;
 	Core* _core;
+
+	QString _saveDirectory;
 };

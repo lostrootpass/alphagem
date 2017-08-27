@@ -44,7 +44,7 @@ void Core::init(QApplication* app)
 		_feedCache, &FeedCache::onAboutToQuit);
 	_feedCache->startRefreshTimer();
 
-	_episodeCache = new EpisodeCache(nullptr);
+	_episodeCache = new EpisodeCache(this);
 	connect(_episodeCache, &EpisodeCache::downloadComplete,
 		this, &Core::onEpisodeDownloaded);
 

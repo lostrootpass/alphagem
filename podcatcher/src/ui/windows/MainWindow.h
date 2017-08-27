@@ -31,6 +31,7 @@ private slots:
 	void on_actionAdd_Feed_triggered();
 	void on_actionExport_OPML_triggered();
 	void on_actionImport_OPML_triggered();
+	void on_actionSettings_triggered();
 	void on_actionQuit_triggered();
 
 	//Help menu

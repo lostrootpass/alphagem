@@ -226,7 +226,8 @@ void FeedCache::_clearOldEpisodes(Feed* feed)
 
 void FeedCache::onFeedSettingsChanged(Feed* feed)
 {
-	refresh(feed);
+	if(feed)
+		refresh(feed);
 }
 
 void FeedCache::onTimedRefresh()

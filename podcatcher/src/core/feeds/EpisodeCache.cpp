@@ -7,6 +7,7 @@
 #include <QStandardPaths>
 
 #include "core/Core.h"
+#include "core/Settings.h"
 #include "core/Version.h"
 
 #include "core/feeds/FeedCache.h"
@@ -45,8 +46,8 @@ void DownloadInfo::onReadyRead()
 }
 
 
-EpisodeCache::EpisodeCache(QObject *parent)
-	: QObject(parent)
+EpisodeCache::EpisodeCache(Core* core, QObject *parent)
+	: QObject(parent), _core(core)
 {
 	_mgr = new QNetworkAccessManager(this);
 
@@ -58,10 +59,10 @@ EpisodeCache::~EpisodeCache()
 {
 }
 
-bool EpisodeCache::isDownloaded(const Episode* e)
+bool EpisodeCache::isDownloaded(const Episode* e) const
 {
-	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (dir.cd("podcasts"))
+	QDir dir(_core->settings()->saveDirectory());
+	if (dir.exists())
 	{
 		QStringList filter(sha1(e->guid) + ".*");
 		QStringList list = dir.entryList(filter);
@@ -84,8 +85,8 @@ qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
 
 QString EpisodeCache::getCachedFilename(const Episode* e)
 {
-	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (dir.cd("podcasts"))
+	QDir dir(_core->settings()->saveDirectory());
+	if (dir.exists())
 	{
 		QStringList filter(sha1(e->guid) + ".*");
 		QStringList list = dir.entryList(filter);

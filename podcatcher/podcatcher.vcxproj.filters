@@ -276,6 +276,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_Core.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApplicationSettingsWindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApplicationSettingsWindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\windows\ApplicationSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\ui\windows\MainWindow.h">
@@ -383,6 +392,12 @@
     <CustomBuild Include="src\core\Settings.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\ui\windows\ApplicationSettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Resources\ui\windows\ApplicationSettingsWindow.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h">
@@ -420,6 +435,9 @@
     </ClInclude>
     <ClInclude Include="src\core\feeds\FeedSettings.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_ApplicationSettingsWindow.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

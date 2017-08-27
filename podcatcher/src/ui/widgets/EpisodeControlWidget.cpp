@@ -80,7 +80,8 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 	{
 		ui.downloadButton->setEnabled(true);
 
-		qint64 bytesSoFar = EpisodeCache::getPartialDownloadSize(_episode);
+		qint64 bytesSoFar = 
+			_core->episodeCache()->getPartialDownloadSize(_episode);
 		if (bytesSoFar != -1)
 			ui.downloadButton->setText(tr("Resume download"));
 		else

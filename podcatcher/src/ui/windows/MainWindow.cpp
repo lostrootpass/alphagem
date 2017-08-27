@@ -20,6 +20,8 @@
 
 #include "ui/widgets/EpisodeListItemWidget.h"
 
+#include "ui/windows/ApplicationSettingsWindow.h"
+
 MainWindow::MainWindow(Core& core, QWidget *parent)
 	: QMainWindow(parent), _core(&core)
 {
@@ -114,6 +116,16 @@ void MainWindow::on_actionImport_OPML_triggered()
 		_core->feedCache(), &FeedCache::onOPMLImported);
 
 	dialog->show();
+}
+
+void MainWindow::on_actionSettings_triggered()
+{
+	ApplicationSettingsWindow* asw = 
+		new ApplicationSettingsWindow(_core, nullptr);
+	asw->setAttribute(Qt::WA_DeleteOnClose);
+	asw->setWindowModality(Qt::ApplicationModal);
+	asw->setWindowTitle(tr("Settings"));
+	asw->show();
 }
 
 void MainWindow::on_actionQuit_triggered()
