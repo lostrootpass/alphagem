@@ -33,6 +33,8 @@ private:
 
 private slots:
 	void on_refreshButton_clicked();
+	void on_settingsButton_clicked();
 
+	void onRefreshStarted(Feed* f);
 	void onFeedListUpdated();
 };

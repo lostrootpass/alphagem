@@ -1,13 +1,18 @@
 #include "FeedCache.h"
 
 #include <QDataStream>
+#include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
+#include <QTimer>
 
 #include "FeedParser.h"
 #include "OPMLParser.h"
 
+#include "core/Settings.h"
+#include "core/TimeUtil.h"
 #include "core/Version.h"
+#include "core/feeds/FeedSettings.h"
 
 QDataStream& operator<<(QDataStream& stream, const Episode* episode)
 {
@@ -55,7 +60,7 @@ QDataStream& operator<<(QDataStream& stream, const Feed* feed)
 	stream << feed->description << feed->imageUrl;
 	stream << feed->creator << feed->ownerName << feed->ownerEmail;
 	stream << feed->lastUpdated << feed->episodes << feed->categories;
-	stream << feed->isExplicit;
+	stream << feed->lastRefreshTimestamp << feed->isExplicit;
 
 	return stream;
 }
@@ -63,7 +68,7 @@ QDataStream& operator<<(QDataStream& stream, const Feed* feed)
 QDataStream& operator >> (QDataStream& stream, Feed*& feed)
 {
 	feed = new Feed();
-
+	
 	stream >> feed->feedUrl;
 	stream >> feed->title;
 	stream >> feed->link;
@@ -75,14 +80,17 @@ QDataStream& operator >> (QDataStream& stream, Feed*& feed)
 	stream >> feed->lastUpdated;
 	stream >> feed->episodes;
 	stream >> feed->categories;
+	stream >> feed->lastRefreshTimestamp;
 	stream >> feed->isExplicit;
 
 	return stream;
 }
 
-FeedCache::FeedCache(QObject *parent)
-	: QObject(parent), _feedParser(nullptr)
+FeedCache::FeedCache(Core* core)
+	: QObject(nullptr), _core(core), _feedParser(nullptr)
 {
+	connect(_core->settings(), &Settings::feedSettingsChanged,
+		this, &FeedCache::onFeedSettingsChanged);
 }
 
 FeedCache::~FeedCache()
@@ -153,8 +161,10 @@ void FeedCache::onFeedAdded(const QString& url)
 	_feedParser->queueFeedDownload(url);
 }
 
-void FeedCache::onFeedRetrieved(Feed*)
+void FeedCache::onFeedRetrieved(Feed* feed)
 {
+	_clearOldEpisodes(feed);
+
 	saveToDisk();
 
 	emit feedListUpdated();
@@ -176,6 +186,67 @@ void FeedCache::onOPMLImported(const QString& fileName)
 	for (const QString& url : feedURLs)
 	{
 		onFeedAdded(url);
+	}
+}
+
+void FeedCache::_clearOldEpisodes(Feed* feed)
+{
+	const FeedSettings& settings = _core->settings()->feed(feed);
+
+	if (!settings.enableThreshold)
+		return;
+
+	qint64 secs = settings.ignoreThreshold * 24 * 60 * 60;
+	qint64 epoch = QDateTime::currentSecsSinceEpoch();
+	qint64 threshold = (epoch - secs);
+
+	QDateTime epTime;
+	qint64 epStamp;
+	Episode* e;
+	QVector<Episode*>::iterator i = feed->episodes.begin();
+	while(i != feed->episodes.end())
+	{
+		e = *i;
+		epTime = parseDateTime(e->published);
+		epTime.setOffsetFromUtc(0);
+		epStamp = epTime.toSecsSinceEpoch();
+
+		if (epStamp < threshold)
+		{
+			//TODO: also delete associated data.
+			_core->removeEpisode(e);
+			i = feed->episodes.erase(i);
+		}
+		else
+		{
+			++i;
+		}
+	}
+}
+
+void FeedCache::onFeedSettingsChanged(Feed* feed)
+{
+	refresh(feed);
+}
+
+void FeedCache::onTimedRefresh()
+{
+	qDebug() << "Starting scheduled refresh...";
+
+	qint64 epoch = QDateTime::currentSecsSinceEpoch();
+	qint64 refreshPeriod = 0;
+
+	for (Feed* f : _feeds)
+	{
+		const FeedSettings& settings = _core->settings()->feed(f);
+		if (settings.enableRefreshPeriod)
+		{
+			refreshPeriod = settings.refreshPeriod * 60 * 60;
+			if (epoch >= f->lastRefreshTimestamp + refreshPeriod)
+			{
+				refresh(f);
+			}
+		}
 	}
 }
 
@@ -206,11 +277,13 @@ void FeedCache::refresh(int index)
 	if (index < 0 || index >= _feeds.size()) return;
 
 	onFeedAdded(_feeds[index]->feedUrl);
+	emit refreshStarted(_feeds[index]);
 }
 
 void FeedCache::refresh(Feed* feed)
 {
 	onFeedAdded(feed->feedUrl);
+	emit refreshStarted(feed);
 }
 
 void FeedCache::refreshAll()
@@ -219,13 +292,19 @@ void FeedCache::refreshAll()
 	{
 		onFeedAdded(f->feedUrl);
 	}
+
+	emit refreshStarted(nullptr);
 }
 
 void FeedCache::removeFeed(int index)
 {
 	if (index < 0 || index >= _feeds.size()) return;
 
-	//For now, don't remove associated data, just the feed.
+	for (Episode* e : _feeds[index]->episodes)
+	{
+		_core->removeEpisode(e);
+	}
+
 	_feeds.remove(index);
 	saveToDisk();
 	
@@ -253,4 +332,22 @@ void FeedCache::saveToDisk()
 
 	QFile::remove(dir.filePath("feeds.pod"));
 	QFile::rename(filePath, dir.filePath("feeds.pod"));
+}
+
+void FeedCache::startRefreshTimer()
+{
+	QTimer* timer = new QTimer(this);
+	connect(timer, &QTimer::timeout, this, &FeedCache::onTimedRefresh);
+
+	//Check refreshes once per 30 minutes.
+	timer->start(30 * 60 * 1000);
+}
+
+void FeedCache::startupRefresh()
+{
+	for (const Feed* f : _feeds)
+	{
+		if(_core->settings()->feed(f).refreshAtStartup)
+			onFeedAdded(f->feedUrl);
+	}
 }

@@ -4,6 +4,8 @@
 #include "core/ImageDownloader.h"
 #include "core/feeds/FeedCache.h"
 
+#include "ui/windows/FeedSettingsWindow.h"
+
 FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 	: QWidget(parent)
 {
@@ -20,6 +22,9 @@ void FeedDetailWidget::setCore(Core* core)
 	_core = core;
 	connect(_core->feedCache(), &FeedCache::feedListUpdated,
 		this, &FeedDetailWidget::onFeedListUpdated);
+
+	connect(_core->feedCache(), &FeedCache::refreshStarted,
+		this, &FeedDetailWidget::onRefreshStarted);
 }
 
 void FeedDetailWidget::setFeed(Feed* f)
@@ -56,10 +61,22 @@ void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
 
 void FeedDetailWidget::on_refreshButton_clicked()
 {
+	_core->feedCache()->refresh(_feed);
+}
+
+void FeedDetailWidget::on_settingsButton_clicked()
+{
+	FeedSettingsWindow* fsw = new FeedSettingsWindow(_core, _feed, nullptr);
+	fsw->setAttribute(Qt::WA_DeleteOnClose);
+	fsw->setWindowModality(Qt::ApplicationModal);
+	fsw->setWindowTitle(tr("Feed Settings"));
+	fsw->show();
+}
+
+void FeedDetailWidget::onRefreshStarted(Feed*)
+{
 	ui.refreshButton->setEnabled(false);
 	ui.refreshButton->setText(tr("Refreshing..."));
-
-	_core->feedCache()->refresh(_feed);
 }
 
 void FeedDetailWidget::onFeedListUpdated()

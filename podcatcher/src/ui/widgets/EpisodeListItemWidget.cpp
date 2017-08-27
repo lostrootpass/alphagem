@@ -45,11 +45,7 @@ void EpisodeListItemWidget::refresh()
 	}
 
 	ui.dateLabel->setText(commonTimestamp(_episode->published));
-
-	QString listenText("");
-	if (!_episode->listened)
-		listenText = QString(tr("New"));
-	ui.listenStatusLabel->setText(listenText);
+	ui.listenStatusLabel->setVisible(!_episode->listened);
 
 	ui.controlWidget->update(_episode);
 }

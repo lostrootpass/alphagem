@@ -52,10 +52,13 @@ public:
 
 	static bool isDownloaded(const Episode* e);
 	static qint64 getPartialDownloadSize(const Episode* e);
+	static QString getCachedFilename(const Episode* e);
 	static QUrl getEpisodeUrl(const Episode* e);
 	static QString getTmpDownloadFilename(const Episode* e);
 
 	void cancelDownload(Episode* e);
+
+	void deleteLocalFile(const Episode* e);
 
 	bool downloadInProgress() { return (_downloads.size()); }
 	const QList<DownloadInfo*>& downloadList() { return _downloads; }
@@ -65,7 +68,8 @@ public:
 	void enqueueDownload(Episode* e);
 
 signals:
-	void downloadComplete(const Episode& e);
+	void cacheStatusUpdated(const Episode* e);
+	void downloadComplete(Episode& e);
 	void downloadFailed(const Episode& e, QString error);
 	void downloadProgressUpdated(const Episode& e, qint64 bytesDownloaded);
 	void downloadQueueUpdated();

@@ -43,6 +43,10 @@ private:
 	Core* _core;
 	Episode* _current;
 
+	qint64 _skipAtPosition;
+
 private slots:
+	void onDurationChanged(qint64 duration);
+	void onPositionChanged(qint64 position);
 	void onStateChange(QMediaPlayer::MediaStatus state);
 };

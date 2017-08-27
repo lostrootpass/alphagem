@@ -42,6 +42,7 @@ public:
 private:
 	QListView* _view;
 	Core* _core;
+	Feed* _feed;
 	int _feedIndex;
 	EpisodeListType _listType;
 
@@ -51,6 +52,7 @@ private:
 
 private slots:
 	void onDownloadQueueUpdated();
+	void onFeedSettingsChanged(Feed* f);
 	void onFeedUpdated();
 	void onPlaylistChanged();
 

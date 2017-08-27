@@ -82,6 +82,21 @@ qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
 	return -1;
 }
 
+QString EpisodeCache::getCachedFilename(const Episode* e)
+{
+	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	if (dir.cd("podcasts"))
+	{
+		QStringList filter(sha1(e->guid) + ".*");
+		QStringList list = dir.entryList(filter);
+
+		if (list.size())
+			return dir.absoluteFilePath(list[0]);
+	}
+
+	return QString();
+}
+
 DownloadStatus EpisodeCache::downloadStatus(const Episode& e) const
 {
 	for (const DownloadInfo* i : _downloads)
@@ -157,15 +172,9 @@ QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
 
 	QUrl url(e->mediaUrl);
 
-	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-	if (dir.cd("podcasts"))
-	{
-		QStringList filter(sha1(e->guid) + ".*");
-		QStringList list = dir.entryList(filter);
-
-		if (list.size())
-			url = QUrl(dir.absoluteFilePath(list[0]));
-	}
+	QString cachedName = getCachedFilename(e);
+	if (cachedName != "")
+		url = QUrl(cachedName);
 
 	return url;
 }
@@ -210,10 +219,23 @@ void EpisodeCache::cancelDownload(Episode* e)
 	}
 }
 
+void EpisodeCache::deleteLocalFile(const Episode* e)
+{
+	QString cachedName = getCachedFilename(e);
+
+	if (cachedName == "")
+		return;
+
+	QFile file(cachedName);
+	file.remove();
+
+	emit cacheStatusUpdated(e);
+}
+
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 {
 	DownloadInfo* info = _downloads.first();
-	const Episode* e = info->episode;
+	Episode* e = info->episode;
 
 	if (reply->error())
 	{

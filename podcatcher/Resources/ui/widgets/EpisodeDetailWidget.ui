@@ -72,6 +72,9 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: red; color: white; padding-right: 3px; border-radius: 3px;</string>
+       </property>
        <property name="text">
         <string>New</string>
        </property>

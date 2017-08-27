@@ -293,6 +293,8 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 		FeedCache* cache = (FeedCache*)parent();
 		Feed* feed = cache->feedForUrl(feedUrl);
 
+		feed->lastRefreshTimestamp = QDateTime::currentSecsSinceEpoch();
+
 		while (!xml.atEnd())
 		{
 			xml.readNext();

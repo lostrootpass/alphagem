@@ -6,6 +6,8 @@
 #include <QVector>
 #include <ctime>
 
+#include "FeedSettings.h"
+
 struct Episode : public QObject
 {
 	Q_OBJECT;
@@ -48,6 +50,8 @@ struct Feed
 		}
 	}
 
+	FeedSettings settings;
+
 	QString feedUrl;
 	QString title;
 	QString link;
@@ -63,7 +67,10 @@ struct Feed
 	QVector<Episode*> episodes;
 	QVector<QString> categories;
 
+	qint64 lastRefreshTimestamp;
+
 	bool isExplicit;
+	bool useGlobalSettings;
 
 	int countUnplayed()
 	{

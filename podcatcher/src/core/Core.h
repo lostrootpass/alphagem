@@ -5,14 +5,19 @@ class AudioPlayer;
 class EpisodeCache;
 class FeedCache;
 class ImageDownloader;
+class Settings;
 class State;
 
 #include <QList>
 
 #include "Playlist.h"
 
-class Core
+#include "core/feeds/Feed.h"
+#include "core/feeds/FeedSettings.h"
+
+class Core : public QObject
 {
+	Q_OBJECT
 public:
 	Core();
 	~Core();
@@ -21,6 +26,7 @@ public:
 	inline EpisodeCache* episodeCache() const { return _episodeCache; }
 	inline FeedCache* feedCache() const { return _feedCache; }
 	inline ImageDownloader* imageDownloader() const { return _imageDownloader; }
+	inline Settings* settings() const { return _settings; }
 
 	inline Playlist* defaultPlaylist() 
 	{
@@ -34,6 +40,8 @@ public:
 
 	void loadState();
 
+	void removeEpisode(Episode* e);
+
 private:
 	QList<Playlist*> _playlists;
 
@@ -41,7 +49,11 @@ private:
 	EpisodeCache* _episodeCache;
 	FeedCache* _feedCache;
 	ImageDownloader* _imageDownloader;
+	Settings* _settings;
 	State* _state;
+
+private slots:
+	void onEpisodeDownloaded(Episode& e);
 };
 
 #endif

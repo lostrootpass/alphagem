@@ -15,11 +15,21 @@ void Playlist::add(Episode* e)
 	}
 }
 
+void Playlist::addAfterCurrent(Episode* e)
+{
+	if (!contains(e))
+	{
+		episodes.insert(1, e);
+
+		emit playlistUpdated();
+	}
+}
+
 bool Playlist::contains(const Episode* e) const
 {
 	for (const Episode* ep : episodes)
 	{
-		if (ep->guid == e->guid)
+		if (ep == e)
 			return true;
 	}
 

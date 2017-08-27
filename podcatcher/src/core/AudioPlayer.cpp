@@ -5,15 +5,25 @@
 #include <QMediaPlaylist>
 #include <QStandardPaths>
 
+#include "core/Settings.h"
 #include "core/feeds/Feed.h"
+#include "core/feeds/FeedCache.h"
+#include "core/feeds/FeedSettings.h"
 #include "core/feeds/EpisodeCache.h"
 
 AudioPlayer::AudioPlayer(Core& core, QObject *parent)
-	: QObject(parent), _core(&core), _playlist(nullptr), _current(nullptr)
+	: QObject(parent), _core(&core), _playlist(nullptr), _current(nullptr),
+	_skipAtPosition(-1)
 {
 	_mediaPlayer = new QMediaPlayer();
 	connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
 		this, &AudioPlayer::onStateChange);
+
+	connect(_mediaPlayer, &QMediaPlayer::positionChanged,
+		this, &AudioPlayer::onPositionChanged);
+
+	connect(_mediaPlayer, &QMediaPlayer::durationChanged,
+		this, &AudioPlayer::onDurationChanged);
 }
 
 AudioPlayer::~AudioPlayer()
@@ -52,8 +62,16 @@ void AudioPlayer::playEpisode(Episode* episode)
 	}
 
 	_playlist->addMedia(EpisodeCache::getEpisodeUrl(episode));
-	_mediaPlayer->setPosition(0);
 	_mediaPlayer->play();
+
+	const Feed* f = _core->feedCache()->feedForEpisode(episode);
+	const FeedSettings& settings = _core->settings()->feed(f);
+	if (settings.enableSkipIntroSting)
+		_mediaPlayer->setPosition(settings.introStingLength * 1000);
+	else
+		_mediaPlayer->setPosition(0);
+
+	_skipAtPosition = -1;
 
 	_current = episode;
 	_current->setListened(true);
@@ -83,11 +101,34 @@ void AudioPlayer::onPlayPauseToggle()
 	emit pauseStatusChanged(wasPlaying);
 }
 
+void AudioPlayer::onDurationChanged(qint64 duration)
+{
+	const Feed* f = _core->feedCache()->feedForEpisode(_current);
+	const FeedSettings& settings = _core->settings()->feed(f);
+	if (settings.enableSkipOutroSting)
+		_skipAtPosition = duration - (settings.outroStingLength * 1000);
+	else
+		_skipAtPosition = -1;
+}
+
+void AudioPlayer::onPositionChanged(qint64 position)
+{
+	if (_skipAtPosition > -1 && position >= _skipAtPosition)
+		_mediaPlayer->setPosition(_mediaPlayer->duration());
+}
+
 void AudioPlayer::onStateChange(QMediaPlayer::MediaStatus state)
 {
 	if (state == QMediaPlayer::MediaStatus::EndOfMedia)
 	{
-		_core->defaultPlaylist()->popFront();
+		Episode* justFinished = _core->defaultPlaylist()->popFront();
+
+		//Need to close the file before trying to delete it on Windows.
 		nextEpisode();
+
+		const Feed* f = _core->feedCache()->feedForEpisode(justFinished);
+		const FeedSettings& settings = _core->settings()->feed(f);
+		if (settings.deleteAfterPlayback)
+			_core->episodeCache()->deleteLocalFile(justFinished);
 	}
 }

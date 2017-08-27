@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FeedSettingsWindow</class>
+ <widget class="QWidget" name="FeedSettingsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>569</width>
+    <height>644</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FeedSettingsWindow</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="feedTitleLabel">
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="useGlobalDefaultsCheckBox">
+     <property name="whatsThis">
+      <string>If enabled, this feed will respect the global default feed settings.</string>
+     </property>
+     <property name="text">
+      <string>Use global default settings for this feed</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="feedGroupBox">
+     <property name="title">
+      <string>Feed</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="episodeOrderLabel">
+        <property name="whatsThis">
+         <string>Whether to have the newest episode or the oldest episode be treated as the starting point. This affects the order that episodes are displayed in, as well as the other in which episodes are automatically downloaded. For story-style podcasts where you want to listen from the beginning, select Oldest First. For news podcasts, select Newest First.</string>
+        </property>
+        <property name="text">
+         <string>Episode Order</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="episodeOrderComboBox">
+        <property name="whatsThis">
+         <string>Whether to have the newest episode or the oldest episode be treated as the starting point. This affects the order that episodes are displayed in, as well as the other in which episodes are automatically downloaded. For story-style podcasts where you want to listen from the beginning, select Oldest First. For news podcasts, select Newest First.</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Newest First</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Oldest First</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="refreshOnStartupCheckBox">
+        <property name="whatsThis">
+         <string>If enabled, this feed will be refreshed when the application starts.</string>
+        </property>
+        <property name="text">
+         <string>Refresh on startup</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="refreshEveryCheckBox">
+          <property name="whatsThis">
+           <string>If enabled, this feed will automatically refresh based on the time period selected</string>
+          </property>
+          <property name="text">
+           <string>Refresh every</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="refreshEverySpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, this feed will automatically refresh based on the time period selected</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="refreshEveryComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, this feed will automatically refresh based on the time period selected</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>hours</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>days</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="ignoreOlderThanCheckBox">
+          <property name="whatsThis">
+           <string>If enabled, the feed will not display any episodes older than the given time. Enable this for regularly-updating podcasts such as news podcasts to avoid feed clutter.</string>
+          </property>
+          <property name="text">
+           <string>Ignore episodes older than</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="ignoreOlderThanSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, the feed will not display any episodes older than the given time. Enable this for regularly-updating podcasts such as news podcasts to avoid feed clutter.</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="ignoreOlderThanComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, the feed will not display any episodes older than the given time. Enable this for regularly-updating podcasts such as news podcasts to avoid feed clutter.</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>days</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>weeks</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="notificationGroupBox">
+     <property name="title">
+      <string>Notifications</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="releaseNotificationCheckBox">
+        <property name="whatsThis">
+         <string>If enabled, a notification will appear on the desktop when a new episode has become available. Depending on your computer preferences, this notification may make a sound.</string>
+        </property>
+        <property name="text">
+         <string>Show a desktop notification when a new episode has been released</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="downloadNotificationCheckBox">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, a notification will appear on the desktop when an episode has been downloaded. Depending on your computer preferences, this notification may make a sound.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Show a dektop notification when an episode has been downloaded</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="playbackGroupBox">
+     <property name="title">
+      <string>Playback</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_3">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="skipFirstCheckBox">
+          <property name="whatsThis">
+           <string>If enabled, the intro of episodes in this feed will be skipped.</string>
+          </property>
+          <property name="text">
+           <string>Skip first</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="skipFirstSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, the intro of episodes in this feed will be skipped.</string>
+          </property>
+          <property name="wrapping">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="whatsThis">
+           <string>If enabled, the intro of episodes in this feed will be skipped.</string>
+          </property>
+          <property name="text">
+           <string>seconds of each episode</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QCheckBox" name="skipLastCheckBox">
+          <property name="whatsThis">
+           <string>If enabled, the outro of episodes in this feed will be skipped.</string>
+          </property>
+          <property name="text">
+           <string>Skip last</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="skipLastSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, the outro of episodes in this feed will be skipped.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="whatsThis">
+           <string>If enabled, the outro of episodes in this feed will be skipped.</string>
+          </property>
+          <property name="text">
+           <string>seconds</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="skipBackToBackCheckBox">
+        <property name="whatsThis">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Only skip when playing back-to-back episodes</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="continueListeningCheckBox">
+        <property name="text">
+         <string>Continue listening if playlist is empty</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="downloadsGroupBox">
+     <property name="title">
+      <string>Downloads</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_4">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="autoDownloadCheckBox">
+        <property name="whatsThis">
+         <string>If Episode Order is newest first, this will be the most recently posted episode. For Oldest First, it will be the oldest unplayed episode. Only episodes that have not been listened to will be queued.</string>
+        </property>
+        <property name="text">
+         <string>Automatically queue next episodes for download</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="autoDeleteCheckBox">
+        <property name="whatsThis">
+         <string>If enabled, downloaded episodes will be deleted automatically after playback has finished.</string>
+        </property>
+        <property name="text">
+         <string>Delete episodes after playback</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="storageLimitLayout">
+        <property name="leftMargin">
+         <number>25</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="limitStorageCheckBox">
+          <property name="whatsThis">
+           <string>Enable a limit for the maximum number of episodes for this feed that can be stored locally before episodes stop being automatically queued for download (if enabled). This includes episodes that you have downloaded manually, but does not affect your ability to manually download episodes.</string>
+          </property>
+          <property name="text">
+           <string>Don't queue automatic downloads if at least</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="limitStorageSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>episodes are already stored locally</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="0">
+       <widget class="QPushButton" name="deleteLocalPlayedButton">
+        <property name="whatsThis">
+         <string>Delete all downloaded episodes from this feed that have been listened to. They will remain in the episode list for streaming or redownloading.</string>
+        </property>
+        <property name="text">
+         <string>Delete local played episodes</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QCheckBox" name="autoPlaylistCheckBox">
+          <property name="whatsThis">
+           <string>If enabled, episodes will be automatically added to the playlist after being downloaded.</string>
+          </property>
+          <property name="text">
+           <string>Automatically add to playlist after download</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="autoPlaylistComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>If enabled, episodes will be automatically added to the playlist after being downloaded.</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>at end of playlist</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>after current</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="markAllAsListenedButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="whatsThis">
+      <string>Mark every episode in this feed as listened.</string>
+     </property>
+     <property name="text">
+      <string>Mark all episodes as listened</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="saveButtonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

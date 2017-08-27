@@ -14,6 +14,8 @@ public:
 
 	void add(Episode* e);
 
+	void addAfterCurrent(Episode* e);
+
 	bool contains(const Episode* e) const;
 
 	void emplaceFront(Episode* e);

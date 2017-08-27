@@ -8,6 +8,7 @@
 
 #include "core/AudioPlayer.h"
 #include "core/ImageDownloader.h"
+#include "core/Settings.h"
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/Feed.h"
 #include "core/feeds/FeedCache.h"
@@ -67,7 +68,8 @@ void MainWindow::init()
 		*_core, -1, this);
 	ui.episodeListView->setModel(model);
 	ui.episodeListView->setMouseTracking(true);
-	connect(ui.episodeListView->selectionModel(), &QItemSelectionModel::currentChanged,
+	connect(ui.episodeListView->selectionModel(), 
+		&QItemSelectionModel::currentChanged,
 		this, &MainWindow::onEpisodeHighlighted);
 	connect(ui.episodeListView, &QListView::doubleClicked,
 		this, &MainWindow::onEpisodeSelected);

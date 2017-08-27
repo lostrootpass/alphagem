@@ -3,7 +3,10 @@
 #include <QList>
 
 #include "core/AudioPlayer.h"
+#include "core/Core.h"
+#include "core/Settings.h"
 #include "core/feeds/EpisodeCache.h"
+#include "core/feeds/FeedSettings.h"
 #include "ui/widgets/EpisodeListItemWidget.h"
 #include "ui/windows/MainWindow.h"
 
@@ -11,6 +14,9 @@ EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObjec
 	: QAbstractListModel(parent), _view(&view), _core(&core), _feedIndex(feed),
 	_listType(EpisodeListType::Feed)
 {
+	if(_feedIndex > -1)
+		_feed = _core->feedCache()->feeds()[_feedIndex];
+
 	connect(_core->defaultPlaylist(), &Playlist::playlistUpdated,
 		this, &EpisodeListModel::onPlaylistChanged);
 
@@ -19,6 +25,9 @@ EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObjec
 
 	connect(_core->episodeCache(), &EpisodeCache::downloadQueueUpdated,
 		this, &EpisodeListModel::onDownloadQueueUpdated);
+
+	connect(_core->settings(), &Settings::feedSettingsChanged,
+		this, &EpisodeListModel::onFeedSettingsChanged);
 }
 
 EpisodeListModel::~EpisodeListModel()
@@ -57,14 +66,26 @@ Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 
 	case EpisodeListType::Feed:
 	default:
-		return _core->feedCache()->episodes(_feedIndex)[_epCount() - 1 - index.row()];
+	{
+		const FeedSettings& settings = _core->settings()->feed(_feed);
+		if (settings.episodeOrder == EpisodeOrder::NewestFirst)
+			return _feed->episodes[_epCount() - 1 - index.row()];
+		else
+			return _feed->episodes[index.row()];
 		break;
+	}
 	}
 }
 
 void EpisodeListModel::onDownloadQueueUpdated()
 {
 	if (_listType == EpisodeListType::Downloads)
+		refreshList();
+}
+
+void EpisodeListModel::onFeedSettingsChanged(Feed* f)
+{
+	if(f == _feed)
 		refreshList();
 }
 
@@ -98,6 +119,7 @@ void EpisodeListModel::setFeedIndex(int newIndex)
 
 	_listType = EpisodeListType::Feed;
 	_feedIndex = newIndex;
+	_feed = _core->feedCache()->feeds()[_feedIndex];
 
 	refreshList();
 }
@@ -138,7 +160,7 @@ int EpisodeListModel::_epCount() const
 	case EpisodeListType::Feed:
 	default:
 		return _feedIndex == -1 ? 
-			0 : _core->feedCache()->episodes(_feedIndex).size();
+			0 : _feed->episodes.size();
 		break;
 	}
 	
