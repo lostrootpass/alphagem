@@ -20,8 +20,9 @@ public:
 
 signals:
 	void downloadFailed(QString& error);
-	void updateProgress(int percent);
 	void feedRetrieved(Feed* name);
+	void newEpisodeAdded(Feed* f, Episode* e);
+	void updateProgress(int percent);
 
 private:
 	QNetworkAccessManager _netMgr;

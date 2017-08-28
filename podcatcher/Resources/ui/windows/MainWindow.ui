@@ -144,7 +144,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&amp;File</string>
+     <string>&amp;AlphaGem</string>
     </property>
     <addaction name="actionAdd_Feed"/>
     <addaction name="separator"/>

@@ -7,6 +7,7 @@
 #include "Feed.h"
 #include "FeedCache.h"
 #include "ImageDownloader.h"
+#include "Notifier.h"
 #include "Settings.h"
 #include "State.h"
 
@@ -22,6 +23,9 @@ Core::~Core()
 	delete _episodeCache;
 	delete _feedCache;
 	delete _imageDownloader;
+	delete _notifier;
+	delete _settings;
+	delete _state;
 
 	for (Playlist* p : _playlists)
 	{
@@ -44,9 +48,19 @@ void Core::init(QApplication* app)
 		_feedCache, &FeedCache::onAboutToQuit);
 	_feedCache->startRefreshTimer();
 
+	_notifier = new Notifier(this);
+	connect(_audioPlayer, &AudioPlayer::episodeChanged,
+		_notifier, &Notifier::episodeStarted);
+	connect(_feedCache, &FeedCache::feedListUpdated,
+		_notifier, &Notifier::flushNotifications);
+	connect(_feedCache, &FeedCache::newEpisodeAdded,
+		_notifier, &Notifier::episodeReleased);
+
 	_episodeCache = new EpisodeCache(this);
 	connect(_episodeCache, &EpisodeCache::downloadComplete,
 		this, &Core::onEpisodeDownloaded);
+	connect(_episodeCache, &EpisodeCache::downloadComplete,
+		_notifier, &Notifier::episodeDownloaded);
 
 	_imageDownloader = new ImageDownloader(nullptr);
 

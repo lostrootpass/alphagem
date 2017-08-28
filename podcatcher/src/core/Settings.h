@@ -7,6 +7,7 @@
 class Core;
 struct Feed;
 
+
 class Settings : public QObject
 {
 	Q_OBJECT
@@ -21,11 +22,15 @@ public:
 
 	void loadFromDisk();
 
+	bool notifyOnNextEpisode() const { return _notifyOnNextEpisode; }
+
 	inline const QString& saveDirectory() const { return _saveDirectory; }
 
 	void saveToDisk();
 
 	void setFeedDefaults(const FeedSettings& settings);
+
+	inline void setAllowNotification(bool b) { _notifyOnNextEpisode = b; }
 
 	inline void setSaveDirectory(const QString& dir) { _saveDirectory = dir; }
 
@@ -41,5 +46,7 @@ private:
 	FeedSettings _feedDefaults;
 	Core* _core;
 
+	/* The actual settings */
 	QString _saveDirectory;
+	bool _notifyOnNextEpisode;
 };

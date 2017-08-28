@@ -265,7 +265,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 		
 		info->handle->close();
 		info->handle->rename(d.absoluteFilePath(outName));
-		
+
 		emit downloadComplete(*e);
 		emit downloadQueueUpdated();
 	}

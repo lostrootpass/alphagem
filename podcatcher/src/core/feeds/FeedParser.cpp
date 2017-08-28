@@ -76,7 +76,11 @@ void FeedParser::_parseChannelData(QXmlStreamReader* xml, Feed* feed)
 				Episode* e = new Episode();
 				e->listened = false;
 
-				if (!_parseItemData(xml, e, untilGuid))
+				if (_parseItemData(xml, e, untilGuid))
+				{
+					emit newEpisodeAdded(feed, e);
+				}
+				else
 				{
 					break;
 				}

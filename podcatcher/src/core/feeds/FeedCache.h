@@ -33,6 +33,7 @@ public:
 
 signals:
 	void feedListUpdated();
+	void newEpisodeAdded(Episode* e);
 	void refreshStarted(Feed* f);
 
 public slots:
@@ -53,5 +54,6 @@ private:
 
 private slots:
 	void onFeedSettingsChanged(Feed* feed);
+	void onNewEpisodeAdded(Feed* f, Episode* e);
 	void onTimedRefresh();
 };

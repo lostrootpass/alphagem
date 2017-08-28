@@ -73,6 +73,8 @@ Settings::Settings(Core* core, QObject *parent)
 		QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 	_saveDirectory += "/podcasts";
 	_saveDirectory = QDir::toNativeSeparators(_saveDirectory);
+
+	_notifyOnNextEpisode = false;
 }
 
 Settings::~Settings()
@@ -81,7 +83,7 @@ Settings::~Settings()
 
 const FeedSettings& Settings::feed(const Feed* f) const
 {
-	if (f->useGlobalSettings)
+	if (!f || f->useGlobalSettings)
 		return _feedDefaults;
 	else
 		return f->settings;
@@ -105,6 +107,7 @@ void Settings::loadFromDisk()
 
 	//First read in global application settings
 	inStream >> _saveDirectory;
+	inStream >> _notifyOnNextEpisode;
 
 	//Then read in feed defaults
 	inStream >> _feedDefaults;
@@ -139,6 +142,7 @@ void Settings::saveToDisk()
 
 	//First write global application settings
 	outStream << _saveDirectory;
+	outStream << _notifyOnNextEpisode;
 
 	//Then feed defaults
 	outStream << _feedDefaults;

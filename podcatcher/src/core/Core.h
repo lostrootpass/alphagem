@@ -5,6 +5,7 @@ class AudioPlayer;
 class EpisodeCache;
 class FeedCache;
 class ImageDownloader;
+class Notifier;
 class Settings;
 class State;
 
@@ -26,6 +27,7 @@ public:
 	inline EpisodeCache* episodeCache() const { return _episodeCache; }
 	inline FeedCache* feedCache() const { return _feedCache; }
 	inline ImageDownloader* imageDownloader() const { return _imageDownloader; }
+	inline Notifier* notifier() const { return _notifier; }
 	inline Settings* settings() const { return _settings; }
 
 	inline Playlist* defaultPlaylist() 
@@ -49,6 +51,7 @@ private:
 	EpisodeCache* _episodeCache;
 	FeedCache* _feedCache;
 	ImageDownloader* _imageDownloader;
+	Notifier* _notifier;
 	Settings* _settings;
 	State* _state;
 

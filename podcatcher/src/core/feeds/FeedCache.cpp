@@ -95,6 +95,8 @@ FeedCache::FeedCache(Core* core)
 
 FeedCache::~FeedCache()
 {
+	delete _feedParser;
+
 	for (Feed* f : _feeds)
 	{
 		delete f;
@@ -156,6 +158,8 @@ void FeedCache::onFeedAdded(const QString& url)
 
 		connect(_feedParser, &FeedParser::feedRetrieved,
 			this, &FeedCache::onFeedRetrieved);
+		connect(_feedParser, &FeedParser::newEpisodeAdded,
+			this, &FeedCache::onNewEpisodeAdded);
 	}
 
 	_feedParser->queueFeedDownload(url);
@@ -227,6 +231,11 @@ void FeedCache::onFeedSettingsChanged(Feed* feed)
 {
 	if(feed)
 		refresh(feed);
+}
+
+void FeedCache::onNewEpisodeAdded(Feed*, Episode* e)
+{
+	emit newEpisodeAdded(e);
 }
 
 void FeedCache::onTimedRefresh()

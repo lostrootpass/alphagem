@@ -14,6 +14,9 @@ ApplicationSettingsWindow::ApplicationSettingsWindow(Core* c,
 	ui.setupUi(this);
 
 	ui.saveDirectoryLineEdit->setText(_core->settings()->saveDirectory());
+
+	bool b = _core->settings()->notifyOnNextEpisode();
+	ui.nextEpisodeNotificationCheckBox->setChecked(b);
 }
 
 ApplicationSettingsWindow::~ApplicationSettingsWindow()
@@ -44,6 +47,10 @@ void ApplicationSettingsWindow::on_saveButtonBox_accepted()
 {
 	QString t = ui.saveDirectoryLineEdit->text();
 	_core->settings()->setSaveDirectory(t);
+
+	bool b = ui.nextEpisodeNotificationCheckBox->isChecked();
+	_core->settings()->setAllowNotification(b);
+
 	close();
 }
 
