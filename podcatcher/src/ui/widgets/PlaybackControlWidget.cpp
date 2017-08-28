@@ -10,7 +10,13 @@
 #include "ui/widgets/FeedIconWidget.h"
 
 //Skip five seconds per forward/back
-const int JUMP_MS = 5000;
+const int SHORT_JUMP_MS = 5000;
+
+//10s per Ctrl+Jump
+const int MEDIUM_JUMP_MS = 10000;
+
+//30s per Shift+Jump
+const int LONG_JUMP_MS = 30000;
 
 QString formatMS(qint64 milliseconds)
 {
@@ -104,14 +110,28 @@ void PlaybackControlWidget::onIconClicked()
 	emit episodeSelected(_episode);
 }
 
+int PlaybackControlWidget::_getJumpLen()
+{
+	Qt::KeyboardModifiers mask = QApplication::queryKeyboardModifiers();
+
+	if (mask & Qt::ControlModifier)
+		return MEDIUM_JUMP_MS;
+	if (mask & Qt::ShiftModifier)
+		return LONG_JUMP_MS;
+	else
+		return SHORT_JUMP_MS;
+}
+
 void PlaybackControlWidget::on_jumpBackButton_clicked()
 {
-	ui.playbackSlider->setValue(ui.playbackSlider->sliderPosition() - JUMP_MS);
+	int jumpLen = _getJumpLen();
+	ui.playbackSlider->setValue(ui.playbackSlider->sliderPosition() - jumpLen);
 }
 
 void PlaybackControlWidget::on_jumpForwardButton_clicked()
 {
-	ui.playbackSlider->setValue(ui.playbackSlider->sliderPosition() + JUMP_MS);
+	int jumpLen = _getJumpLen();
+	ui.playbackSlider->setValue(ui.playbackSlider->sliderPosition() + jumpLen);
 }
 
 void PlaybackControlWidget::on_nextEpisodeButton_clicked()

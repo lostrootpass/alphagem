@@ -35,6 +35,8 @@ private:
 	Core* _core;
 	Episode* _episode;
 
+	int _getJumpLen();
+
 private slots:
 	/* Auto generated slots */
 	void on_jumpBackButton_clicked();
