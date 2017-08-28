@@ -1,23 +1,6 @@
 #include "PlaybackSlider.h"
 
 #include <QPainter>
-#include <QProxyStyle>
-#include <QStyleOption>
-
-class PlaybackSliderStyle : public QProxyStyle
-{
-public:
-	PlaybackSliderStyle(QStyle* s) : QProxyStyle(s) 
-	{
-	};
-
-	int styleHint(QStyle::StyleHint hint, const QStyleOption* option = 0, const QWidget* widget = 0, QStyleHintReturn* returnData = 0) const
-	{
-		if (hint == QStyle::SH_Slider_AbsoluteSetButtons)
-			return (Qt::LeftButton | Qt::MidButton | Qt::RightButton);
-		return QProxyStyle::styleHint(hint, option, widget, returnData);
-	}
-};
 
 PlaybackSlider::PlaybackSlider(QWidget *parent)
 	: QSlider(parent)
@@ -32,4 +15,14 @@ PlaybackSlider::~PlaybackSlider()
 void PlaybackSlider::paintEvent(QPaintEvent* pe)
 {
 	QSlider::paintEvent(pe);
+}
+
+void PlaybackSlider::enterEvent(QEvent *event)
+{
+	QSlider::enterEvent(event);
+}
+
+void PlaybackSlider::leaveEvent(QEvent *event)
+{
+	QSlider::leaveEvent(event);
 }

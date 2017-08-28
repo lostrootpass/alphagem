@@ -29,16 +29,16 @@ background-color: lightgrey;
   </property>
   <layout class="QHBoxLayout" name="centralLayout">
    <property name="leftMargin">
-    <number>0</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>12</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <item>
     <layout class="QVBoxLayout" name="iconLayout">
@@ -81,6 +81,24 @@ background-color: lightgrey;
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>12</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -117,6 +135,11 @@ background-color: lightgrey;
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string/>
@@ -184,7 +207,8 @@ background-color: lightgrey;
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-seek-backward"/>
+          <iconset theme="media-seek-backward">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -230,7 +254,8 @@ background-color: lightgrey;
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-playback-start"/>
+          <iconset theme="media-playback-start">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -267,7 +292,8 @@ background-color: lightgrey;
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-seek-forward"/>
+          <iconset theme="media-seek-forward">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -307,7 +333,8 @@ background-color: lightgrey;
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-skip-forward"/>
+          <iconset theme="media-skip-forward">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -342,12 +369,13 @@ background-color: lightgrey;
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="audio-volume-high"/>
+          <iconset theme="audio-volume-high">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSlider" name="verticalSlider">
+        <widget class="QSlider" name="volumeSlider">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
            <horstretch>0</horstretch>

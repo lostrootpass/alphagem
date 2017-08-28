@@ -2,3 +2,36 @@ QDialogButtonBox
 {
     dialogbuttonbox-buttons-have-icons: 1;
 }
+
+PlaybackSlider::groove:horizontal
+{
+    height: 14px;
+}
+
+PlaybackSlider::handle:horizontal {
+    background: rgba(0,0,0,0);
+}
+
+PlaybackSlider::handle:horizontal:hover {
+    height: 10px;
+	width: 10px;
+    border-radius: 5px;
+    margin: 0 -5px;
+    background: black;
+}
+
+PlaybackSlider::add-page:horizontal {
+    background: white;
+}
+
+PlaybackSlider::groove::sub-page:horizontal {
+    background: lightblue;
+}
+
+QSlider::add-page:horizontal#volumeSlider {
+    background: white;
+}
+
+QSlider::groove::sub-page:horizontal#volumeSlider {
+    background: lightblue;
+}

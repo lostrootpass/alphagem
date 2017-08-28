@@ -37,6 +37,8 @@ PlaybackControlWidget::PlaybackControlWidget(QWidget *parent)
 	ui.setupUi(this);
 
 	ui.episodeIcon->resetDefault();
+	PlaybackSliderStyle* s = new PlaybackSliderStyle(ui.volumeSlider->style());
+	ui.volumeSlider->setStyle(s);
 }
 
 PlaybackControlWidget::~PlaybackControlWidget()
@@ -151,6 +153,7 @@ void PlaybackControlWidget::on_playPauseButton_clicked()
 void PlaybackControlWidget::onFinished()
 {
 	ui.episodeName->setText("");
+	ui.episodeIcon->resetDefault();
 	setEnabled(false);
 }
 
