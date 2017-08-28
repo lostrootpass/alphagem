@@ -49,6 +49,7 @@ void PlaybackControlWidget::setupConnections(Core* core)
 {
 	_core = core;
 	_player = core->audioPlayer();
+	QMediaPlayer* mp = _player->getMediaPlayer();
 
 	connect(_player, &AudioPlayer::episodeChanged,
 		this, &PlaybackControlWidget::onEpisodeChanged);
@@ -56,20 +57,30 @@ void PlaybackControlWidget::setupConnections(Core* core)
 		this, &PlaybackControlWidget::onFinished);
 	connect(_player, &AudioPlayer::pauseStatusChanged,
 		this, &PlaybackControlWidget::onPauseStatusChanged);
-	connect(_player->getMediaPlayer(), &QMediaPlayer::positionChanged,
+	connect(mp, &QMediaPlayer::positionChanged,
 		this, &PlaybackControlWidget::onPlayerPositionChanged);
 
 	connect(this, &PlaybackControlWidget::pauseToggled,
 		_player, &AudioPlayer::onPlayPauseToggle);
 
 	connect(ui.playbackSlider, &PlaybackSlider::valueChanged,
-		_player->getMediaPlayer(), &QMediaPlayer::setPosition);
+		mp, &QMediaPlayer::setPosition);
 
 	connect(core->defaultPlaylist(), &Playlist::playlistUpdated,
 		this, &PlaybackControlWidget::onPlaylistUpdated);
 
 	connect(ui.episodeIcon, &FeedIconWidget::clicked,
 		this, &PlaybackControlWidget::onIconClicked);
+
+	connect(this, &PlaybackControlWidget::muteToggled,
+		mp, &QMediaPlayer::setMuted);
+	connect(mp, &QMediaPlayer::mutedChanged,
+		this, &PlaybackControlWidget::onMutedChanged);
+
+	connect(this, &PlaybackControlWidget::volumeChanged,
+		mp, &QMediaPlayer::setVolume);
+	connect(mp, &QMediaPlayer::volumeChanged,
+		this, &PlaybackControlWidget::onVolumeChanged);
 }
 
 void PlaybackControlWidget::onEpisodeChanged(Episode* episode)
@@ -112,6 +123,19 @@ void PlaybackControlWidget::onIconClicked()
 	emit episodeSelected(_episode);
 }
 
+void PlaybackControlWidget::onMutedChanged(bool muted)
+{
+	if (muted)
+	{
+		ui.muteButton->setIcon(QIcon::fromTheme("audio-volume-muted"));
+	}
+	else
+	{
+		int volume = _core->audioPlayer()->getMediaPlayer()->volume();
+		_updateMuteIcon(volume);
+	}
+}
+
 int PlaybackControlWidget::_getJumpLen()
 {
 	Qt::KeyboardModifiers mask = QApplication::queryKeyboardModifiers();
@@ -124,6 +148,20 @@ int PlaybackControlWidget::_getJumpLen()
 		return SHORT_JUMP_MS;
 }
 
+void PlaybackControlWidget::_updateMuteIcon(int volume)
+{
+	QString icon;
+
+	if (volume > 65)
+		icon = "audio-volume-high";
+	else if (volume > 25)
+		icon = "audio-volume-medium";
+	else
+		icon = "audio-volume-low";
+
+	ui.muteButton->setIcon(QIcon::fromTheme(icon));
+}
+
 void PlaybackControlWidget::on_jumpBackButton_clicked()
 {
 	int jumpLen = _getJumpLen();
@@ -134,6 +172,12 @@ void PlaybackControlWidget::on_jumpForwardButton_clicked()
 {
 	int jumpLen = _getJumpLen();
 	ui.playbackSlider->setValue(ui.playbackSlider->sliderPosition() + jumpLen);
+}
+
+void PlaybackControlWidget::on_muteButton_clicked()
+{
+	bool muted = _core->audioPlayer()->getMediaPlayer()->isMuted();
+	emit muteToggled(!muted);
 }
 
 void PlaybackControlWidget::on_nextEpisodeButton_clicked()
@@ -150,6 +194,12 @@ void PlaybackControlWidget::on_playPauseButton_clicked()
 	emit pauseToggled();
 }
 
+void PlaybackControlWidget::on_volumeSlider_valueChanged(int value)
+{
+	emit muteToggled(false);
+	emit volumeChanged(value);
+}
+
 void PlaybackControlWidget::onFinished()
 {
 	ui.episodeName->setText("");
@@ -161,4 +211,10 @@ void PlaybackControlWidget::onPlaylistUpdated()
 {
 	const bool hasMore = (_core->defaultPlaylist()->episodes.size() > 1);
 	ui.nextEpisodeButton->setEnabled(hasMore);
+}
+
+void PlaybackControlWidget::onVolumeChanged(int volume)
+{
+	ui.volumeSlider->setValue(volume);
+	_updateMuteIcon(volume);
 }

@@ -20,7 +20,9 @@ public:
 
 signals:
 	void episodeSelected(Episode* e);
+	void muteToggled(bool muted);
 	void pauseToggled();
+	void volumeChanged(int volume);
 
 public slots:
 	/* Custom slots */
@@ -36,15 +38,20 @@ private:
 	Episode* _episode;
 
 	int _getJumpLen();
+	void _updateMuteIcon(int volume);
 
 private slots:
 	/* Auto generated slots */
 	void on_jumpBackButton_clicked();
 	void on_jumpForwardButton_clicked();
+	void on_muteButton_clicked();
 	void on_nextEpisodeButton_clicked();
 	void on_playPauseButton_clicked();
+	void on_volumeSlider_valueChanged(int value);
 
 	void onFinished();
 	void onIconClicked();
+	void onMutedChanged(bool muted);
 	void onPlaylistUpdated();
+	void onVolumeChanged(int volume);
 };
