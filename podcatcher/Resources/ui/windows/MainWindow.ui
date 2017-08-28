@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Podcatcher</string>
+   <string>AlphaGem</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="centralLayout">
@@ -183,7 +183,7 @@
   <action name="actionAbout_Qt">
    <property name="icon">
     <iconset resource="../../Resources.qrc">
-     <normaloff>:/icons/breeze/32/qt_logo_green_rgb.svg</normaloff>:/icons/breeze/32/qt_logo_green_rgb.svg</iconset>
+     <normaloff>:/icons/alphagem/qt_logo_green_rgb.svg</normaloff>:/icons/alphagem/qt_logo_green_rgb.svg</iconset>
    </property>
    <property name="text">
     <string>About &amp;Qt</string>

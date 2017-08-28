@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
+	QApplication::setWindowIcon(QIcon(":/icons/alphagem/alphagem"));
 	QIcon::setThemeName("breeze");
 	{
 		QFile f(":/stylesheet.css");

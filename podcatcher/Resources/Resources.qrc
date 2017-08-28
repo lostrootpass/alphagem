@@ -1,6 +1,8 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
   <qresource>
+    <file>./icons/alphagem/qt_logo_green_rgb.svg</file>
+    <file>./icons/alphagem/alphagem.svg</file>
     <file>./icons/breeze/16/application-exit.svg</file>
     <file>./icons/breeze/16/application-menu.svg</file>
     <file>./icons/breeze/16/audio-volume-high.svg</file>
@@ -123,7 +125,6 @@
     <file>./icons/breeze/32/media-seek-forward.svg</file>
     <file>./icons/breeze/32/media-skip-forward.svg</file>
     <file>./icons/breeze/32/view-refresh.svg</file>
-    <file>./icons/breeze/32/qt_logo_green_rgb.svg</file>
     <file>./icons/breeze/index.theme</file>
     <file>./stylesheet.css</file>
   </qresource>
