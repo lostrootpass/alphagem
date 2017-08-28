@@ -88,7 +88,9 @@ void FeedListModel::onFeedListUpdated()
 {
 	_clearThumbnails();
 	_thumbnails.resize(_core->feedCache()->feeds().size());
-	emit layoutChanged();
+	
+	beginResetModel();
+	endResetModel();
 }
 
 void FeedListModel::onThumbnailDownloaded(QPixmap* px, QString url)
