@@ -10,6 +10,8 @@ public:
 	FeedIconWidget(QWidget *parent);
 	~FeedIconWidget();
 
+	void resetDefault();
+
 signals:
 	void clicked();
 

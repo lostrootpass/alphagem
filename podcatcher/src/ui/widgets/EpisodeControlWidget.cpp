@@ -44,17 +44,14 @@ void EpisodeControlWidget::update(Episode* e)
 
 void EpisodeControlWidget::_updatePlayButtonStatus()
 {
+	ui.playButton->setIcon(QIcon::fromTheme("media-playback-start"));
 	if (_episode->duration > 0)
 	{
-		QString formatString = QString(tr("Play (%1:%2)"))
+		QString formatString = QString(tr("%1:%2"))
 			.arg(_episode->duration / 60, 2, 10, QChar('0'))
 			.arg(_episode->duration % 60, 2, 10, QChar('0'));
 
 		ui.playButton->setText(formatString);
-	}
-	else
-	{
-		ui.playButton->setText(tr("Play"));
 	}
 }
 
@@ -66,15 +63,18 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 	{
 	case DownloadStatus::DownloadComplete:
 		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Downloaded"));
+		ui.downloadButton->setIcon(QIcon::fromTheme("state-ok"));
+		ui.downloadButton->setToolTip(tr("Downloaded"));
 		break;
 	case DownloadStatus::DownloadInProgress:
 		ui.downloadButton->setEnabled(false);
-		ui.downloadButton->setText(tr("Downloading..."));
+		ui.downloadButton->setIcon(QIcon::fromTheme("state-pause"));
+		ui.downloadButton->setToolTip(tr("Downloading..."));
 		break;
 	case DownloadStatus::DownloadInQueue:
 		ui.downloadButton->setEnabled(true);
-		ui.downloadButton->setText(tr("Cancel download"));
+		ui.downloadButton->setIcon(QIcon::fromTheme("state-offline"));
+		ui.downloadButton->setToolTip(tr("Cancel download"));
 		break;
 	case DownloadStatus::DownloadNotInQueue:
 	{
@@ -83,9 +83,15 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 		qint64 bytesSoFar = 
 			_core->episodeCache()->getPartialDownloadSize(_episode);
 		if (bytesSoFar != -1)
-			ui.downloadButton->setText(tr("Resume download"));
+		{
+			ui.downloadButton->setIcon(QIcon::fromTheme("state-sync"));
+			ui.downloadButton->setToolTip(tr("Resume download"));
+		}
 		else
-			ui.downloadButton->setText(tr("Download"));
+		{
+			ui.downloadButton->setIcon(QIcon::fromTheme("state-download"));
+			ui.downloadButton->setToolTip(tr("Download"));
+		}
 	}
 
 	break;
@@ -95,9 +101,9 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 void EpisodeControlWidget::_updatePlaylistButtonStatus()
 {
 	if (_core->defaultPlaylist()->contains(_episode))
-		ui.addToPlaylistButton->setText(tr("Remove From Playlist"));
+		ui.addToPlaylistButton->setText(tr("Dequeue"));
 	else
-		ui.addToPlaylistButton->setText(tr("Add To Playlist"));
+		ui.addToPlaylistButton->setText(tr("Enqueue"));
 }
 
 void EpisodeControlWidget::on_addToPlaylistButton_clicked()
@@ -153,7 +159,8 @@ void EpisodeControlWidget::onDownloadProgressUpdate(const Episode& e, qint64)
 {
 	if (&e == _episode)
 	{
-		ui.downloadButton->setText(tr("Downloading..."));
+		ui.downloadButton->setIcon(QIcon::fromTheme("state-pause"));
+		ui.downloadButton->setToolTip(tr("Downloading..."));
 		ui.downloadButton->setEnabled(false);
 	}
 }

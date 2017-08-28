@@ -29,6 +29,8 @@ PlaybackControlWidget::PlaybackControlWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+
+	ui.episodeIcon->resetDefault();
 }
 
 PlaybackControlWidget::~PlaybackControlWidget()
@@ -72,9 +74,10 @@ void PlaybackControlWidget::onEpisodeChanged(Episode* episode)
 	ui.playbackSlider->setTickInterval(episode->duration);
 	ui.playbackSlider->setValue(0);
 	
-	ui.playPauseButton->setText("Pause");
+	ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
 
 	QUrl url(_core->feedCache()->feedForEpisode(episode)->imageUrl);
+	ui.episodeIcon->resetDefault();
 	_core->imageDownloader()->getImage(url, ui.episodeIcon);
 
 	setEnabled(true);
@@ -82,7 +85,8 @@ void PlaybackControlWidget::onEpisodeChanged(Episode* episode)
 
 void PlaybackControlWidget::onPauseStatusChanged(bool paused)
 {
-	ui.playPauseButton->setText(paused ? "Play" : "Pause");
+	QString icon = paused ? "media-playback-start" : "media-playback-pause";
+	ui.playPauseButton->setIcon(QIcon::fromTheme(icon));
 }
 
 void PlaybackControlWidget::onPlayerPositionChanged(qint64 milliseconds)

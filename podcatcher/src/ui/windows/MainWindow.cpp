@@ -260,7 +260,7 @@ void MainWindow::onFeedJump(Feed* f)
 	ui.feedDetailWidget->setFeed(f);
 	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
 	elm->setFeedIndex(_core->feedCache()->feeds().indexOf(f));
-	ui.stackedWidget->setCurrentWidget(ui.episodeListView);
+	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
 
 void MainWindow::onStatusBarUpdate(QString& text)

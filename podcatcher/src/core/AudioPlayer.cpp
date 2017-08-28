@@ -121,14 +121,17 @@ void AudioPlayer::onStateChange(QMediaPlayer::MediaStatus state)
 {
 	if (state == QMediaPlayer::MediaStatus::EndOfMedia)
 	{
-		Episode* justFinished = _core->defaultPlaylist()->popFront();
+		Episode* justFinished = _core->defaultPlaylist()->front();
+
+		if (justFinished == _current)
+			_core->defaultPlaylist()->popFront();
 
 		//Need to close the file before trying to delete it on Windows.
 		nextEpisode();
 
-		const Feed* f = _core->feedCache()->feedForEpisode(justFinished);
+		const Feed* f = _core->feedCache()->feedForEpisode(_current);
 		const FeedSettings& settings = _core->settings()->feed(f);
 		if (settings.deleteAfterPlayback)
-			_core->episodeCache()->deleteLocalFile(justFinished);
+			_core->episodeCache()->deleteLocalFile(_current);
 	}
 }

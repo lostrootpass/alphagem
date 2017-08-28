@@ -1,0 +1,21 @@
+[Icon Theme]
+Name=Breeze
+Comment=Plasma 5 Default Theme
+
+Directories=16,22,24,32
+
+[16]
+Size=16
+Type=Scalable
+
+[22]
+Size=22
+Type=Scalable
+
+[24]
+Size=24
+Type=Scalable
+
+[32]
+Size=32
+Type=Scalable

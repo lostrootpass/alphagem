@@ -16,6 +16,8 @@ FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 
 	connect(ui.feedIcon, &FeedIconWidget::clicked,
 		this, &FeedDetailWidget::onIconClicked);
+
+	ui.feedIcon->resetDefault();
 }
 
 FeedDetailWidget::~FeedDetailWidget()
@@ -49,7 +51,7 @@ void FeedDetailWidget::setFeed(Feed* f)
 
 	ui.titleLabel->setText(_feed->title);
 	ui.descriptionLabel->setText(_feed->description);
-	ui.feedIcon->clear();
+	ui.feedIcon->resetDefault();
 	ui.refreshButton->setVisible(true);
 
 	_core->imageDownloader()->getImage(QUrl(_feed->imageUrl), ui.feedIcon);

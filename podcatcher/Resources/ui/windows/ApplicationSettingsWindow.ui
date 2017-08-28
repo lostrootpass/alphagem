@@ -64,6 +64,9 @@
        <property name="text">
         <string>...</string>
        </property>
+       <property name="icon">
+        <iconset theme="document-open"/>
+       </property>
       </widget>
      </item>
     </layout>
@@ -82,6 +85,9 @@
      <property name="text">
       <string>Configure default feed settings</string>
      </property>
+     <property name="icon">
+      <iconset theme="configure"/>
+     </property>
     </widget>
    </item>
    <item>
@@ -99,6 +105,9 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="saveButtonBox">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
      </property>

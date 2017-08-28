@@ -8,9 +8,24 @@
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/FeedCache.h"
 
+#include <QFile>
+
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+
+	QIcon::setThemeName("breeze");
+	{
+		QFile f(":/stylesheet.css");
+		if (f.exists())
+		{
+			QCoreApplication::setAttribute(
+				Qt::AA_UseStyleSheetPropagationInWidgetStyles, true);
+			f.open(QIODevice::ReadOnly);
+			a.setStyleSheet(f.readAll());
+			f.close();
+		}
+	}
 
 	Core core;
 	core.init(&a);
