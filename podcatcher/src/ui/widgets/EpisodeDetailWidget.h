@@ -7,6 +7,7 @@
 
 class Core;
 struct Episode;
+class TagLayout;
 
 class EpisodeDetailWidget : public QWidget
 {
@@ -25,6 +26,7 @@ private:
 	
 	Core* _core;
 	Episode* _episode;
+	TagLayout* _tagLayout;
 
 	void _refresh();
 	void _setByline();

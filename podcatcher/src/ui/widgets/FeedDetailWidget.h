@@ -8,6 +8,8 @@
 class Core;
 struct Feed;
 
+class TagLayout;
+
 class QNetworkReply;
 
 class FeedDetailWidget : public QWidget
@@ -33,6 +35,7 @@ private:
 
 	Core* _core;
 	Feed* _feed;
+	TagLayout* _tagLayout;
 
 private slots:
 	void on_refreshButton_clicked();

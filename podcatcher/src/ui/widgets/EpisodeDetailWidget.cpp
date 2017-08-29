@@ -8,6 +8,8 @@
 #include "core/TimeUtil.h"
 #include "core/feeds/Feed.h"
 
+#include "ui/widgets/TagLayout.h"
+
 EpisodeDetailWidget::EpisodeDetailWidget(QWidget *parent)
 	: QWidget(parent), _core(nullptr), _episode(nullptr)
 {
@@ -16,10 +18,14 @@ EpisodeDetailWidget::EpisodeDetailWidget(QWidget *parent)
 
 	connect(ui.description, &QLabel::linkHovered,
 		this, &EpisodeDetailWidget::onLinkHovered);
+
+	_tagLayout = new TagLayout(nullptr);
+	ui.tagPlaceholder->addLayout(_tagLayout);
 }
 
 EpisodeDetailWidget::~EpisodeDetailWidget()
 {
+	delete _tagLayout;
 }
 
 void EpisodeDetailWidget::init(Core* core)
@@ -62,6 +68,9 @@ void EpisodeDetailWidget::_refresh()
 	_setMetadata();
 
 	ui.controlWidget->update(_episode);
+
+	_tagLayout->clearTags();
+	_tagLayout->setTags(_episode->categories);
 }
 
 void EpisodeDetailWidget::_setByline()

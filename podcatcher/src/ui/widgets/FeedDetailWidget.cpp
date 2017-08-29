@@ -7,6 +7,7 @@
 #include "ui/widgets/FeedIconWidget.h"
 
 #include "ui/windows/FeedSettingsWindow.h"
+#include "TagLayout.h"
 
 FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 	: QWidget(parent)
@@ -18,10 +19,14 @@ FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 		this, &FeedDetailWidget::onIconClicked);
 
 	ui.feedIcon->resetDefault();
+
+	_tagLayout = new TagLayout(nullptr);
+	ui.verticalLayout->addLayout(_tagLayout);
 }
 
 FeedDetailWidget::~FeedDetailWidget()
 {
+	delete _tagLayout;
 }
 
 void FeedDetailWidget::setCore(Core* core)
@@ -51,10 +56,19 @@ void FeedDetailWidget::setFeed(Feed* f)
 
 	ui.titleLabel->setText(_feed->title);
 	ui.descriptionLabel->setText(_feed->description);
+	ui.descriptionLabel->updateGeometry();
+	ui.descriptionLabel->adjustSize();
+	QSize s = ui.descriptionLabel->sizeHint();
+	s = ui.descriptionLabel->size();
+	s = ui.descriptionLabel->minimumSizeHint();
+	s = ui.descriptionLabel->maximumSize();
 	ui.feedIcon->resetDefault();
 	ui.refreshButton->setVisible(true);
 
 	_core->imageDownloader()->getImage(QUrl(_feed->imageUrl), ui.feedIcon);
+
+	_tagLayout->clearTags();
+	_tagLayout->setTags(f->categories);
 }
 
 void FeedDetailWidget::onFeedSelected(const QModelIndex& index)
