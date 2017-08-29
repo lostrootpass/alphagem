@@ -73,6 +73,27 @@ bool EpisodeCache::isDownloaded(const Episode* e) const
 	return false;
 }
 
+void EpisodeCache::pauseCurrent()
+{
+	if (_downloads.size())
+	{
+		_downloads[0]->paused = true;
+
+		_downloads[0]->handle->close();
+		_downloads[0]->reply->disconnect(this);
+		_downloads[0]->reply->abort();
+		_downloads[0]->reply->deleteLater();
+		_downloads[0]->reply = nullptr;
+
+		emit downloadPaused();
+	}
+}
+
+void EpisodeCache::resumeCurrent()
+{
+	downloadNext();
+}
+
 qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
 {
 	QFile handle(getTmpDownloadFilename(e));
@@ -104,8 +125,10 @@ DownloadStatus EpisodeCache::downloadStatus(const Episode& e) const
 	{
 		if (i->episode->guid == e.guid)
 		{
-			if (i->handle->isOpen())
+			if (i->handle->isOpen() && !i->paused)
 				return DownloadStatus::DownloadInProgress;
+			else if (i->paused)
+				return DownloadStatus::DownloadPaused;
 			else
 				return DownloadStatus::DownloadInQueue;
 		}
@@ -124,6 +147,9 @@ void EpisodeCache::downloadNext()
 	if (!_downloads.size()) return;
 
 	DownloadInfo* info = _downloads.first();
+
+	if (info->paused)
+		info->paused = false;
 
 	QNetworkRequest req(QUrl(info->episode->mediaUrl));
 	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -213,6 +239,10 @@ void EpisodeCache::cancelDownload(Episode* e)
 
 	if (toRemove)
 	{
+		toRemove->handle->close();
+		toRemove->handle->remove();
+		toRemove->handle = nullptr;
+
 		delete toRemove;
 		_downloads.removeOne(toRemove);
 
@@ -236,6 +266,10 @@ void EpisodeCache::deleteLocalFile(const Episode* e)
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 {
 	DownloadInfo* info = _downloads.first();
+
+	if (info->paused)
+		return;
+
 	Episode* e = info->episode;
 
 	if (reply->error())

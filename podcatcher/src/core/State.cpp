@@ -47,6 +47,11 @@ void State::loadFromDisk()
 		_core->episodeCache()->enqueueDownload(e);
 	}
 
+	bool downloadsPaused;
+	inStream >> downloadsPaused;
+	if (downloadsPaused)
+		_core->episodeCache()->pauseCurrent();
+
 	qint64 currentPosition;
 	QString currentGuid;
 
@@ -100,6 +105,8 @@ void State::saveToDisk()
 	}
 
 	outStream << guids;
+
+	outStream << (dl.size() && dl[0]->paused);
 
 	const AudioPlayer* player = _core->audioPlayer();
 

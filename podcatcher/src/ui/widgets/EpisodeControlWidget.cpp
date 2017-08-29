@@ -71,9 +71,14 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 		ui.downloadButton->setToolTip(tr("Downloaded"));
 		break;
 	case DownloadStatus::DownloadInProgress:
-		ui.downloadButton->setEnabled(false);
+		ui.downloadButton->setEnabled(true);
 		ui.downloadButton->setIcon(QIcon::fromTheme("state-pause"));
 		ui.downloadButton->setToolTip(tr("Downloading..."));
+		break;
+	case DownloadStatus::DownloadPaused:
+		ui.downloadButton->setEnabled(true);
+		ui.downloadButton->setIcon(QIcon::fromTheme("state-sync"));
+		ui.downloadButton->setToolTip(tr("Resume download"));
 		break;
 	case DownloadStatus::DownloadInQueue:
 		ui.downloadButton->setEnabled(true);
@@ -123,16 +128,28 @@ void EpisodeControlWidget::_updateMoreDetailsButton()
 			this, &EpisodeControlWidget::onMarkAsListened);
 	}
 
-
-	if (_downloadStatus == DownloadStatus::DownloadComplete)
-	{
+	if(_downloadStatus != DownloadStatus::DownloadNotInQueue)
 		_menu->addSeparator();
 
-		_menu->addAction(QIcon::fromTheme("edit-delete"), 
+	switch (_downloadStatus)
+	{
+	case DownloadStatus::DownloadComplete:
+		_menu->addAction(QIcon::fromTheme("edit-delete"),
 			tr("&Delete local media"),
 			this, &EpisodeControlWidget::onFileDelete);
-	}
+		break;
+	case DownloadStatus::DownloadInProgress:
+	case DownloadStatus::DownloadPaused:
+	case DownloadStatus::DownloadInQueue:
+		_menu->addAction(QIcon::fromTheme("dialog-cancel"),
+			tr("&Cancel download"),
+			this, &EpisodeControlWidget::onDownloadCancelled);
+		break;
+	default:
+		break;
 
+	}
+	
 	ui.moreDetailsButton->setEnabled((bool)(_menu->actions().size()));
 }
 
@@ -162,11 +179,25 @@ void EpisodeControlWidget::on_addToPlaylistButton_clicked()
 
 void EpisodeControlWidget::on_downloadButton_clicked()
 {
-	DownloadStatus status = _core->episodeCache()->downloadStatus(*_episode);
-	if (status == DownloadStatus::DownloadNotInQueue)
-		_core->episodeCache()->enqueueDownload(_episode);
-	else if (status == DownloadStatus::DownloadInQueue)
-		_core->episodeCache()->cancelDownload(_episode);
+	EpisodeCache* epCache = _core->episodeCache();
+	switch (_downloadStatus)
+	{
+	case DownloadStatus::DownloadNotInQueue:
+		epCache->enqueueDownload(_episode);
+		break;
+	case DownloadStatus::DownloadInQueue:
+		epCache->cancelDownload(_episode);
+		break;
+	case DownloadStatus::DownloadPaused:
+		epCache->resumeCurrent();
+		break;
+	case DownloadStatus::DownloadInProgress:
+		epCache->pauseCurrent();
+		break;
+	case DownloadStatus::DownloadComplete:
+	default:
+		break;
+	}
 
 	update(_episode);
 }
@@ -199,7 +230,6 @@ void EpisodeControlWidget::onDownloadProgressUpdate(const Episode& e, qint64)
 	{
 		ui.downloadButton->setIcon(QIcon::fromTheme("state-pause"));
 		ui.downloadButton->setToolTip(tr("Downloading..."));
-		ui.downloadButton->setEnabled(false);
 	}
 }
 
@@ -213,6 +243,11 @@ void EpisodeControlWidget::onEpisodeChanged(const Episode* e)
 {
 	if(e == _episode)
 		update(_episode);
+}
+
+void EpisodeControlWidget::onDownloadCancelled()
+{
+	_core->episodeCache()->cancelDownload(_episode);
 }
 
 void EpisodeControlWidget::onFileDelete()

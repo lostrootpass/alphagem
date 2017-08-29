@@ -50,6 +50,8 @@ void MainWindow::init()
 		this, &MainWindow::onDownloadComplete);
 	connect(_core->episodeCache(), &EpisodeCache::downloadFailed,
 		this, &MainWindow::onDownloadFailed);
+	connect(_core->episodeCache(), &EpisodeCache::downloadPaused,
+		this, &MainWindow::onDownloadPaused);
 	connect(_core->episodeCache(), &EpisodeCache::downloadProgressUpdated,
 		this, &MainWindow::onDownloadProgress);
 
@@ -223,6 +225,11 @@ void MainWindow::onDownloadFailed(const Episode&, QString error)
 {
 	QString message = QString(tr("Download failed: %1")).arg(error);
 	statusBar()->showMessage(message);
+}
+
+void MainWindow::onDownloadPaused()
+{
+	statusBar()->clearMessage();
 }
 
 void MainWindow::onDownloadProgress(const Episode& e, qint64 bytesDownloaded)

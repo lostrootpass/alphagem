@@ -20,6 +20,9 @@ enum class DownloadStatus
 	/* Download of this particular file is in progress right now */
 	DownloadInProgress,
 
+	/* Download of this particular file is in progress, but paused */
+	DownloadPaused,
+
 	/* The file is in the queue waiting to be downloaded */
 	DownloadInQueue,
 
@@ -37,6 +40,7 @@ public:
 	QNetworkReply* reply = nullptr;
 	QFile* handle = nullptr;
 	Episode* episode;
+	bool paused = false;
 
 public slots:
 	void onReadyRead();
@@ -68,10 +72,15 @@ public:
 
 	bool isDownloaded(const Episode* e) const;
 
+	void pauseCurrent();
+
+	void resumeCurrent();
+
 signals:
 	void cacheStatusUpdated(const Episode* e);
 	void downloadComplete(Episode& e);
 	void downloadFailed(const Episode& e, QString error);
+	void downloadPaused();
 	void downloadProgressUpdated(const Episode& e, qint64 bytesDownloaded);
 	void downloadQueueUpdated();
 

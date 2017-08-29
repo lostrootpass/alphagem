@@ -44,6 +44,7 @@ private slots:
 	void onEpisodeChanged(const Episode* e);
 
 	/* More Details Menu*/
+	void onDownloadCancelled();
 	void onFileDelete();
 	void onMarkAsListened();
 	void onMarkAsNew();
