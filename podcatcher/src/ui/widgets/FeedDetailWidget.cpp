@@ -21,7 +21,7 @@ FeedDetailWidget::FeedDetailWidget(QWidget *parent)
 	ui.feedIcon->resetDefault();
 
 	_tagLayout = new TagLayout(nullptr);
-	ui.verticalLayout->addLayout(_tagLayout);
+	ui.verticalLayout->insertLayout(4, _tagLayout);
 }
 
 FeedDetailWidget::~FeedDetailWidget()

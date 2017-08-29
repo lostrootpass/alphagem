@@ -59,6 +59,8 @@ void EpisodeControlWidget::_updatePlayButtonStatus()
 
 		ui.playButton->setText(formatString);
 	}
+	else
+		ui.playButton->setText("");
 }
 
 void EpisodeControlWidget::_updateDownloadButtonStatus()
