@@ -3,6 +3,8 @@
 #include <QWidget>
 #include "ui_EpisodeControlWidget.h"
 
+#include "core/feeds/EpisodeCache.h"
+
 class Core;
 struct Episode;
 
@@ -23,9 +25,12 @@ private:
 
 	Core* _core;
 	Episode* _episode;
+	QMenu* _menu;
+	DownloadStatus _downloadStatus;
 
 	void _updatePlayButtonStatus();
 	void _updateDownloadButtonStatus();
+	void _updateMoreDetailsButton();
 	void _updatePlaylistButtonStatus();
 
 private slots:
@@ -37,4 +42,9 @@ private slots:
 	void onDownloadProgressUpdate(const Episode& e, qint64 progress);
 	void onDownloadFinished(const Episode& e);
 	void onEpisodeChanged(const Episode* e);
+
+	/* More Details Menu*/
+	void onFileDelete();
+	void onMarkAsListened();
+	void onMarkAsNew();
 };

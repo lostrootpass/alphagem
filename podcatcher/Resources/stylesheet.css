@@ -35,3 +35,8 @@ QSlider::add-page:horizontal#volumeSlider {
 QSlider::groove::sub-page:horizontal#volumeSlider {
     background: lightblue;
 }
+
+QPushButton::menu-indicator#moreDetailsButton
+{
+    image: none;
+}

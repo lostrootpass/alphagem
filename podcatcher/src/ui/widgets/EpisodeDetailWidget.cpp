@@ -31,8 +31,21 @@ void EpisodeDetailWidget::init(Core* core)
 
 void EpisodeDetailWidget::setEpisode(Episode* e)
 {
+	if (_episode)
+	{
+		_episode->disconnect(this);
+	}
+
 	_episode = e;
-	ui.title->setText(e->title);
+	connect(_episode, &Episode::updated,
+		this, &EpisodeDetailWidget::episodeUpdated);
+
+	_refresh();
+}
+
+void EpisodeDetailWidget::_refresh()
+{
+	ui.title->setText(_episode->title);
 
 	if (_episode->description != "")
 		ui.description->setText(_episode->description);
@@ -43,12 +56,12 @@ void EpisodeDetailWidget::setEpisode(Episode* e)
 		ui.description->setText(default);
 	}
 
-	ui.newLabel->setVisible(!e->listened);
+	ui.newLabel->setVisible(!_episode->listened);
 
 	_setByline();
 	_setMetadata();
 
-	ui.controlWidget->update(e);
+	ui.controlWidget->update(_episode);
 }
 
 void EpisodeDetailWidget::_setByline()
@@ -92,6 +105,11 @@ void EpisodeDetailWidget::_setMetadata()
 		.arg(tr("Published")).arg(_episode->published);
 
 	ui.metadata->setText(metatext);
+}
+
+void EpisodeDetailWidget::episodeUpdated()
+{
+	_refresh();
 }
 
 void EpisodeDetailWidget::onLinkHovered(const QString& link)

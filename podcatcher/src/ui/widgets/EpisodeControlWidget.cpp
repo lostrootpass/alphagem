@@ -1,5 +1,7 @@
 #include "EpisodeControlWidget.h"
 
+#include <QMenu>
+
 #include "core/AudioPlayer.h"
 #include "core/Core.h"
 #include "core/Playlist.h"
@@ -7,13 +9,14 @@
 #include "core/feeds/Feed.h"
 
 EpisodeControlWidget::EpisodeControlWidget(QWidget *parent)
-	: QWidget(parent), _core(nullptr), _episode(nullptr)
+	: QWidget(parent), _core(nullptr), _episode(nullptr), _menu(nullptr)
 {
 	ui.setupUi(this);
 }
 
 EpisodeControlWidget::~EpisodeControlWidget()
 {
+	delete _menu;
 }
 
 void EpisodeControlWidget::init(Core* core)
@@ -37,8 +40,11 @@ void EpisodeControlWidget::update(Episode* e)
 {
 	_episode = e;
 
+	_downloadStatus = _core->episodeCache()->downloadStatus(*_episode);
+
 	_updatePlayButtonStatus();
 	_updateDownloadButtonStatus();
+	_updateMoreDetailsButton();
 	_updatePlaylistButtonStatus();
 }
 
@@ -57,9 +63,7 @@ void EpisodeControlWidget::_updatePlayButtonStatus()
 
 void EpisodeControlWidget::_updateDownloadButtonStatus()
 {
-	DownloadStatus status = _core->episodeCache()->downloadStatus(*_episode);
-
-	switch (status)
+	switch (_downloadStatus)
 	{
 	case DownloadStatus::DownloadComplete:
 		ui.downloadButton->setEnabled(false);
@@ -96,6 +100,40 @@ void EpisodeControlWidget::_updateDownloadButtonStatus()
 
 	break;
 	}
+}
+
+void EpisodeControlWidget::_updateMoreDetailsButton()
+{
+	if (!_menu)
+	{
+		_menu = new QMenu(this);
+		ui.moreDetailsButton->setMenu(_menu);
+	}
+	
+	_menu->clear();
+
+	if (_episode->listened)
+	{
+		_menu->addAction(tr("Mark as &New"),
+			this, &EpisodeControlWidget::onMarkAsNew);
+	}
+	else
+	{
+		_menu->addAction(tr("Mark as &Listened"),
+			this, &EpisodeControlWidget::onMarkAsListened);
+	}
+
+
+	if (_downloadStatus == DownloadStatus::DownloadComplete)
+	{
+		_menu->addSeparator();
+
+		_menu->addAction(QIcon::fromTheme("edit-delete"), 
+			tr("&Delete local media"),
+			this, &EpisodeControlWidget::onFileDelete);
+	}
+
+	ui.moreDetailsButton->setEnabled((bool)(_menu->actions().size()));
 }
 
 void EpisodeControlWidget::_updatePlaylistButtonStatus()
@@ -175,4 +213,19 @@ void EpisodeControlWidget::onEpisodeChanged(const Episode* e)
 {
 	if(e == _episode)
 		update(_episode);
+}
+
+void EpisodeControlWidget::onFileDelete()
+{
+	_core->episodeCache()->deleteLocalFile(_episode);
+}
+
+void EpisodeControlWidget::onMarkAsListened()
+{
+	_episode->setListened(true);
+}
+
+void EpisodeControlWidget::onMarkAsNew()
+{
+	_episode->setListened(false);
 }

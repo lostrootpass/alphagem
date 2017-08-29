@@ -26,9 +26,11 @@ private:
 	Core* _core;
 	Episode* _episode;
 
+	void _refresh();
 	void _setByline();
 	void _setMetadata();
 
 private slots:
+	void episodeUpdated();
 	void onLinkHovered(const QString& link);
 };
