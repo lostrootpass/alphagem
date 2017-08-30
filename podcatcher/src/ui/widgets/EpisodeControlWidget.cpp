@@ -34,10 +34,16 @@ void EpisodeControlWidget::init(Core* core)
 
 	connect(_core->episodeCache(), &EpisodeCache::cacheStatusUpdated,
 		this, &EpisodeControlWidget::onCacheStatusUpdated);
+
+	connect(_core->episodeCache(), &EpisodeCache::downloadQueueUpdated,
+		this, &EpisodeControlWidget::onDownloadQueueUpdated);
 }
 
 void EpisodeControlWidget::update(Episode* e)
 {
+	if (!e)
+		return;
+
 	_episode = e;
 
 	_downloadStatus = _core->episodeCache()->downloadStatus(*_episode);
@@ -239,6 +245,11 @@ void EpisodeControlWidget::onDownloadFinished(const Episode& e)
 {
 	if (&e == _episode)
 		update(_episode);
+}
+
+void EpisodeControlWidget::onDownloadQueueUpdated()
+{
+	update(_episode);
 }
 
 void EpisodeControlWidget::onEpisodeChanged(const Episode* e)

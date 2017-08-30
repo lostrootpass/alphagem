@@ -41,6 +41,7 @@ private slots:
 	void onCacheStatusUpdated(const Episode* e);
 	void onDownloadProgressUpdate(const Episode& e, qint64 progress);
 	void onDownloadFinished(const Episode& e);
+	void onDownloadQueueUpdated();
 	void onEpisodeChanged(const Episode* e);
 
 	/* More Details Menu*/

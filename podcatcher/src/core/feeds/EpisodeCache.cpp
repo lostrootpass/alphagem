@@ -106,12 +106,15 @@ void EpisodeCache::updateAutoDownloadQueue(Feed* feed)
 	inProgress += countStatus(feed, DownloadStatus::DownloadInProgress);
 	inProgress += countStatus(feed, DownloadStatus::DownloadPaused);
 
-	int remainingQuota = 0;
+	int remainingQuota = settings.maxSimultaneousDownloads;
 
 	if (settings.enableLocalStorageLimit)
 	{
 		remainingQuota = settings.localEpisodeStorageLimit;
 		remainingQuota -= (locallyStored + inProgress);
+
+		if (remainingQuota > settings.maxSimultaneousDownloads)
+			remainingQuota = settings.maxSimultaneousDownloads;
 	}
 
 	while (remainingQuota > 0)
@@ -156,7 +159,7 @@ DownloadStatus EpisodeCache::downloadStatus(const Episode& e) const
 	{
 		if (i->episode->guid == e.guid)
 		{
-			if (i->handle->isOpen() && !i->paused)
+			if ((i->handle->isOpen() || i == _downloads[0]) && !i->paused)
 				return DownloadStatus::DownloadInProgress;
 			else if (i->paused)
 				return DownloadStatus::DownloadPaused;
@@ -270,13 +273,14 @@ void EpisodeCache::cancelDownload(Episode* e)
 
 	if (toRemove)
 	{
+		_downloads.removeOne(toRemove);
+
 		toRemove->handle->close();
 		toRemove->handle->remove();
 		toRemove->handle = nullptr;
 
 		delete toRemove;
-		_downloads.removeOne(toRemove);
-
+		
 		emit downloadQueueUpdated();
 	}
 }
@@ -309,9 +313,12 @@ void EpisodeCache::deleteLocalFile(const Episode* e)
 
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 {
+	if (!_downloads.size())
+		return;
+
 	DownloadInfo* info = _downloads.first();
 
-	if (info->paused)
+	if (info->paused || info->reply != reply)
 		return;
 
 	Episode* e = info->episode;
@@ -358,7 +365,8 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 
 void EpisodeCache::_downloadProgressUpdated(qint64 done, qint64)
 {
-	emit downloadProgressUpdated(*_downloads.first()->episode, done);
+	if(_downloads.size())
+		emit downloadProgressUpdated(*_downloads.first()->episode, done);
 }
 
 Episode* EpisodeCache::_nextEpisode(Feed* feed)

@@ -62,6 +62,7 @@ QDataStream& operator<<(QDataStream& stream, const Feed* feed)
 	stream << feed->creator << feed->ownerName << feed->ownerEmail;
 	stream << feed->lastUpdated << feed->episodes << feed->categories;
 	stream << feed->lastRefreshTimestamp << feed->isExplicit;
+	stream << feed->useGlobalSettings;
 
 	return stream;
 }
@@ -83,6 +84,7 @@ QDataStream& operator >> (QDataStream& stream, Feed*& feed)
 	stream >> feed->categories;
 	stream >> feed->lastRefreshTimestamp;
 	stream >> feed->isExplicit;
+	stream >> feed->useGlobalSettings;
 
 	return stream;
 }

@@ -26,6 +26,7 @@ signals:
 
 public slots:
 	/* Custom slots */
+	void onDurationChanged(qint64 duration);
 	void onEpisodeChanged(Episode* episode);
 	void onPauseStatusChanged(bool paused);
 	void onPlayerPositionChanged(qint64 milliseconds);

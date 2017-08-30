@@ -52,10 +52,6 @@ struct FeedSettings
 	/* Enable skipping the outro sting */
 	bool enableSkipOutroSting = false;
 
-	/* Intro/Outro stings are only skipped when playing episodes consecutively
-	from the same feed. */
-	bool skipOnlyOnBackToBack = false;
-
 	/* Automatically add the next episode to the download queue 
 	That is the newest (chronologically) if episodeOrder is NewestFirst
 	or the oldest unplayed episode if episodeOrder is OldestFirst*/
@@ -79,6 +75,9 @@ struct FeedSettings
 	/* Queue another episode from the same feed if this is the last episode
 	in the playlist */
 	bool autoContinueListening = false;
+
+	/* Only continue listening if the next ep has been downloaded */
+	bool autoPlaylistRequiresDownload = true;
 };
 
 #endif

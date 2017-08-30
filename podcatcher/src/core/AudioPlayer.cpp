@@ -35,7 +35,11 @@ void AudioPlayer::nextEpisode()
 	Playlist* p = _core->defaultPlaylist();
 
 	if (!p->episodes.size())
+	{
+		_current = nullptr;
+
 		emit finished();
+	}
 	else
 	{
 		_current = p->front();
@@ -63,13 +67,6 @@ void AudioPlayer::playEpisode(Episode* episode)
 
 	_playlist->addMedia(_core->episodeCache()->getEpisodeUrl(episode));
 	_mediaPlayer->play();
-
-	const Feed* f = _core->feedCache()->feedForEpisode(episode);
-	const FeedSettings& settings = _core->settings()->feed(f);
-	if (settings.enableSkipIntroSting)
-		_mediaPlayer->setPosition(settings.introStingLength * 1000);
-	else
-		_mediaPlayer->setPosition(0);
 
 	_skipAtPosition = -1;
 
@@ -105,10 +102,12 @@ void AudioPlayer::onDurationChanged(qint64 duration)
 {
 	const Feed* f = _core->feedCache()->feedForEpisode(_current);
 	const FeedSettings& settings = _core->settings()->feed(f);
+	
+	if (settings.enableSkipIntroSting)
+		_mediaPlayer->setPosition(settings.introStingLength * 1000);
+
 	if (settings.enableSkipOutroSting)
 		_skipAtPosition = duration - (settings.outroStingLength * 1000);
-	else
-		_skipAtPosition = -1;
 }
 
 void AudioPlayer::onPositionChanged(qint64 position)
@@ -129,9 +128,48 @@ void AudioPlayer::onStateChange(QMediaPlayer::MediaStatus state)
 		//Need to close the file before trying to delete it on Windows.
 		nextEpisode();
 
-		const Feed* f = _core->feedCache()->feedForEpisode(_current);
+		EpisodeCache* epCache = _core->episodeCache();
+		Feed* f = _core->feedCache()->feedForEpisode(justFinished);
 		const FeedSettings& settings = _core->settings()->feed(f);
 		if (settings.deleteAfterPlayback)
-			_core->episodeCache()->deleteLocalFile(_current);
+			epCache->deleteLocalFile(justFinished);
+
+		if (settings.autoContinueListening)
+		{
+			Episode* nextEp = nullptr;
+			int index = f->episodes.indexOf(justFinished);
+
+			if (settings.episodeOrder == EpisodeOrder::OldestFirst)
+			{
+				if (index < f->episodes.size() - 1)
+					nextEp = f->episodes.at(index + 1);
+			}
+			else
+			{
+				if (index > 0)
+					nextEp = f->episodes.at(index - 1);
+			}
+
+			
+			if (nextEp && !nextEp->listened)
+			{
+				bool canQueue = true;
+
+				if (settings.autoPlaylistRequiresDownload)
+				{
+					DownloadStatus status = epCache->downloadStatus(*nextEp);
+					if (status != DownloadStatus::DownloadComplete)
+					{
+						canQueue = false;
+					}
+				}
+
+				if (canQueue)
+				{
+					_core->defaultPlaylist()->add(nextEp);
+					nextEpisode();
+				}
+			}
+		}
 	}
 }

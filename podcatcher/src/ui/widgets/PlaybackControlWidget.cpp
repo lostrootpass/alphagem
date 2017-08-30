@@ -57,6 +57,8 @@ void PlaybackControlWidget::setupConnections(Core* core)
 		this, &PlaybackControlWidget::onFinished);
 	connect(_player, &AudioPlayer::pauseStatusChanged,
 		this, &PlaybackControlWidget::onPauseStatusChanged);
+	connect(mp, &QMediaPlayer::durationChanged,
+		this, &PlaybackControlWidget::onDurationChanged);
 	connect(mp, &QMediaPlayer::positionChanged,
 		this, &PlaybackControlWidget::onPlayerPositionChanged);
 
@@ -83,16 +85,19 @@ void PlaybackControlWidget::setupConnections(Core* core)
 		this, &PlaybackControlWidget::onVolumeChanged);
 }
 
+void PlaybackControlWidget::onDurationChanged(qint64 duration)
+{
+	ui.playbackSlider->setMinimum(0);
+	ui.playbackSlider->setMaximum(duration);
+	ui.playbackSlider->setTickInterval(duration);
+	ui.playbackSlider->setValue(0);
+}
+
 void PlaybackControlWidget::onEpisodeChanged(Episode* episode)
 {
 	_episode = episode;
 	ui.episodeName->setText(episode->title);
 
-	ui.playbackSlider->setMinimum(0);
-	ui.playbackSlider->setMaximum(episode->duration * 1000);
-	ui.playbackSlider->setTickInterval(episode->duration);
-	ui.playbackSlider->setValue(0);
-	
 	ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
 
 	QUrl url(_core->feedCache()->feedForEpisode(episode)->imageUrl);
@@ -202,7 +207,9 @@ void PlaybackControlWidget::on_volumeSlider_valueChanged(int value)
 
 void PlaybackControlWidget::onFinished()
 {
+	ui.playbackSlider->setValue(0);
 	ui.episodeName->setText("");
+	ui.positionLabel->setText("");
 	ui.episodeIcon->resetDefault();
 	setEnabled(false);
 }

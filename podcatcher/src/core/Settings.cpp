@@ -25,7 +25,6 @@ QDataStream& operator<<(QDataStream& stream, const FeedSettings& settings)
 	stream << settings.showDownloadNotification;
 	stream << settings.enableSkipIntroSting;
 	stream << settings.enableSkipOutroSting;
-	stream << settings.skipOnlyOnBackToBack;
 	stream << settings.autoDownloadNextEpisodes;
 	stream << settings.deleteAfterPlayback;
 	stream << settings.enableLocalStorageLimit;
@@ -33,6 +32,7 @@ QDataStream& operator<<(QDataStream& stream, const FeedSettings& settings)
 	stream << settings.enableRefreshPeriod;
 	stream << settings.enableThreshold;
 	stream << settings.autoContinueListening;
+	stream << settings.autoPlaylistRequiresDownload;
 
 	return stream;
 }
@@ -56,7 +56,6 @@ QDataStream& operator>>(QDataStream& stream, FeedSettings& settings)
 	stream >> settings.showDownloadNotification;
 	stream >> settings.enableSkipIntroSting;
 	stream >> settings.enableSkipOutroSting;
-	stream >> settings.skipOnlyOnBackToBack;
 	stream >> settings.autoDownloadNextEpisodes;
 	stream >> settings.deleteAfterPlayback;
 	stream >> settings.enableLocalStorageLimit;
@@ -64,6 +63,7 @@ QDataStream& operator>>(QDataStream& stream, FeedSettings& settings)
 	stream >> settings.enableRefreshPeriod;
 	stream >> settings.enableThreshold;
 	stream >> settings.autoContinueListening;
+	stream >> settings.autoPlaylistRequiresDownload;
 
 	return stream;
 }

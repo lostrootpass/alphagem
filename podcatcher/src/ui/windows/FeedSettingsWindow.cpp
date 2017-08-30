@@ -18,6 +18,8 @@ FeedSettingsWindow::FeedSettingsWindow(Core* c, Feed* f, QWidget *parent)
 
 	if (_feed)
 	{
+		_updateUI(_feed->settings);
+
 		ui.feedTitleLabel->setText(_feed->title);
 		ui.useGlobalDefaultsCheckBox->setChecked(_feed->useGlobalSettings);
 		ui.feedUrlLineEdit->setText(f->feedUrl);
@@ -79,8 +81,9 @@ void FeedSettingsWindow::_updateUI(const FeedSettings& settings)
 	ui.skipLastCheckBox->setChecked(settings.enableSkipOutroSting);
 	ui.skipLastSpinBox->setValue(settings.outroStingLength);
 
-	ui.skipBackToBackCheckBox->setChecked(settings.skipOnlyOnBackToBack);
 	ui.continueListeningCheckBox->setChecked(settings.autoContinueListening);
+	bool req = settings.autoPlaylistRequiresDownload;
+	ui.continueListeningDownloadCheckBox->setChecked(req);
 
 	ui.autoDownloadCheckBox->setChecked(settings.autoDownloadNextEpisodes);
 	ui.maximumSimtaneousSpinBox->setValue(settings.maxSimultaneousDownloads);
@@ -115,9 +118,9 @@ void FeedSettingsWindow::on_useGlobalDefaultsCheckBox_stateChanged(int state)
 	ui.notificationGroupBox->setEnabled(e);
 
 	if (e)
-		_updateUI(_core->settings()->feedDefaults());
-	else
 		_updateUI(_feed->settings);
+	else
+		_updateUI(_core->settings()->feedDefaults());
 }
 
 void FeedSettingsWindow::on_markAllAsListenedButton_clicked()
@@ -161,9 +164,9 @@ void FeedSettingsWindow::on_saveButtonBox_accepted()
 	f.enableSkipOutroSting = ui.skipLastCheckBox->isChecked();
 	f.outroStingLength = ui.skipLastSpinBox->value();
 
-	f.skipOnlyOnBackToBack = ui.skipBackToBackCheckBox->isChecked();
-
 	f.autoContinueListening = ui.continueListeningCheckBox->isChecked();
+	f.autoPlaylistRequiresDownload = 
+		ui.continueListeningDownloadCheckBox->isChecked();
 
 	/* Download section */
 	f.autoDownloadNextEpisodes = ui.autoDownloadCheckBox->isChecked();
@@ -241,6 +244,12 @@ void FeedSettingsWindow::on_ignoreOlderThanCheckBox_stateChanged(int state)
 	bool e = (state == Qt::CheckState::Checked);
 	ui.ignoreOlderThanSpinBox->setEnabled(e);
 	ui.ignoreOlderThanComboBox->setEnabled(e);
+}
+
+void FeedSettingsWindow::on_continueListeningCheckBox_stateChanged(int state)
+{
+	bool e = (state == Qt::CheckState::Checked);
+	ui.continueListeningDownloadCheckBox->setEnabled(e);
 }
 
 void FeedSettingsWindow::on_skipFirstCheckBox_stateChanged(int state)

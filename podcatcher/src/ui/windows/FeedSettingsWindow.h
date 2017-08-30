@@ -43,6 +43,7 @@ private slots:
 	void on_ignoreOlderThanCheckBox_stateChanged(int state);
 
 	/* Playback */
+	void on_continueListeningCheckBox_stateChanged(int state);
 	void on_skipFirstCheckBox_stateChanged(int state);
 	void on_skipLastCheckBox_stateChanged(int state);
 

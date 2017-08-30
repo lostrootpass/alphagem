@@ -4,10 +4,9 @@
 #include <QMediaPlayer>
 
 #include "core/Core.h"
+#include "core/feeds/Feed.h"
 
 class QMediaPlaylist;
-
-struct Episode;
 
 class AudioPlayer : public QObject
 {

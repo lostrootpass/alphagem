@@ -72,7 +72,8 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset theme="edit-copy"/>
+           <iconset theme="edit-copy">
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>
@@ -328,21 +329,34 @@
        </layout>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="skipBackToBackCheckBox">
-        <property name="whatsThis">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Only skip when playing back-to-back episodes</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
        <widget class="QCheckBox" name="continueListeningCheckBox">
+        <property name="whatsThis">
+         <string>If an episode from this feed is the last in the playlist, the next unplayed episode will automatically be queued to play afterwards.</string>
+        </property>
         <property name="text">
          <string>Continue listening if playlist is empty</string>
         </property>
        </widget>
+      </item>
+      <item row="3" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="leftMargin">
+         <number>25</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="continueListeningDownloadCheckBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>The next unplayed episode will only be queued if it has already been downloaded.</string>
+          </property>
+          <property name="text">
+           <string>Only if the next episode has been downloaded</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
