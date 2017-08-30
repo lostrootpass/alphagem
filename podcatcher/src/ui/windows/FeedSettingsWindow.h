@@ -38,6 +38,7 @@ private slots:
 	void on_saveButtonBox_rejected();
 
 	/* Feed */
+	void on_feedUrlButton_clicked();
 	void on_refreshEveryCheckBox_stateChanged(int state);
 	void on_ignoreOlderThanCheckBox_stateChanged(int state);
 

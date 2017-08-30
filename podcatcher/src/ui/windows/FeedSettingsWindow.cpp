@@ -1,5 +1,8 @@
 #include "FeedSettingsWindow.h"
 
+#include <QApplication>
+#include <QClipboard>
+
 #include "core/Core.h"
 #include "core/Settings.h"
 #include "core/feeds/EpisodeCache.h"
@@ -17,16 +20,14 @@ FeedSettingsWindow::FeedSettingsWindow(Core* c, Feed* f, QWidget *parent)
 	{
 		ui.feedTitleLabel->setText(_feed->title);
 		ui.useGlobalDefaultsCheckBox->setChecked(_feed->useGlobalSettings);
-
-		_updateUI(_feed->settings);
+		ui.feedUrlLineEdit->setText(f->feedUrl);
 	}
 	else
 	{
 		ui.feedTitleLabel->setText(tr("Default Settings"));
 		ui.markAllAsListenedButton->setVisible(false);
 		ui.useGlobalDefaultsCheckBox->setVisible(false);
-
-		_updateUI(_core->settings()->feedDefaults());
+		ui.feedUrlGroupBox->setVisible(false);
 	}
 }
 
@@ -112,6 +113,11 @@ void FeedSettingsWindow::on_useGlobalDefaultsCheckBox_stateChanged(int state)
 	ui.playbackGroupBox->setEnabled(e);
 	ui.downloadsGroupBox->setEnabled(e);
 	ui.notificationGroupBox->setEnabled(e);
+
+	if (e)
+		_updateUI(_core->settings()->feedDefaults());
+	else
+		_updateUI(_feed->settings);
 }
 
 void FeedSettingsWindow::on_markAllAsListenedButton_clicked()
@@ -204,11 +210,23 @@ void FeedSettingsWindow::on_saveButtonBox_clicked(QAbstractButton* which)
 		else
 			_updateUI(FeedSettings());
 	}
+	else if (which == ui.saveButtonBox->button(QDialogButtonBox::Reset))
+	{
+		if (_feed)
+			_updateUI(_feed->settings);
+		else
+			_updateUI(_core->settings()->feedDefaults());
+	}
 }
 
 void FeedSettingsWindow::on_saveButtonBox_rejected()
 {
 	close();
+}
+
+void FeedSettingsWindow::on_feedUrlButton_clicked()
+{
+	QApplication::clipboard()->setText(_feed->feedUrl);
 }
 
 void FeedSettingsWindow::on_refreshEveryCheckBox_stateChanged(int state)
