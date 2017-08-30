@@ -37,6 +37,9 @@ struct FeedSettings
 	/* if enableSkipOutroSting is true, this number of seconds is skipped */
 	int outroStingLength = 15;
 
+	/* Number of autodownloads that can be queued simultaneously */
+	int maxSimultaneousDownloads = 3;
+
 	/* Desktop notification on new episode appearing in the episode list */
 	bool showReleaseNotification = false;
 

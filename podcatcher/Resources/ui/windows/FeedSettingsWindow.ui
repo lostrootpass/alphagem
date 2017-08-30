@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>569</width>
-    <height>644</height>
+    <height>684</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,10 @@
       <string>Feed</string>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
-      <item row="0" column="0">
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_6"/>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="episodeOrderLabel">
         <property name="whatsThis">
          <string>Whether to have the newest episode or the oldest episode be treated as the starting point. This affects the order that episodes are displayed in, as well as the other in which episodes are automatically downloaded. For story-style podcasts where you want to listen from the beginning, select Oldest First. For news podcasts, select Newest First.</string>
@@ -54,7 +57,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <widget class="QComboBox" name="episodeOrderComboBox">
         <property name="whatsThis">
          <string>Whether to have the newest episode or the oldest episode be treated as the starting point. This affects the order that episodes are displayed in, as well as the other in which episodes are automatically downloaded. For story-style podcasts where you want to listen from the beginning, select Oldest First. For news podcasts, select Newest First.</string>
@@ -71,7 +74,7 @@
         </item>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QCheckBox" name="refreshOnStartupCheckBox">
         <property name="whatsThis">
          <string>If enabled, this feed will be refreshed when the application starts.</string>
@@ -81,7 +84,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="3" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QCheckBox" name="refreshEveryCheckBox">
@@ -128,7 +131,7 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QCheckBox" name="ignoreOlderThanCheckBox">
@@ -311,26 +314,34 @@
      </property>
      <layout class="QFormLayout" name="formLayout_4">
       <item row="0" column="0">
-       <widget class="QCheckBox" name="autoDownloadCheckBox">
-        <property name="whatsThis">
-         <string>If Episode Order is newest first, this will be the most recently posted episode. For Oldest First, it will be the oldest unplayed episode. Only episodes that have not been listened to will be queued.</string>
-        </property>
-        <property name="text">
-         <string>Automatically queue next episodes for download</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QCheckBox" name="autoDownloadCheckBox">
+          <property name="whatsThis">
+           <string>If Episode Order is newest first, this will be the most recently posted episode. For Oldest First, it will be the oldest unplayed episode. Only episodes that have not been listened to will be queued.</string>
+          </property>
+          <property name="text">
+           <string>Automatically queue up to</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="maximumSimtaneousSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>unplayed episodes for download</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="autoDeleteCheckBox">
-        <property name="whatsThis">
-         <string>If enabled, downloaded episodes will be deleted automatically after playback has finished.</string>
-        </property>
-        <property name="text">
-         <string>Delete episodes after playback</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
        <layout class="QHBoxLayout" name="storageLimitLayout">
         <property name="leftMargin">
          <number>25</number>
@@ -341,7 +352,7 @@
            <string>Enable a limit for the maximum number of episodes for this feed that can be stored locally before episodes stop being automatically queued for download (if enabled). This includes episodes that you have downloaded manually, but does not affect your ability to manually download episodes.</string>
           </property>
           <property name="text">
-           <string>Don't queue automatic downloads if at least</string>
+           <string>Unless at least</string>
           </property>
          </widget>
         </item>
@@ -361,17 +372,17 @@
         </item>
        </layout>
       </item>
-      <item row="4" column="0">
-       <widget class="QPushButton" name="deleteLocalPlayedButton">
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="autoDeleteCheckBox">
         <property name="whatsThis">
-         <string>Delete all downloaded episodes from this feed that have been listened to. They will remain in the episode list for streaming or redownloading.</string>
+         <string>If enabled, downloaded episodes will be deleted automatically after playback has finished.</string>
         </property>
         <property name="text">
-         <string>Delete local played episodes</string>
+         <string>Delete episodes after playback</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
          <widget class="QCheckBox" name="autoPlaylistCheckBox">
@@ -404,6 +415,16 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="5" column="0">
+       <widget class="QPushButton" name="deleteLocalPlayedButton">
+        <property name="whatsThis">
+         <string>Delete all downloaded episodes from this feed that have been listened to. They will remain in the episode list for streaming or redownloading.</string>
+        </property>
+        <property name="text">
+         <string>Delete local played episodes</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

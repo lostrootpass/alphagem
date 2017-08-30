@@ -82,6 +82,7 @@ void FeedSettingsWindow::_updateUI(const FeedSettings& settings)
 	ui.continueListeningCheckBox->setChecked(settings.autoContinueListening);
 
 	ui.autoDownloadCheckBox->setChecked(settings.autoDownloadNextEpisodes);
+	ui.maximumSimtaneousSpinBox->setValue(settings.maxSimultaneousDownloads);
 
 	if (settings.autoPlaylistMode == AutoPlaylistMode::NoAutoEnqueue)
 	{
@@ -160,6 +161,7 @@ void FeedSettingsWindow::on_saveButtonBox_accepted()
 
 	/* Download section */
 	f.autoDownloadNextEpisodes = ui.autoDownloadCheckBox->isChecked();
+	f.maxSimultaneousDownloads = ui.maximumSimtaneousSpinBox->value();
 	if (!ui.autoPlaylistCheckBox->isChecked())
 	{
 		f.autoPlaylistMode = AutoPlaylistMode::NoAutoEnqueue;
@@ -239,6 +241,7 @@ void FeedSettingsWindow::on_autoDownloadCheckBox_stateChanged(int state)
 {
 	bool e = (state == Qt::CheckState::Checked);
 	ui.limitStorageCheckBox->setEnabled(e);
+	ui.maximumSimtaneousSpinBox->setEnabled(e);
 }
 
 void FeedSettingsWindow::on_autoPlaylistCheckBox_stateChanged(int state)

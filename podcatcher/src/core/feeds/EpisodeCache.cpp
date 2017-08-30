@@ -94,6 +94,37 @@ void EpisodeCache::resumeCurrent()
 	downloadNext();
 }
 
+void EpisodeCache::updateAutoDownloadQueue(Feed* feed)
+{
+	const FeedSettings& settings = _core->settings()->feed(feed);
+
+	if (!settings.autoDownloadNextEpisodes)
+		return;
+
+	int locallyStored = countStatus(feed, DownloadStatus::DownloadComplete);
+	int inProgress = countStatus(feed, DownloadStatus::DownloadInQueue);
+	inProgress += countStatus(feed, DownloadStatus::DownloadInProgress);
+	inProgress += countStatus(feed, DownloadStatus::DownloadPaused);
+
+	int remainingQuota = 0;
+
+	if (settings.enableLocalStorageLimit)
+	{
+		remainingQuota = settings.localEpisodeStorageLimit;
+		remainingQuota -= (locallyStored + inProgress);
+	}
+
+	while (remainingQuota > 0)
+	{
+		Episode* e = _nextEpisode(feed);
+		if (!e)
+			return;
+
+		enqueueDownload(e);
+		--remainingQuota;
+	}
+}
+
 qint64 EpisodeCache::getPartialDownloadSize(const Episode* e)
 {
 	QFile handle(getTmpDownloadFilename(e));
@@ -250,6 +281,19 @@ void EpisodeCache::cancelDownload(Episode* e)
 	}
 }
 
+int EpisodeCache::countStatus(Feed* feed, DownloadStatus status) const
+{
+	int count = 0;
+
+	for (const Episode* e : feed->episodes)
+	{
+		if (downloadStatus(*e) == status)
+			++count;
+	}
+
+	return count;
+}
+
 void EpisodeCache::deleteLocalFile(const Episode* e)
 {
 	QString cachedName = getCachedFilename(e);
@@ -315,4 +359,25 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 void EpisodeCache::_downloadProgressUpdated(qint64 done, qint64)
 {
 	emit downloadProgressUpdated(*_downloads.first()->episode, done);
+}
+
+Episode* EpisodeCache::_nextEpisode(Feed* feed)
+{
+	const FeedSettings& settings = _core->settings()->feed(feed);
+
+	if (settings.episodeOrder == EpisodeOrder::OldestFirst)
+	{
+		QVector<Episode*>::iterator it = feed->episodes.begin();
+		QVector<Episode*>::iterator end = feed->episodes.end();
+
+		return _nextEpisodeForDownload(it, end);
+
+	}
+	else
+	{
+		QVector<Episode*>::reverse_iterator it = feed->episodes.rbegin();
+		QVector<Episode*>::reverse_iterator end = feed->episodes.rend();
+
+		return _nextEpisodeForDownload(it, end);
+	}
 }

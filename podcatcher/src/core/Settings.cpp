@@ -20,6 +20,7 @@ QDataStream& operator<<(QDataStream& stream, const FeedSettings& settings)
 	stream << settings.localEpisodeStorageLimit;
 	stream << settings.introStingLength;
 	stream << settings.outroStingLength;
+	stream << settings.maxSimultaneousDownloads;
 	stream << settings.showReleaseNotification;
 	stream << settings.showDownloadNotification;
 	stream << settings.enableSkipIntroSting;
@@ -50,6 +51,7 @@ QDataStream& operator>>(QDataStream& stream, FeedSettings& settings)
 	stream >> settings.localEpisodeStorageLimit;
 	stream >> settings.introStingLength;
 	stream >> settings.outroStingLength;
+	stream >> settings.maxSimultaneousDownloads;
 	stream >> settings.showReleaseNotification;
 	stream >> settings.showDownloadNotification;
 	stream >> settings.enableSkipIntroSting;

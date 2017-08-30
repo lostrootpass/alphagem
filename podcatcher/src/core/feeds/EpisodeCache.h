@@ -56,6 +56,8 @@ public:
 
 	void cancelDownload(Episode* e);
 
+	int countStatus(Feed* feed, DownloadStatus status) const;
+
 	void deleteLocalFile(const Episode* e);
 
 	bool downloadInProgress() { return (_downloads.size()); }
@@ -76,6 +78,8 @@ public:
 
 	void resumeCurrent();
 
+	void updateAutoDownloadQueue(Feed* feed);
+
 signals:
 	void cacheStatusUpdated(const Episode* e);
 	void downloadComplete(Episode& e);
@@ -93,4 +97,24 @@ private:
 	QNetworkAccessManager* _mgr;
 
 	Core* _core;
+
+	Episode* _nextEpisode(Feed* feed);
+
+	template<typename T>
+	Episode* _nextEpisodeForDownload(T iter, T iend)
+	{
+		while (iter != iend)
+		{
+			if (!(*iter)->listened)
+			{
+				DownloadStatus status = downloadStatus(**iter);
+				if (status == DownloadStatus::DownloadNotInQueue)
+					return *iter;
+			}
+
+			++iter;
+		}
+
+		return nullptr;
+	}
 };

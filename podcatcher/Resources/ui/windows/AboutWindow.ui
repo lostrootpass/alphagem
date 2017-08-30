@@ -35,6 +35,24 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="versionLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="aboutText">
      <property name="text">
       <string>&lt;p&gt;&lt;span style=&quot;font-weight: bold;&quot;&gt;AlphaGem&lt;/span&gt; is a podcatcher created by &lt;a href=&quot;http://pmurdoch&quot;&gt;Pete Murdoch&lt;/a&gt;. All code has, except where otherwise noted, been released under the zlib open-source license, and the source can be viewed &lt;a href=&quot;http://github.com/lostrootpass/alphagem&quot;&gt;on Github&lt;/a&gt;.&lt;/p&gt;

@@ -28,7 +28,10 @@ public:
 	void startRefreshTimer();
 	void startupRefresh();
 
-	inline QVector<Episode*>& episodes(int index) { return _feeds[index]->episodes; }
+	inline QVector<Episode*>& episodes(int index)
+	{
+		return _feeds[index]->episodes; 
+	}
 	inline QVector<Feed*>& feeds() { return _feeds; }
 
 signals:

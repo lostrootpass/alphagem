@@ -12,6 +12,7 @@
 #include "core/Settings.h"
 #include "core/TimeUtil.h"
 #include "core/Version.h"
+#include "core/feeds/EpisodeCache.h"
 #include "core/feeds/FeedSettings.h"
 
 QDataStream& operator<<(QDataStream& stream, const Episode* episode)
@@ -172,6 +173,8 @@ void FeedCache::onFeedRetrieved(Feed* feed)
 	saveToDisk();
 
 	emit feedListUpdated();
+
+	_core->episodeCache()->updateAutoDownloadQueue(feed);
 }
 
 void FeedCache::onOPMLExported(const QString& fileName)
