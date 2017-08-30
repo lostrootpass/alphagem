@@ -276,7 +276,14 @@ void FeedParser::_parseFromRemoteFile(QString& url)
 
 void FeedParser::_parseNext()
 {
-	if (_reply || !_parseQueue.size()) return;
+	if (_reply)
+		return;
+
+	if (!_parseQueue.size())
+	{
+		emit queueParsed();
+		return;
+	}
 	
 	QString next = _parseQueue.takeFirst();
 	_parseFromRemoteFile(next);

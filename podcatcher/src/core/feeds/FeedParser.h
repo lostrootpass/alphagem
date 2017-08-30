@@ -23,6 +23,7 @@ signals:
 	void feedRetrieved(Feed* name);
 	void newEpisodeAdded(Feed* f, Episode* e);
 	void updateProgress(int percent);
+	void queueParsed();
 
 private:
 	QNetworkAccessManager _netMgr;

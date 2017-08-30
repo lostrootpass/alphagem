@@ -96,7 +96,7 @@ bool Notifier::_iconForFeed(QIcon* icon, const Feed* f)
 	{
 		QPixmap p;
 
-		img->loadPixmap(QUrl(f->imageUrl), &p);
+		img->getImage(QUrl(f->imageUrl), &p);
 		p = p.scaled(QSize(96, 96), Qt::KeepAspectRatio,
 			Qt::SmoothTransformation);
 

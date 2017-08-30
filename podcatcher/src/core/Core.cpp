@@ -51,7 +51,7 @@ void Core::init(QApplication* app)
 	_notifier = new Notifier(this);
 	connect(_audioPlayer, &AudioPlayer::episodeChanged,
 		_notifier, &Notifier::episodeStarted);
-	connect(_feedCache, &FeedCache::feedListUpdated,
+	connect(_feedCache, &FeedCache::queueParsed,
 		_notifier, &Notifier::flushNotifications);
 	connect(_feedCache, &FeedCache::newEpisodeAdded,
 		_notifier, &Notifier::episodeReleased);

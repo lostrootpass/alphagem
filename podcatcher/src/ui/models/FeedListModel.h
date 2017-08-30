@@ -24,9 +24,6 @@ public:
 
 private:
 	Core* _core;
-	mutable QVector<QPixmap*> _thumbnails;
-
-	void _clearThumbnails();
 
 private slots:
 	void onFeedListUpdated();

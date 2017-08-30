@@ -36,9 +36,9 @@ public:
 
 	void getImage(QUrl url, QLabel* label = nullptr);
 
-	bool isCached(QUrl url);
+	void getImage(QUrl url, QPixmap* px);
 
-	void loadPixmap(QUrl url, QPixmap* px);
+	bool isCached(QUrl url);
 
 signals:
 	void imageDownloaded(QPixmap* px, QString url);
@@ -47,9 +47,13 @@ private:
 	QNetworkAccessManager _mgr;
 	QVector<ImageDownload*> _downloads;
 
+	QHash<QUrl, QPixmap> _pixmapCache;
+
 	QString _getCachedLocation(QUrl url);
 	QString _getDownloadLocation(QUrl url);
 	QString _getDownloadName(QUrl url);
+
+	void _loadPixmap(QUrl url, QPixmap* px);
 
 	void _setPixmap(QPixmap& pixmap, QLabel* label);
 

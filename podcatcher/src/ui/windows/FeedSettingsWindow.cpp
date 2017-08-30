@@ -30,6 +30,7 @@ FeedSettingsWindow::FeedSettingsWindow(Core* c, Feed* f, QWidget *parent)
 		ui.markAllAsListenedButton->setVisible(false);
 		ui.useGlobalDefaultsCheckBox->setVisible(false);
 		ui.feedUrlGroupBox->setVisible(false);
+		_updateUI(_core->settings()->feedDefaults());
 	}
 }
 
@@ -86,7 +87,7 @@ void FeedSettingsWindow::_updateUI(const FeedSettings& settings)
 	ui.continueListeningDownloadCheckBox->setChecked(req);
 
 	ui.autoDownloadCheckBox->setChecked(settings.autoDownloadNextEpisodes);
-	ui.maximumSimtaneousSpinBox->setValue(settings.maxSimultaneousDownloads);
+	ui.maximumSimultaneousSpinBox->setValue(settings.maxSimultaneousDownloads);
 
 	if (settings.autoPlaylistMode == AutoPlaylistMode::NoAutoEnqueue)
 	{
@@ -104,6 +105,7 @@ void FeedSettingsWindow::_updateUI(const FeedSettings& settings)
 	ui.autoDeleteCheckBox->setChecked(settings.deleteAfterPlayback);
 
 	ui.limitStorageCheckBox->setEnabled(settings.autoDownloadNextEpisodes);
+	ui.limitStorageLabel->setEnabled(settings.autoDownloadNextEpisodes);
 	ui.limitStorageCheckBox->setChecked(settings.enableLocalStorageLimit);
 	ui.limitStorageSpinBox->setValue(settings.localEpisodeStorageLimit);
 }
@@ -170,7 +172,7 @@ void FeedSettingsWindow::on_saveButtonBox_accepted()
 
 	/* Download section */
 	f.autoDownloadNextEpisodes = ui.autoDownloadCheckBox->isChecked();
-	f.maxSimultaneousDownloads = ui.maximumSimtaneousSpinBox->value();
+	f.maxSimultaneousDownloads = ui.maximumSimultaneousSpinBox->value();
 	if (!ui.autoPlaylistCheckBox->isChecked())
 	{
 		f.autoPlaylistMode = AutoPlaylistMode::NoAutoEnqueue;
@@ -268,7 +270,8 @@ void FeedSettingsWindow::on_autoDownloadCheckBox_stateChanged(int state)
 {
 	bool e = (state == Qt::CheckState::Checked);
 	ui.limitStorageCheckBox->setEnabled(e);
-	ui.maximumSimtaneousSpinBox->setEnabled(e);
+	ui.limitStorageLabel->setEnabled(e);
+	ui.maximumSimultaneousSpinBox->setEnabled(e);
 }
 
 void FeedSettingsWindow::on_autoPlaylistCheckBox_stateChanged(int state)

@@ -38,6 +38,7 @@ signals:
 	void feedListUpdated();
 	void newEpisodeAdded(Episode* e);
 	void refreshStarted(Feed* f);
+	void queueParsed();
 
 public slots:
 	void onAboutToQuit();
@@ -45,6 +46,7 @@ public slots:
 	void onFeedRetrieved(Feed* feed);
 	void onOPMLExported(const QString& fileName);
 	void onOPMLImported(const QString& fileName);
+	void onQueueParsed();
 
 
 private:

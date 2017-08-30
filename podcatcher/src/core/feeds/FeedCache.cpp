@@ -163,6 +163,8 @@ void FeedCache::onFeedAdded(const QString& url)
 			this, &FeedCache::onFeedRetrieved);
 		connect(_feedParser, &FeedParser::newEpisodeAdded,
 			this, &FeedCache::onNewEpisodeAdded);
+		connect(_feedParser, &FeedParser::queueParsed,
+			this, &FeedCache::onQueueParsed);
 	}
 
 	_feedParser->queueFeedDownload(url);
@@ -196,6 +198,11 @@ void FeedCache::onOPMLImported(const QString& fileName)
 	{
 		onFeedAdded(url);
 	}
+}
+
+void FeedCache::onQueueParsed()
+{
+	emit queueParsed();
 }
 
 void FeedCache::_clearOldEpisodes(Feed* feed)

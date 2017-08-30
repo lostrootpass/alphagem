@@ -353,6 +353,8 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 
 		emit downloadComplete(*e);
 		emit downloadQueueUpdated();
+
+		updateAutoDownloadQueue(_core->feedCache()->feedForEpisode(e));
 	}
 
 	info->reply->disconnect(this);

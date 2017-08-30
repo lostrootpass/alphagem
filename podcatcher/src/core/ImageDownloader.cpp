@@ -79,6 +79,19 @@ void ImageDownloader::getImage(QUrl url, QLabel* label)
 	download->handle->open(QIODevice::ReadWrite | QIODevice::Append);
 }
 
+void ImageDownloader::getImage(QUrl url, QPixmap* px)
+{
+	if (_pixmapCache.contains(url))
+	{
+		*px = _pixmapCache[url];
+	}
+	else
+	{
+		_loadPixmap(url, px);
+		_pixmapCache.insert(url, *px);
+	}
+}
+
 bool ImageDownloader::isCached(QUrl url)
 {
 	QFile cached(_getCachedLocation(url));
@@ -86,7 +99,7 @@ bool ImageDownloader::isCached(QUrl url)
 	return cached.exists();
 }
 
-void ImageDownloader::loadPixmap(QUrl url, QPixmap* px)
+void ImageDownloader::_loadPixmap(QUrl url, QPixmap* px)
 {
 	QFile cached(_getCachedLocation(url));
 
