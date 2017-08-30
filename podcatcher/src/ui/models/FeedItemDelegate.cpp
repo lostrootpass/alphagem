@@ -18,6 +18,8 @@ void FeedItemDelegate::paint(QPainter *painter,
 {
 	painter->save();
 
+	painter->setRenderHints(QPainter::TextAntialiasing |
+		QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 	QVariant v = index.model()->data(index, Qt::DecorationRole);
 	
 	if (option.state & QStyle::State_MouseOver)

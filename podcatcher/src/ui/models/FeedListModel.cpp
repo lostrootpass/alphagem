@@ -57,7 +57,7 @@ QVariant FeedListModel::data(const QModelIndex &index, int role) const
 		if (img->isCached(feed->imageUrl))
 		{
 			img->loadPixmap(QUrl(feed->imageUrl), p);
-			*p = p->scaled(pixSize, Qt::KeepAspectRatio,
+			*p = p->scaled(pixSize, Qt::IgnoreAspectRatio,
 				Qt::SmoothTransformation);
 		}
 		else
