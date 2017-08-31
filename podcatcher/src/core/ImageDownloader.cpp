@@ -54,6 +54,12 @@ void ImageDownloader::getImage(QUrl url, QLabel* label)
 		return;
 	}
 
+	for (const ImageDownload* d : _downloads)
+	{
+		if (d->requestedUrl == url.toString())
+			return;
+	}
+
 	ImageDownload* download = new ImageDownload(url.toString());
 	_downloads.push_back(download);
 
