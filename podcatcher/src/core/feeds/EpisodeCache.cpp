@@ -331,7 +331,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 	else
 	{
 		QString baseUrl = reply->url().toString(QUrl::RemoveQuery);
-		QString ext = QFileInfo(baseUrl).completeSuffix();
+		QString ext = QFileInfo(baseUrl).suffix();
 
 		if (ext == "")
 		{
