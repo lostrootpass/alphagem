@@ -4,8 +4,12 @@
 
 QDateTime parseDateTime(const QString& datetime)
 {
-	QDateTime t =
-		QDateTime::fromString(datetime, "ddd, dd MMM yyyy HH:mm:ss t");
+	QDateTime t = QDateTime::fromString(datetime, Qt::ISODate);
+
+	if (!t.isValid())
+	{
+		t = QDateTime::fromString(datetime, "ddd, dd MMM yyyy HH:mm:ss t");
+	}
 
 	if (!t.isValid())
 	{
