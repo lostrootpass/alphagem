@@ -42,7 +42,7 @@ signals:
 
 struct Feed
 {
-	Feed() {}
+	Feed() : useGlobalSettings(true) {}
 	~Feed()
 	{
 		for (Episode* e : episodes)

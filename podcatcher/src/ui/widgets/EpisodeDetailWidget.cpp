@@ -183,7 +183,7 @@ void EpisodeDetailWidget::episodeUpdated()
 
 void EpisodeDetailWidget::onImageDownloaded(QPixmap* px, QString url)
 {
-	if (url != _episode->imageUrl)
+	if (!_episode || url != _episode->imageUrl)
 		return;
 
 	_background = *px;
