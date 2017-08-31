@@ -512,4 +512,7 @@
     </None>
     <None Include="Resources\stylesheet.css" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="alphagem.rc" />
+  </ItemGroup>
 </Project>

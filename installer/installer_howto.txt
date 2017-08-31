@@ -1,0 +1,6 @@
+How to make a release installer:
+
+* Create an empty directory next to this file called AlphaGem
+* Place the release AlphaGem.exe executable in that directory
+* cd in to that directory, and from there execute `windeployqt to calculate/copy in all dependencies
+* Compile the install.nsi script in NSIS.
