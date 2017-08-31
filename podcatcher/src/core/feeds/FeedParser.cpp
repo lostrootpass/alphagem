@@ -257,6 +257,10 @@ bool FeedParser::_parseItemData(QXmlStreamReader* xml, Episode* episode,
 				if (xml->attributes().value("role") == "author")
 					episode->author = xml->readElementText();
 			}
+			else if (n == "content:encoded")
+			{
+				episode->encodedContent = xml->readElementText();
+			}
 		}
 	}
 

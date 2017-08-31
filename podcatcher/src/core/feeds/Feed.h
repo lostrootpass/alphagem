@@ -14,6 +14,7 @@ struct Episode : public QObject
 public:
 	QString title;
 	QString description;
+	QString encodedContent;
 	QString mediaUrl;
 	QString imageUrl;
 	QString guid;

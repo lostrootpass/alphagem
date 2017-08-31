@@ -19,6 +19,7 @@ QDataStream& operator<<(QDataStream& stream, const Episode* episode)
 {
 	stream << episode->title;
 	stream << episode->description;
+	stream << episode->encodedContent;
 	stream << episode->mediaUrl;
 	stream << episode->imageUrl;
 	stream << episode->guid;
@@ -40,6 +41,7 @@ QDataStream& operator>>(QDataStream& stream, Episode*& episode)
 
 	stream >> episode->title;
 	stream >> episode->description;
+	stream >> episode->encodedContent;
 	stream >> episode->mediaUrl;
 	stream >> episode->imageUrl;
 	stream >> episode->guid;
