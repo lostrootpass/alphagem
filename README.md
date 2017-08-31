@@ -10,7 +10,7 @@ Many existing "desktop" podcatchers are actually web-based, meaning they don't a
 
 Downloads
 ---------
-You can download the Windows installer for the latest version [here](releases/installer-v0.1.exe).
+You can download the Windows installer for the latest version [here](releases/AlphaGemInstall0.1.exe).
 
 Building
 --------
