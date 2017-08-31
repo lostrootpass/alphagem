@@ -47,6 +47,7 @@ QVariant FeedListModel::data(const QModelIndex &index, int role) const
 	else if (role == Qt::DecorationRole)
 	{
 		QPixmap p(pixSize);
+		p.fill(Qt::white);
 
 		ImageDownloader* img = _core->imageDownloader();
 		if (feed->imageUrl != "" && img->isCached(feed->imageUrl))
