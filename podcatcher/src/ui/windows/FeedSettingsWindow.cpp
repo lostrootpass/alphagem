@@ -290,7 +290,8 @@ void FeedSettingsWindow::on_deleteLocalPlayedButton_clicked()
 {
 	for (Episode* e : _feed->episodes)
 	{
-		_core->episodeCache()->deleteLocalFile(e);
+		if(e->listened)
+			_core->episodeCache()->deleteLocalFile(e);
 	}
 
 	ui.deleteLocalPlayedButton->setEnabled(false);
