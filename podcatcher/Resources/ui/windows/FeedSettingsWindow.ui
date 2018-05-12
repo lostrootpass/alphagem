@@ -244,7 +244,7 @@
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, a notification will appear on the desktop when an episode has been downloaded. Depending on your computer preferences, this notification may make a sound.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>Show a dektop notification when an episode has been downloaded</string>
+         <string>Show a desktop notification when an episode has been downloaded</string>
         </property>
        </widget>
       </item>
