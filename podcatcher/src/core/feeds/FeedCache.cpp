@@ -373,4 +373,6 @@ void FeedCache::startupRefresh()
 		if(_core->settings()->feed(f).refreshAtStartup)
 			onFeedAdded(f->feedUrl);
 	}
+
+	onTimedRefresh();
 }
