@@ -74,7 +74,10 @@ void State::loadFromDisk()
 		p->emplaceFront(feedCache->getEpisode(currentGuid));
 		AudioPlayer* player = _core->audioPlayer();
 		player->nextEpisode();
-		player->setPosition(currentPosition);
+		
+		//Duration won't be set straight away, so store it & update later
+		player->setResumePos(currentPosition);
+
 		player->pause();
 	}
 

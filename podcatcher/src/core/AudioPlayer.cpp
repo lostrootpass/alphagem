@@ -13,7 +13,7 @@
 
 AudioPlayer::AudioPlayer(Core& core, QObject *parent)
 	: QObject(parent), _core(&core), _playlist(nullptr), _current(nullptr),
-	_skipAtPosition(-1)
+	_skipAtPosition(-1), _resumePos(-1)
 {
 	_mediaPlayer = new QMediaPlayer();
 	connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
@@ -103,8 +103,15 @@ void AudioPlayer::onDurationChanged(qint64 duration)
 	const Feed* f = _core->feedCache()->feedForEpisode(_current);
 	const FeedSettings& settings = _core->settings()->feed(f);
 	
-	if (settings.enableSkipIntroSting)
+	if (_resumePos != -1)
+	{
+		_mediaPlayer->setPosition(_resumePos);
+		_resumePos = -1;
+	}
+	else if (settings.enableSkipIntroSting)
+	{
 		_mediaPlayer->setPosition(settings.introStingLength * 1000);
+	}
 
 	if (settings.enableSkipOutroSting)
 		_skipAtPosition = duration - (settings.outroStingLength * 1000);

@@ -28,6 +28,11 @@ public:
 
 	void setPosition(qint64 pos);
 
+	inline void setResumePos(quint64 pos)
+	{
+		_resumePos = pos;
+	}
+
 public slots:
 	void onPlayPauseToggle();
 
@@ -43,6 +48,7 @@ private:
 	Episode* _current;
 
 	qint64 _skipAtPosition;
+	qint64 _resumePos;
 
 private slots:
 	void onDurationChanged(qint64 duration);
