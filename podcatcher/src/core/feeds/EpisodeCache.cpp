@@ -19,6 +19,18 @@ QString sha1(QString s)
 	return QString(hash.toHex());
 }
 
+static QString getExt(QString format)
+{
+	if (format == "audio/mpeg")
+		return "mp3";
+	else if (format == "audio/m4a" || format == "audio/x-m4a")
+		return "m4a";
+	else if (format == "audio/ogg" || format == "audio/vorbis")
+		return "ogg";
+
+	return "";
+}
+
 DownloadInfo::~DownloadInfo()
 {
 	if (handle != nullptr)
@@ -242,10 +254,7 @@ QUrl EpisodeCache::getEpisodeUrl(const Episode* e)
 
 QString EpisodeCache::getTmpDownloadFilename(const Episode* e)
 {
-	QString ext = "";
-	
-	if (e->mediaFormat == "audio/mpeg")
-		ext = ".mp3";
+	QString ext = getExt(e->mediaFormat);
 
 	QDir dir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 	if (!dir.cd("podcasts/download"))
@@ -334,8 +343,7 @@ void EpisodeCache::_downloadFinished(QNetworkReply* reply)
 
 		if (ext == "")
 		{
-			if(e->mediaFormat == "audio/mpeg")
-				ext = "mp3";
+			ext = getExt(e->mediaFormat);
 		}
 
 		QDir d = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
