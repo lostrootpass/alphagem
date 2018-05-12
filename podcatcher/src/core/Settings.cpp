@@ -9,6 +9,8 @@
 #include "Core/Version.h"
 #include "Core/Feeds/FeedCache.h"
 
+#include "../ui/windows/MainWindow.h"
+
 typedef QVector<QPair<QString, FeedSettings> > SettingsList;
 
 QDataStream& operator<<(QDataStream& stream, const FeedSettings& settings)
@@ -111,6 +113,21 @@ void Settings::loadFromDisk()
 	inStream >> _saveDirectory;
 	inStream >> _notifyOnNextEpisode;
 
+	//Read in window settings - added in 0.2
+	if (fileVersion >= 2)
+	{
+		QRect rect;
+		bool maximised;
+
+		inStream >> rect;
+		inStream >> maximised;
+
+		_core->mainWindow()->setGeometry(rect);
+
+		if(maximised)
+			_core->mainWindow()->showMaximized();
+	}
+
 	//Then read in feed defaults
 	inStream >> _feedDefaults;
 
@@ -145,6 +162,11 @@ void Settings::saveToDisk()
 	//First write global application settings
 	outStream << _saveDirectory;
 	outStream << _notifyOnNextEpisode;
+
+	//Write out window settings
+	outStream << _core->mainWindow()->geometry();
+	outStream << _core->mainWindow()->isMaximized();
+
 
 	//Then feed defaults
 	outStream << _feedDefaults;

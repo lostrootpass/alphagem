@@ -31,15 +31,6 @@ int main(int argc, char *argv[])
 	Core core;
 	core.init(&a);
 
-	MainWindow w(core);
-	w.init();
-
-	//Load the state now that the main window is hooked up, but...
-	core.loadState();
-
-	//...avoid showing the UI until here, to avoid unresponsiveness.
-	w.show();
-
 	core.feedCache()->startupRefresh();
 
 	return a.exec();

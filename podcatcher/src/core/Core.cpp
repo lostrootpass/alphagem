@@ -7,6 +7,7 @@
 #include "Feed.h"
 #include "FeedCache.h"
 #include "ImageDownloader.h"
+#include "MainWindow.h"
 #include "Notifier.h"
 #include "Settings.h"
 #include "State.h"
@@ -19,6 +20,7 @@ Core::Core() : QObject(nullptr), _audioPlayer(nullptr), _episodeCache(nullptr),
 
 Core::~Core()
 {
+	delete _mainWindow;
 	delete _audioPlayer;
 	delete _episodeCache;
 	delete _feedCache;
@@ -67,6 +69,13 @@ void Core::init(QApplication* app)
 	_state = new State(this);
 	connect(app, &QApplication::aboutToQuit,
 		_state, &State::onAboutToQuit);
+
+	_mainWindow = new MainWindow(*this);
+	_mainWindow->init();
+
+	loadState();
+
+	_mainWindow->show();
 }
 
 void Core::loadState()
