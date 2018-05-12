@@ -266,6 +266,9 @@ background-color: lightgrey;
            <height>48</height>
           </size>
          </property>
+         <property name="shortcut">
+          <string>Space</string>
+         </property>
          <property name="flat">
           <bool>true</bool>
          </property>
