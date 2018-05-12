@@ -56,5 +56,6 @@ private slots:
 	void onEpisodeSelected(const QModelIndex& index);
 	void onFeedJump(Feed* f);
 	void onFeedSelected(const QModelIndex& index);
+	void onPlaylistUpdated();
 	void onStatusBarUpdate(QString& text);
 };

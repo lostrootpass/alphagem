@@ -84,6 +84,9 @@ void MainWindow::init()
 
 	connect(ui.playbackControlWidget, &PlaybackControlWidget::episodeSelected,
 		this, &MainWindow::onEpisodeJump);
+
+	connect(_core->defaultPlaylist(), &Playlist::playlistUpdated,
+		this, &MainWindow::onPlaylistUpdated);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -191,11 +194,13 @@ void MainWindow::on_actionPlaylist_triggered()
 	if (!p->episodes.size())
 	{
 		ui.feedDetailWidget->setFeed(nullptr);
+		ui.feedDetailWidget->setVisible(false);
 	}
 	else
 	{
 		Feed* f = _core->feedCache()->feedForEpisode(p->episodes.first());
 		ui.feedDetailWidget->setFeed(f);
+		ui.feedDetailWidget->setVisible(true);
 	}
 
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
@@ -286,4 +291,24 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 
 	ui.feedDetailWidget->setVisible(true);
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
+}
+
+void MainWindow::onPlaylistUpdated()
+{
+	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
+	if (elm->listType() != EpisodeListType::Playlist)
+		return;
+
+	Playlist* p = _core->defaultPlaylist();
+	if (!p->episodes.size())
+	{
+		ui.feedDetailWidget->setFeed(nullptr);
+		ui.feedDetailWidget->setVisible(false);
+	}
+	else if(!ui.episodeListView->currentIndex().isValid())
+	{
+		Feed* f = _core->feedCache()->feedForEpisode(p->episodes.first());
+		ui.feedDetailWidget->setFeed(f);
+		ui.feedDetailWidget->setVisible(true);
+	}
 }

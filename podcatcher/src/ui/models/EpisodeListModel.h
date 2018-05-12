@@ -29,6 +29,11 @@ public:
 
 	Episode* getEpisode(const QModelIndex& index) const;
 
+	inline EpisodeListType listType() const
+	{
+		return _listType;
+	}
+
 	void refreshIndex(const QModelIndex& index);
 
 	void refreshList();
