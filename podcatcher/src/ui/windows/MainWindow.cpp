@@ -296,8 +296,11 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 void MainWindow::onPlaylistUpdated()
 {
 	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	if (elm->listType() != EpisodeListType::Playlist)
+	if (!(elm->listType() == EpisodeListType::Playlist &&
+		ui.stackedWidget->currentWidget() == ui.episodeListLayout))
+	{
 		return;
+	}
 
 	Playlist* p = _core->defaultPlaylist();
 	if (!p->episodes.size())
