@@ -6,3 +6,4 @@ Release/
 .vs
 *.VC.db
 *.VC.opendb
+/installer/AlphaGem
