@@ -8,6 +8,8 @@
 struct Feed;
 struct Episode;
 
+class QTimer;
+
 class FeedParser : public QObject
 {
 	Q_OBJECT
@@ -30,6 +32,10 @@ private:
 	QNetworkReply* _reply;
 	QVector<QString> _parseQueue;
 
+	QTimer* _timer;
+	qint64 _bytesAtLastCheck;
+	qint64 _total;
+
 	void _parseOwnerData(QXmlStreamReader* xml, Feed* feed);
 	void _parseChannelData(QXmlStreamReader* xml, Feed* feed);
 	void _parseImageData(QXmlStreamReader*xml, Feed* feed);
@@ -38,6 +44,8 @@ private:
 
 	void _parseFromRemoteFile(QString& url);
 	void _parseNext();
+
+	void _checkTimeout();
 
 private slots:
 	void _downloadFinished(QNetworkReply* reply);

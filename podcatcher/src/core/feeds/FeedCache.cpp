@@ -205,6 +205,7 @@ void FeedCache::onOPMLImported(const QString& fileName)
 void FeedCache::onQueueParsed()
 {
 	emit queueParsed();
+	emit feedListUpdated();
 }
 
 void FeedCache::_clearOldEpisodes(Feed* feed)

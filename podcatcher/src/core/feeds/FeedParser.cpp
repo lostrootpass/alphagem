@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QXmlStreamReader>
+#include <QTimer>
 
 #include "Feed.h"
 #include "FeedCache.h"
@@ -18,7 +19,8 @@ std::time_t toTime(QString s)
 }
 
 FeedParser::FeedParser(QObject *parent)
-	: QObject(parent), _reply(nullptr)
+	: QObject(parent), _reply(nullptr), _timer(nullptr), _bytesAtLastCheck(0),
+	_total(0)
 {
 	connect(&_netMgr, &QNetworkAccessManager::finished, 
 		this, &FeedParser::_downloadFinished);
@@ -291,6 +293,20 @@ void FeedParser::_parseNext()
 	
 	QString next = _parseQueue.takeFirst();
 	_parseFromRemoteFile(next);
+
+	_timer = new QTimer(this);
+	connect(_timer, &QTimer::timeout, this, &FeedParser::_checkTimeout);
+	_timer->start(15 * 1000);
+}
+
+void FeedParser::_checkTimeout()
+{
+	if (_bytesAtLastCheck == _total)
+	{
+		_reply->abort();
+	}
+
+	_bytesAtLastCheck = _total;
 }
 
 void FeedParser::_downloadFinished(QNetworkReply* reply)
@@ -330,11 +346,17 @@ void FeedParser::_downloadFinished(QNetworkReply* reply)
 	reply->deleteLater();
 
 	_reply = nullptr;
+	_bytesAtLastCheck = 0;
+	_total = 0;
+	delete _timer;
+
 	_parseNext();
 }
 
 void FeedParser::_progressUpdated(qint64 received, qint64 total)
 {
+	_total = total;
+
 	if(total > 0)
 		emit updateProgress((received / total) * 100);
 }
