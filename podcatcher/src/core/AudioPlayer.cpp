@@ -37,6 +37,7 @@ void AudioPlayer::nextEpisode()
 	if (!p->episodes.size())
 	{
 		_current = nullptr;
+		_playlist->clear();
 
 		emit finished();
 	}
@@ -128,11 +129,15 @@ void AudioPlayer::onStateChange(QMediaPlayer::MediaStatus state)
 	if (state == QMediaPlayer::MediaStatus::EndOfMedia)
 	{
 		Episode* justFinished = _core->defaultPlaylist()->front();
-
+		
 		if (justFinished == _current)
 			_core->defaultPlaylist()->popFront();
 
 		//Need to close the file before trying to delete it on Windows.
+
+		//TODO: qt5.9 bug, remove this line after 5.10 upgrade
+		_mediaPlayer->stop(); 
+		
 		nextEpisode();
 
 		EpisodeCache* epCache = _core->episodeCache();

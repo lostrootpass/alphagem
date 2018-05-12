@@ -306,9 +306,8 @@ void EpisodeCache::deleteLocalFile(const Episode* e)
 		return;
 
 	QFile file(cachedName);
-	file.remove();
-
-	emit cacheStatusUpdated(e);
+	if(file.remove())
+		emit cacheStatusUpdated(e);
 }
 
 void EpisodeCache::_downloadFinished(QNetworkReply* reply)
