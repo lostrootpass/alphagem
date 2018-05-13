@@ -101,7 +101,7 @@
       <item row="0" column="1">
        <widget class="QComboBox" name="episodeOrderComboBox">
         <property name="whatsThis">
-         <string>Whether to have the newest episode or the oldest episode be treated as the starting point. This affects the order that episodes are displayed in, as well as the other in which episodes are automatically downloaded. For story-style podcasts where you want to listen from the beginning, select Oldest First. For news podcasts, select Newest First.</string>
+         <string>Whether to have the newest episode or the oldest episode be treated as the starting point. This affects the order that episodes are displayed in, as well as the order in which episodes are automatically downloaded. For story-style podcasts where you want to listen from the beginning, select Oldest First. For news podcasts, select Newest First.</string>
         </property>
         <item>
          <property name="text">
