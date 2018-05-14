@@ -338,7 +338,7 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 	if (!feeds.size()) return;
 
 	_episodeListModel->setFeedIndex(index.row());
-
+	ui.episodeListView->scrollToTop();
 	ui.feedDetailWidget->setVisible(true);
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
