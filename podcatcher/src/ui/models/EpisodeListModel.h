@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QListView>
 
 #include "core/Core.h"
 #include "core/feeds/Feed.h"
@@ -21,20 +20,19 @@ class EpisodeListModel : public QAbstractListModel
 	Q_OBJECT
 
 public:
-	EpisodeListModel(QListView& view, Core& core, int feed, QObject* parent = 0);
+	EpisodeListModel(Core& core, int feed, QObject* parent = 0);
 	~EpisodeListModel();
 
 	int rowCount(const QModelIndex &parent) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 
 	Episode* getEpisode(const QModelIndex& index) const;
+	Episode* getEpisode(int row) const;
 
 	inline EpisodeListType listType() const
 	{
 		return _listType;
 	}
-
-	void refreshIndex(const QModelIndex& index);
 
 	void refreshList();
 
@@ -45,15 +43,12 @@ public:
 	void showPlaylist();
 
 private:
-	QListView* _view;
 	Core* _core;
 	Feed* _feed;
 	int _feedIndex;
 	EpisodeListType _listType;
 
 	int _epCount() const;
-
-	EpisodeListItemWidget* _getWidget(const QModelIndex& index) const;
 
 private slots:
 	void onDownloadQueueUpdated();

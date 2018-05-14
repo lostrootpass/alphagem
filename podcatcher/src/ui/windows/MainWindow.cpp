@@ -2,6 +2,7 @@
 
 #include <QFileDialog>
 #include <QProgressBar>
+#include <QTimer>
 
 #include "AddFeedWindow.h"
 #include "AboutWindow.h"
@@ -21,6 +22,7 @@
 #include "ui/widgets/EpisodeListItemWidget.h"
 
 #include "ui/windows/ApplicationSettingsWindow.h"
+#include "EpisodeListProxyModel.h"
 
 MainWindow::MainWindow(Core& core, QWidget *parent)
 	: QMainWindow(parent), _core(&core)
@@ -70,9 +72,11 @@ void MainWindow::init()
 	ui.feedListView->addAction(ui.action_DeleteFeed);
 
 
-	QAbstractItemModel* model = new EpisodeListModel(*ui.episodeListView,
-		*_core, -1, this);
-	ui.episodeListView->setModel(model);
+	_episodeListModel = new EpisodeListModel(*_core, -1, this);
+	_episodeProxyModel = new EpisodeListProxyModel(*_core, 
+		*ui.episodeListView, this);
+	_episodeProxyModel->setSourceModel(_episodeListModel);
+	ui.episodeListView->setModel(_episodeProxyModel);
 	ui.episodeListView->setMouseTracking(true);
 	connect(ui.episodeListView->selectionModel(), 
 		&QItemSelectionModel::currentChanged,
@@ -87,6 +91,11 @@ void MainWindow::init()
 
 	connect(_core->defaultPlaylist(), &Playlist::playlistUpdated,
 		this, &MainWindow::onPlaylistUpdated);
+
+	_searchbarTimer = new QTimer(this);
+	_searchbarTimer->setSingleShot(true);
+	connect(_searchbarTimer, &QTimer::timeout,
+		this, &MainWindow::on_searchbar_textChanged_timeout);
 }
 
 void MainWindow::on_actionAdd_Feed_triggered()
@@ -162,8 +171,7 @@ void MainWindow::on_actionDownloads_triggered()
 
 	if (!feeds.size()) return;
 
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	elm->showDownloadList();
+	_episodeListModel->showDownloadList();
 
 	const QList<DownloadInfo*> dl = _core->episodeCache()->downloadList();
 	if (!dl.size())
@@ -187,8 +195,7 @@ void MainWindow::on_actionHome_triggered()
 
 void MainWindow::on_actionPlaylist_triggered()
 {
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	elm->showPlaylist();
+	_episodeListModel->showPlaylist();
 
 	Playlist* p = _core->defaultPlaylist();
 	if (!p->episodes.size())
@@ -204,6 +211,53 @@ void MainWindow::on_actionPlaylist_triggered()
 	}
 
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
+}
+
+void MainWindow::on_searchbar_textChanged(const QString&)
+{
+	_searchbarTimer->start(150);
+}
+
+void MainWindow::on_searchbar_textChanged_timeout()
+{
+	_episodeProxyModel->setFilterFixedString(ui.searchbar->text());
+}
+
+void MainWindow::on_filterDropdown_currentIndexChanged(int idx)
+{
+	switch (idx)
+	{
+	case 0:
+		//All episodes
+		_episodeProxyModel->setFilterDownloadedOnly(false);
+		_episodeProxyModel->setFilterNewOnly(false);
+		break;
+	case 1:
+		//New only
+		_episodeProxyModel->setFilterDownloadedOnly(false);
+		_episodeProxyModel->setFilterNewOnly(true);
+		break;
+	case 2:
+		//Downloaded only
+		_episodeProxyModel->setFilterDownloadedOnly(true);
+		_episodeProxyModel->setFilterNewOnly(false);
+		break;
+	case 3:
+		//Downloaded & new only
+		_episodeProxyModel->setFilterDownloadedOnly(true);
+		_episodeProxyModel->setFilterNewOnly(true);
+		break;
+	default:
+		break;
+	}
+
+	_episodeListModel->refreshList();
+}
+
+void MainWindow::on_clearFilterButton_clicked()
+{
+	ui.searchbar->clear();
+	ui.filterDropdown->setCurrentIndex(0);
 }
 
 void MainWindow::on_action_DeleteFeed_triggered()
@@ -222,8 +276,7 @@ void MainWindow::onDownloadComplete(const Episode& e)
 	QString message = QString(tr("Download complete: %1")).arg(e.title);
 	statusBar()->showMessage(message);
 
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	elm->refreshList();
+	_episodeListModel->refreshList();
 }
 
 void MainWindow::onDownloadFailed(const Episode&, QString error)
@@ -246,8 +299,7 @@ void MainWindow::onDownloadProgress(const Episode& e, qint64 bytesDownloaded)
 
 void MainWindow::onEpisodeHighlighted(const QModelIndex& index)
 {
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	Episode* e = elm->getEpisode(index);
+	Episode* e = _episodeProxyModel->getEpisode(index);
 	ui.feedDetailWidget->setFeed(_core->feedCache()->feedForEpisode(e));
 }
 
@@ -262,16 +314,15 @@ void MainWindow::onEpisodeJump(Episode* e)
 
 void MainWindow::onEpisodeSelected(const QModelIndex& index)
 {
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	ui.episodeDetailWidget->setEpisode(elm->getEpisode(index));
+	Episode* e = _episodeProxyModel->getEpisode(index);
+	ui.episodeDetailWidget->setEpisode(e);
 	ui.stackedWidget->setCurrentWidget(ui.episodeDetailLayout);
 }
 
 void MainWindow::onFeedJump(Feed* f)
 {
 	ui.feedDetailWidget->setFeed(f);
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	elm->setFeedIndex(_core->feedCache()->feeds().indexOf(f));
+	_episodeListModel->setFeedIndex(_core->feedCache()->feeds().indexOf(f));
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
 }
 
@@ -286,8 +337,7 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 
 	if (!feeds.size()) return;
 
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	elm->setFeedIndex(index.row());
+	_episodeListModel->setFeedIndex(index.row());
 
 	ui.feedDetailWidget->setVisible(true);
 	ui.stackedWidget->setCurrentWidget(ui.episodeListLayout);
@@ -295,14 +345,15 @@ void MainWindow::onFeedSelected(const QModelIndex& index)
 
 void MainWindow::onPlaylistUpdated()
 {
-	EpisodeListModel* elm = (EpisodeListModel*)ui.episodeListView->model();
-	if (!(elm->listType() == EpisodeListType::Playlist &&
+	Playlist* p = _core->defaultPlaylist();
+	ui.actionPlaylist->setEnabled(!p->episodes.isEmpty());
+
+	if (!(_episodeListModel->listType() == EpisodeListType::Playlist &&
 		ui.stackedWidget->currentWidget() == ui.episodeListLayout))
 	{
 		return;
 	}
 
-	Playlist* p = _core->defaultPlaylist();
 	if (!p->episodes.size())
 	{
 		ui.feedDetailWidget->setFeed(nullptr);

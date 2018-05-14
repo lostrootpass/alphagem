@@ -1,7 +1,7 @@
 #include "EpisodeItemDelegate.h"
 
 #include <QPainter>
-#include "EpisodeListModel.h"
+#include "EpisodeListProxyModel.h"
 
 EpisodeItemDelegate::EpisodeItemDelegate(QObject *parent)
 	: QStyledItemDelegate(parent)
@@ -14,8 +14,8 @@ EpisodeItemDelegate::~EpisodeItemDelegate()
 
 void EpisodeItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	EpisodeListModel* elm = (EpisodeListModel*)index.model();
-	elm->refreshIndex(index);
+	EpisodeListProxyModel* proxyModel = (EpisodeListProxyModel*)index.model();
+	proxyModel->refreshIndex(index);
 
 	QStyledItemDelegate::paint(painter, option, index);
 }

@@ -8,6 +8,8 @@
 class EpisodeListItemWidget;
 struct Feed;
 struct Episode;
+class EpisodeListModel;
+class EpisodeListProxyModel;
 
 class MainWindow : public QMainWindow
 {
@@ -21,8 +23,11 @@ public:
 
 private:
 	Ui::MainWindowClass ui;
+	QTimer* _searchbarTimer;
 
 	Core* _core;
+	EpisodeListModel* _episodeListModel;
+	EpisodeListProxyModel* _episodeProxyModel;
 
 private slots:
 	/* Auto generated slots */
@@ -42,6 +47,12 @@ private slots:
 	void on_actionDownloads_triggered();
 	void on_actionHome_triggered();
 	void on_actionPlaylist_triggered();
+
+	//Filter bar
+	void on_searchbar_textChanged(const QString& text);
+	void on_searchbar_textChanged_timeout();
+	void on_filterDropdown_currentIndexChanged(int idx);
+	void on_clearFilterButton_clicked();
 
 	//Context
 	void on_action_DeleteFeed_triggered();

@@ -11,13 +11,11 @@
 #include "core/feeds/EpisodeCache.h"
 #include "core/feeds/Feed.h"
 
-EpisodeListItemWidget::EpisodeListItemWidget(const EpisodeListModel& m, 
-	Core& core, const QModelIndex& idx, QWidget *parent)
-	: QWidget(parent), _core(&core), _model(&m), _index(idx)
+EpisodeListItemWidget::EpisodeListItemWidget(Core& core, Episode& episode, 
+	QWidget *parent)
+	: QWidget(parent), _core(&core), _episode(&episode)
 {
 	ui.setupUi(this);
-
-	_episode = _model->getEpisode(_index);
 
 	connect(_episode, &Episode::updated, 
 		this, &EpisodeListItemWidget::onEpisodeUpdated);

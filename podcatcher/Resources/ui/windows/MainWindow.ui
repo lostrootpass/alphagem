@@ -50,7 +50,7 @@
         <item>
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="feedListLayout">
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -92,6 +92,64 @@
           </widget>
           <widget class="QWidget" name="episodeListLayout">
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <layout class="QHBoxLayout" name="topbarWidget">
+              <item>
+               <widget class="QLineEdit" name="searchbar">
+                <property name="placeholderText">
+                 <string>Search episode titles and descriptions</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="filterDropdown">
+                <item>
+                 <property name="text">
+                  <string>All Episodes</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>New Only</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Downloaded Only</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>New &amp; Downloaded Only</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearFilterButton">
+                <property name="toolTip">
+                 <string>Clear filters</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset theme="kt-remove-filters">
+                  <normaloff>.</normaloff>.</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
             <item>
              <widget class="QListView" name="episodeListView">
               <property name="enabled">

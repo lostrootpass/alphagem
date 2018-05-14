@@ -10,8 +10,8 @@
 #include "ui/widgets/EpisodeListItemWidget.h"
 #include "ui/windows/MainWindow.h"
 
-EpisodeListModel::EpisodeListModel(QListView& view, Core& core, int feed, QObject* parent) 
-	: QAbstractListModel(parent), _view(&view), _core(&core), _feedIndex(feed),
+EpisodeListModel::EpisodeListModel(Core& core, int feed, QObject* parent) 
+	: QAbstractListModel(parent), _core(&core), _feedIndex(feed),
 	_listType(EpisodeListType::Feed)
 {
 	if(_feedIndex > -1)
@@ -46,20 +46,25 @@ QVariant EpisodeListModel::data(const QModelIndex &, int ) const
 
 Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 {
+	return getEpisode(index.row());
+}
+
+Episode* EpisodeListModel::getEpisode(int row) const
+{
 	switch (_listType)
 	{
 	case EpisodeListType::Downloads:
 	{
 		const QList<DownloadInfo*>& list = _core->episodeCache()->downloadList();
-		return (list.at(index.row())->episode);
+		return (list.at(row)->episode);
 	}
 		break;
 
 	case EpisodeListType::Playlist:
 	{
 		Playlist* p = _core->defaultPlaylist();
-		if (p->episodes.size() > index.row())
-			return p->episodes.at(index.row());
+		if (p->episodes.size() > row)
+			return p->episodes.at(row);
 		return nullptr;
 	}
 		break;
@@ -69,9 +74,9 @@ Episode* EpisodeListModel::getEpisode(const QModelIndex& index) const
 	{
 		const FeedSettings& settings = _core->settings()->feed(_feed);
 		if (settings.episodeOrder == EpisodeOrder::NewestFirst)
-			return _feed->episodes[_epCount() - 1 - index.row()];
+			return _feed->episodes[_epCount() - 1 - row];
 		else
-			return _feed->episodes[index.row()];
+			return _feed->episodes[row];
 		break;
 	}
 	}
@@ -98,12 +103,6 @@ void EpisodeListModel::onPlaylistChanged()
 {
 	if(_listType == EpisodeListType::Playlist)
 		refreshList();
-}
-
-void EpisodeListModel::refreshIndex(const QModelIndex& index)
-{
-	if(!_view->indexWidget(index))
-		_view->setIndexWidget(index, _getWidget(index));
 }
 
 void EpisodeListModel::refreshList()
@@ -164,10 +163,4 @@ int EpisodeListModel::_epCount() const
 		break;
 	}
 	
-}
-
-EpisodeListItemWidget* EpisodeListModel::_getWidget(const QModelIndex& index) const
-{
-	//Item view will take ownership of the widget for us.
-	return new EpisodeListItemWidget(*this, *_core, index, nullptr);
 }
