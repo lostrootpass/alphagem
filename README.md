@@ -5,18 +5,15 @@ AlphaGem is a podcatcher designed to make it easy to manage your podcast subscri
 Many existing "desktop" podcatchers are actually web-based, meaning they don't allow proper downloading and media management, and desktop media players almost always take a utilitarian approach to podcasts, supporting them only incidentally or as an afterthought, whereas AlphaGem is designed exclusively to be a podcatcher with a user experience and featureset to reflect that.
 
 ## Screenshots
----
 
 [<img src="screenshots/feedlist.png" width="400"></img>](screenshots/feedlist.png)[<img src="screenshots/episodelist.png" width="400"></img>](screenshots/episodelist.png)
 [<img src="screenshots/episodedetail.png" width="400"></img>](screenshots/episodedetail.png)[<img src="screenshots/feedsettings.png" width="400"></img>](screenshots/feedsettings.png)
 
 ## Downloads
----
 
-You can download the Windows installer for the latest version [here](releases/AlphaGemInstall0.1.exe).
+You can download the Windows installer for the latest version [here](https://github.com/lostrootpass/alphagem/releases/download/v0.2/AlphaGemInstall0.2.exe).
 
 ## Building
----
 
 Requires:
 * Visual Studio 2015
@@ -28,7 +25,6 @@ Building on Linux is technically possible as all code is platform-independent, b
 
 
 ## Licenses
----
 This software is provided under the zlib license. The full text of the zlib license can be found in [LICENSE.md](LICENSE.md).
 
 A full list of acknowledgements can be found in [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md).
