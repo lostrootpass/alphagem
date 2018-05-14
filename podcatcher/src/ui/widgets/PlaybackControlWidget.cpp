@@ -187,11 +187,8 @@ void PlaybackControlWidget::on_muteButton_clicked()
 
 void PlaybackControlWidget::on_nextEpisodeButton_clicked()
 {
-	Episode* first = _core->defaultPlaylist()->episodes.front();
-	if(first == _core->audioPlayer()->currentEpisode())
-		_core->defaultPlaylist()->popFront();
-
-	_player->nextEpisode();
+	qint64 duration = _player->getMediaPlayer()->duration();
+	_player->getMediaPlayer()->setPosition(duration);
 }
 
 void PlaybackControlWidget::on_playPauseButton_clicked()
