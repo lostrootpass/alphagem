@@ -4,7 +4,7 @@
 
 !define VERSIONMAJOR 0
 !define VERSIONMINOR 0
-!define VERSIONBUILD 1
+!define VERSIONBUILD 2
 
 !define HELPURL 	"http://github.com/lostrootpass/alphagem"
 !define UPDATEURL 	"http://github.com/lostrootpass/alphagem"
@@ -13,7 +13,7 @@
 !define INSTALLSIZE 25793
 
 RequestExecutionLevel admin
-OutFile "AlphaGemInstall0.1.exe"
+OutFile "AlphaGemInstall0.2.exe"
 InstallDir "$PROGRAMFILES\${APPNAME}"
 LicenseData "License.txt"
 Name "${APPNAME}"
